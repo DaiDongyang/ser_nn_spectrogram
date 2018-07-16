@@ -1,0 +1,51 @@
+default: &DEFAULT
+  batch_size: 32
+  train_epochs: [100]
+  lrs: [0.0003]
+#  mode: train # mode: train, re-train, eval
+
+  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
+  emos: ['neu', 'ang', 'hap', 'sad']
+  sess: ['Ses01', 'Ses02', 'Ses03', 'Ses04', 'Ses05']
+  consider_sent_types: ['impro', 'script']
+  vali_type: 'M'
+  test_type: 'F'
+  vali_test_ses: 1
+
+  cnn_kernels: [[3, 3, 1, 8], [3, 3, 8, 8], [3, 3, 8, 16], [3, 3, 16, 16]]
+  rnn_hidden_size: 128
+  fc_hiddens: [64]
+
+  is_train: True
+  is_restore: False
+  is_post_calc_len: False
+  is_seq_len_weight: True
+  is_norm_weight: True
+  feature_size: 400
+  optimizer_type: 'adam'
+
+  id_prefix: ''
+  # update when pre-process
+  id: ''
+  id_str: ''
+  tf_log_dir: ./cr_output/tf_log/
+  result_dir: ./cr_output/result/
+  cfg_out_dir: ./cr_output/cfg/
+  ckpt_dir: ./cr_output/ckpt/
+  bestloss_ckpt_dir: ./cr_output/bestloss_ckpt/
+  bestacc_ckpt_dir: ./cr_output/bestacc_ckpt/
+
+  gt_npy: 'gt_'
+  pr_npy: 'pr_'
+  sid_npy: 'sid_'
+  ts_npy: 'ts_'
+
+  best_params_type: bestacc # bestloss
+  restore_file: ''
+  restart_train_epoch: 5
+
+
+
+#large_hidden:
+#  <<: *DEFAULT
+#  num_hidden: 1024
