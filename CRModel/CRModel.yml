@@ -1,6 +1,6 @@
 default: &DEFAULT
   batch_size: 100
-  train_epochs: [10]
+  train_epochs: [3]
   lrs: [0.0003]
   #  mode: train # mode: train, re-train, eval
 
@@ -27,8 +27,8 @@ default: &DEFAULT
   is_shuffle_train: False
   is_norm_weight: True
   is_save_emo_result: False
-  is_train: False
-  is_restore: True
+  is_train: True
+  is_restore: False
 
   feature_size: 400
   optimizer_type: 'adam'

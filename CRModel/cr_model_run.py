@@ -13,6 +13,7 @@ import argparse
 
 from utils import cfg_process
 from utils import post_process
+from utils import log_util
 from CRModel import CRModel
 from CRModel import data_set
 from CRModel import load_data
@@ -41,6 +42,7 @@ class CRModelRun(object):
         self.metric_k = 'acc'
         self.loss_k = 'emo_loss'
         self.saver = None
+        self.logger = log_util.MyLogger()
 
     def init_saver(self, session):
         max_to_keep = 5
@@ -145,7 +147,7 @@ class CRModelRun(object):
             np.save(pr_npy_path, pr_np)
             np.save(ts_npy_path, ts_np)
             np.save(sid_npy_path, sid_np)
-        post_process.print_csv_confustion_matrix(gt_np, pr_np, hparams.emos)
+        post_process.self.logger.log_csv_confustion_matrix(gt_np, pr_np, hparams.emos)
 
     def train_epoch(self, train_iter, lr, session, train_op_k='emo_train_op', vali_iter=None,
                     test_iter=None):
@@ -167,26 +169,28 @@ class CRModelRun(object):
                 }, session=session)
                 count += 1
                 self.global_step += 1
-                print('  train step %d, global step %d,' % (count, self.global_step),
-                      'input shape ', batch_input.x.shape)
+                self.logger.log('  train step %d, global step %d,' % (count, self.global_step),
+                                'input shape ', batch_input.x.shape, level=1)
                 if vali_iter:
                     vali_metric_d, vali_loss_d = self.eval(vali_iter, session)
-                    print('  dev set: metric_d', vali_metric_d, "loss_d", vali_loss_d, end=' ')
+                    self.logger.log('  dev set: metric_d', vali_metric_d, "loss_d", vali_loss_d,
+                                    end=' ', level=1)
                     if self.hparams.best_params_type == 'bestacc':
                         v_acc = vali_metric_d[self.metric_k]
                         if v_acc > self.best_acc:
                             self.best_acc = v_acc
                             self.saver.save(session, self.hparams.bestacc_ckpt_path)
-                        print('best_acc: %f' % self.best_acc)
+                        self.logger.log('best_acc: %f' % self.best_acc, level=1)
                     elif self.hparams.best_params_type == 'bestloss':
                         v_loss = vali_loss_d[self.loss_k]
                         if v_loss < self.best_loss:
                             self.best_acc = v_loss
                             self.saver.save(session, self.hparams.bestloss_ckpt_path)
-                        print('best_loss: %f' % self.best_loss)
+                        self.logger.log('best_loss: %f' % self.best_loss, level=1)
                 if test_iter:
                     test_metric_d, test_loss_d = self.eval(test_iter, session)
-                    print('  test set: metric_d', test_metric_d, 'loss_d', test_loss_d)
+                    self.logger.log('  test set: metric_d', test_metric_d, 'loss_d', test_loss_d,
+                                    level=1)
             except tf.errors.OutOfRangeError:
                 break
 
@@ -197,7 +201,7 @@ class CRModelRun(object):
         vali_iter = d_set.get_vali_iter()
         test_iter = d_set.get_test_iter()
         for i in range(start_i, end_i):
-            print('Epoch %d /%d' % (i, end_i))
+            self.logger.log('Epoch %d /%d' % (i, end_i))
             lr = self.get_cur_lr(i, self.hparams.train_epochs, self.hparams.lrs)
             train_op_k = 'emo_train_op'
             self.train_epoch(train_iter, lr, session, train_op_k=train_op_k,
@@ -205,23 +209,27 @@ class CRModelRun(object):
                              test_iter=test_iter)
             train_metric_d, train_loss_d = self.eval(train_iter, session)
             vali_metric_d, vali_loss_d = self.eval(vali_iter, session)
-            print('train set: metric_d', train_metric_d, "train_d", vali_loss_d)
-            print('dev set: metric_d', vali_metric_d, "loss_d", vali_loss_d, end=' ')
+            self.logger.log('train set: metric_d', train_metric_d, "train_d", vali_loss_d, level=2)
+            self.logger.log('dev set: metric_d', vali_metric_d, "loss_d", vali_loss_d, end=' ',
+                            level=2)
             if self.hparams.best_params_type == 'bestacc':
                 v_acc = vali_metric_d[self.metric_k]
                 if v_acc > self.best_acc:
                     self.best_acc = v_acc
                     self.saver.save(session, self.hparams.bestacc_ckpt_path)
-                print('best_acc: %f' % self.best_acc)
+                self.logger.log('best_acc: %f' % self.best_acc, level=2)
             elif self.hparams.best_params_type == 'bestloss':
                 v_loss = vali_loss_d[self.loss_k]
                 if v_loss < self.best_loss:
                     self.best_loss = v_loss
                     self.saver.save(session, self.hparams.bestloss_ckpt_path)
-                print('best_loss: %f' % self.best_loss)
+                self.logger.log('best_loss: %f' % self.best_loss, level=2)
             if i % self.hparams.persist_interval == 0 and i > 0:
                 self.saver.save(session, self.hparams.ckpt_path, global_step=self.global_step)
-            print('duaraton: %f' %(time.time() - self.start_time))
+            self.logger.log(' duaraton: %f' % (time.time() - self.start_time), level=2)
+
+    def exit(self):
+        self.logger.close()
 
     def run(self, d_set):
         tf_config = tf.ConfigProto()
@@ -249,8 +257,6 @@ class CRModelRun(object):
             self.saver.restore(sess, eval_ckpt_file)
             test_iter = d_set.get_test_iter()
             metric_d, loss_d = self.eval(test_iter, sess)
-            print('train set: metric_d', metric_d, "train_d", loss_d)
+            self.logger.log('train set: metric_d', metric_d, "train_d", loss_d, level=2)
             self.process_result(test_iter, sess)
-
-
-
+        self.exit()

@@ -11,7 +11,7 @@ class MyLogger(object):
         if level >= self.stdout_level:
             print(*args, sep=sep, end=end)
         if self.is_log_beside and self.f:
-            print(*args, sep=sep, end=end, f=self.f)
+            print(*args, sep=sep, end=end, file=self.f)
 
     def close(self):
         if self.is_log_beside and self.f:
