@@ -1,6 +1,6 @@
 import argparse
-from utils import cfg_process
-from CRModel import cr_model_run
+# from utils import cfg_process
+# from CRModel import cr_model_run
 
 
 def add_arguments(parser):
@@ -22,14 +22,14 @@ def log(*args, sep=' ', end='\n'):
 
 
 if __name__ == '__main__':
-    # model_parser = argparse.ArgumentParser()
-    # add_arguments(model_parser)
-    # FLAGS, unparsed = model_parser.parse_known_args()
-    # print('type flags:', type(FLAGS))
-    # print('flags:', FLAGS)
-    # print('type unparsed:', type(unparsed))
-    # print('unparsed:', unparsed)
+    model_parser = argparse.ArgumentParser()
+    add_arguments(model_parser)
+    FLAGS, unparsed = model_parser.parse_known_args()
+    print('type flags:', type(FLAGS))
+    print('flags:', FLAGS)
+    print('type unparsed:', type(unparsed))
+    print('unparsed:', unparsed)
     # yparams = cfg_process.YParams('./CRModel/CRModel.yml', 'default')
     # yparams = cr_model_run.CRHParamsPreprocessor(yparams, None).preprocess()
     # yparams.save()
-    log('hello', 'world %f' % 1.1)
+    # log('hello', 'world %f' % 1.1)

@@ -22,7 +22,7 @@ class CRModel(object):
         self.metric_d = None
         self.loss_d = None
         self.train_op_d = None
-        self.graph = None
+        # self.graph = None
         self.build_graph()
 
     @staticmethod
@@ -126,7 +126,7 @@ class CRModel(object):
         self.metric_d = self.get_metric()
         self.loss_d = self.get_loss()
         self.train_op_d = self.get_train_op()
-        self.graph = tf.get_default_graph()
+        # self.graph = tf.get_default_graph()
 
     # def get_feed_dict(self, x, seq_lens, ws, label, lr, fc_kprob=1.0):
     #     return {
@@ -144,6 +144,7 @@ class CRModel(object):
     #         self.x_ph: batchedInput.x,
     #         self.seq_lens_ph
     #     }
+
 
 def var_conv2d_relu(inputs, w_conv, b_conv, seq_length):
     cnn_outputs, new_seq_len = var_cnn_util.var_cov2d(inputs, w_conv, strides=[1, 1, 1, 1],

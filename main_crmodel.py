@@ -21,6 +21,8 @@ def main(unused_argv):
     parser = argparse.ArgumentParser()
     add_arguments(parser)
     flags, unparsed = parser.parse_known_args()
+    print('config file', flags.config_file)
+    print('config name', flags.config_name)
     yparams = cfg_process.YParams(flags.config_file, flags.config_name)
     yparams = cr_model_run.CRHParamsPreprocessor(yparams, flags).preprocess()
     yparams.save()

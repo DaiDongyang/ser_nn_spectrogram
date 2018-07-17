@@ -234,10 +234,11 @@ class CRModelRun(object):
         tf_config = tf.ConfigProto()
         if 'gpu_allow_growth' in self.hparams:
             tf_config.gpu_options.allow_growth = self.hparams.gpu_allow_growth
-        with tf.Session(graph=self.model.graph, config=tf_config) as sess:
+        with tf.Session(config=tf_config) as sess:
             self.init_saver(sess)
             train_writer = tf.summary.FileWriter(self.hparams.tf_log_dir)
-            train_writer.add_graph(self.model.graph)
+            # train_writer.add_graph(self.model.graph)
+            train_writer.add_graph(tf.get_default_graph())
             eval_ckpt_file = self.hparams.restore_file
             if self.hparams.is_train:
                 start_i = 0
