@@ -1,11 +1,11 @@
 
 class MyLogger(object):
-    def __int__(self, hparams):
+    def __init__(self, hparams):
         self.is_log_beside = hparams.is_log_beside
         self.stdout_level = hparams.stdout_level
         self.log_level = hparams.log_level
         if self.is_log_beside:
-            self.f = open(hparams.log_path)
+            self.f = open(hparams.log_path, 'w')
 
     def log(self, *args, sep=' ', end='\n', level=2):
         if level >= self.stdout_level:

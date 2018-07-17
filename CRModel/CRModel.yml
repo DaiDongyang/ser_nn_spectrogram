@@ -8,7 +8,7 @@ default: &DEFAULT
 #  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
   emos: ['neu', 'ang', 'hap', 'sad']
   sess: ['Ses01', 'Ses02', 'Ses03', 'Ses04', 'Ses05']
-  consider_sent_types: ['impro', 'script']
+  consider_sent_types: ['impro']
   vali_type: 'M'
   test_type: 'F'
   vali_test_ses: 1

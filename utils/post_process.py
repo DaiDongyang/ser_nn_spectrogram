@@ -9,38 +9,38 @@ def get_confusion_matrix(gt, pr, classes):
     return matrix, classes
 
 
-def print_csv_confustion_matrix(gt, pr, classes):
+def print_csv_confustion_matrix(gt, pr, classes, file=None):
     total_acc = np.sum(gt == pr) / len(gt)
     matrix, classes = get_confusion_matrix(gt, pr, classes)
-    print()
-    print('  a\\p', end='\t')
+    print(file=file)
+    print('  a\\p', end='\t', file=file)
     for c in classes:
-        print(c, end='\t')
-    print()
+        print(c, end='\t', file=file)
+    print(file=file)
     for i in range(len(classes)):
-        print(' ', classes[i], end='\t')
+        print(' ', classes[i], end='\t', file=file)
         for ele in matrix[i]:
-            print(ele, end='\t')
-        print()
-    print()
+            print(ele, end='\t', file=file)
+        print(file=file)
+    print(file=file)
 
     sum_1 = np.sum(matrix, axis=1)
     matrix2 = matrix / sum_1.reshape((-1, 1))
-    print('  a\\p', end='\t')
+    print('  a\\p', end='\t', file=file)
     for c in classes:
-        print(' ', c, end='\t')
-    print()
+        print(' ', c, end='\t', file=file)
+    print(file=file)
     for i in range(len(classes)):
-        print(' ', classes[i], end='\t')
+        print(' ', classes[i], end='\t', file=file)
         for ele in matrix2[i]:
-            print('%.4f' % ele, end='\t')
-        print()
-    print()
+            print('%.4f' % ele, end='\t', file=file)
+        print(file=file)
+    print(file=file)
 
     avg = 0
     for i in range(len(classes)):
         avg += matrix2[i, i]
-    print('  average(unweighted) accurate is %.4f' % (avg / len(classes)))
-    print('  total(weighted) accurate is %.4f' % float(total_acc))
-    print()
+    print('  average(unweighted) accurate is %.4f' % (avg / len(classes)), file=file)
+    print('  total(weighted) accurate is %.4f' % float(total_acc), file=file)
+    print(file=file)
 
