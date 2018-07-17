@@ -1,10 +1,11 @@
 default: &DEFAULT
-  batch_size: 32
-  train_epochs: [100]
+  batch_size: 100
+  train_epochs: [10]
   lrs: [0.0003]
   #  mode: train # mode: train, re-train, eval
 
-  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
+  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_simple'
+#  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
   emos: ['neu', 'ang', 'hap', 'sad']
   sess: ['Ses01', 'Ses02', 'Ses03', 'Ses04', 'Ses05']
   consider_sent_types: ['impro', 'script']
@@ -17,16 +18,17 @@ default: &DEFAULT
   fc_hiddens: [64]
   fc_keep_prob: 0.5
 
-  CUDA_VISIBLE_DEVICES: '0,1'
+  CUDA_VISIBLE_DEVICES: '0'
   gpu_allow_growth: True
 
 
   is_post_calc_len: False
   is_seq_len_weight: True
+  is_shuffle_train: False
   is_norm_weight: True
   is_save_emo_result: False
-  is_train: True
-  is_restore: False
+  is_train: False
+  is_restore: True
 
   feature_size: 400
   optimizer_type: 'adam'
@@ -48,8 +50,8 @@ default: &DEFAULT
   sid_npy: 'sid_'
   ts_npy: 'ts_'
 
-  best_params_type: bestacc # bestloss
-  restore_file: ''
+  best_params_type: bestloss # bestloss, bestacc
+  restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_output/bestacc_ckpt/07172216_e1vMtF'
   restart_train_epoch: 5
   persist_interval: 20
   saver_max_to_keep: 30

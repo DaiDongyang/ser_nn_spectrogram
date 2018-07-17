@@ -34,8 +34,8 @@ class HParamsPreprocessor(object):
         self.hparams = hparams
         if flags is None:
             return
-        if flags is argparse.Namespace:
-            flags = vars(flags)
+        # if flags is argparse.Namespace:
+        flags = vars(flags)
         for k, v in flags.items():
             if k in hparams:
                 hparams.set_hparam(k, v)
@@ -67,7 +67,10 @@ class HParamsPreprocessor(object):
             raise ValueError('Empty restore File!')
         eles = self.hparams.restore_file.split('/')
         ele = eles[-1]
-        return "".join(ele.split('.')[:-1])
+        if '.' in ele:
+            return "".join(ele.split('.')[:-1])
+        else:
+            return ele
 
     def _update_id_related(self):
         if self.hparams.id == '':

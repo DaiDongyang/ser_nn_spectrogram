@@ -1,12 +1,3 @@
-import sys;
-
-sys.path.append("..")  # Adds higher directory to python modules path.
-
-from utils import cfg_process
-from utils import post_process
-from CRModel import CRModel
-from CRModel import data_set
-from CRModel import load_data
 from collections import defaultdict
 import tensorflow as tf
 import numpy as np
@@ -15,6 +6,16 @@ from functools import reduce
 from itertools import accumulate
 import operator
 import argparse
+
+# import sys;
+#
+# sys.path.append("..")  # Adds higher directory to python modules path.
+
+from utils import cfg_process
+from utils import post_process
+from CRModel import CRModel
+from CRModel import data_set
+from CRModel import load_data
 
 
 class CRHParamsPreprocessor(cfg_process.HParamsPreprocessor):
@@ -75,21 +76,20 @@ class CRModelRun(object):
         # assert isinstance(batched_input, data_set.BatchedInput)
         # assert isinstance(batched_iter.BatchedInput, data_set.BatchedInput)
         model = self.model
-        metrics_d = defaultdict(lambda: list)
-        losses_d = defaultdict(lambda: list)
+        metrics_d = defaultdict(list)
+        losses_d = defaultdict(list)
         weights = list()
         session.run(batched_iter.initializer)
 
         while True:
             try:
                 batched_input = session.run(batched_iter.BatchedInput)
-                metric_d, loss_d = session.run(model.metric_d, model.loss_d, feed_dict={
+                (metric_d, loss_d) = session.run((model.metric_d, model.loss_d), feed_dict={
                     model.x_ph: batched_input.x,
                     model.seq_lens_ph: batched_input.ts,
                     model.loss_weight_ph: batched_input.ws,
                     model.label_ph: batched_input.y_,
-                    model.fc_kprob: 1.0,
-                    # model.lr_ph: lr,
+                    model.fc_kprob: 1.0
                 })
                 self._dict_list_append(metrics_d, metric_d)
                 self._dict_list_append(losses_d, loss_d)
@@ -167,7 +167,7 @@ class CRModelRun(object):
                 }, session=session)
                 count += 1
                 self.global_step += 1
-                print('  train step %d, global step %d' % (count, self.global_step),
+                print('  train step %d, global step %d,' % (count, self.global_step),
                       'input shape ', batch_input.x.shape)
                 if vali_iter:
                     vali_metric_d, vali_loss_d = self.eval(vali_iter, session)
@@ -175,11 +175,13 @@ class CRModelRun(object):
                     if self.hparams.best_params_type == 'bestacc':
                         v_acc = vali_metric_d[self.metric_k]
                         if v_acc > self.best_acc:
+                            self.best_acc = v_acc
                             self.saver.save(session, self.hparams.bestacc_ckpt_path)
                         print('best_acc: %f' % self.best_acc)
                     elif self.hparams.best_params_type == 'bestloss':
                         v_loss = vali_loss_d[self.loss_k]
                         if v_loss < self.best_loss:
+                            self.best_acc = v_loss
                             self.saver.save(session, self.hparams.bestloss_ckpt_path)
                         print('best_loss: %f' % self.best_loss)
                 if test_iter:
@@ -208,15 +210,18 @@ class CRModelRun(object):
             if self.hparams.best_params_type == 'bestacc':
                 v_acc = vali_metric_d[self.metric_k]
                 if v_acc > self.best_acc:
+                    self.best_acc = v_acc
                     self.saver.save(session, self.hparams.bestacc_ckpt_path)
                 print('best_acc: %f' % self.best_acc)
             elif self.hparams.best_params_type == 'bestloss':
                 v_loss = vali_loss_d[self.loss_k]
                 if v_loss < self.best_loss:
+                    self.best_loss = v_loss
                     self.saver.save(session, self.hparams.bestloss_ckpt_path)
                 print('best_loss: %f' % self.best_loss)
             if i % self.hparams.persist_interval == 0 and i > 0:
                 self.saver.save(session, self.hparams.ckpt_path, global_step=self.global_step)
+            print('duaraton: %f' %(time.time() - self.start_time))
 
     def run(self, d_set):
         tf_config = tf.ConfigProto()
@@ -248,27 +253,4 @@ class CRModelRun(object):
             self.process_result(test_iter, sess)
 
 
-def add_arguments(parser):
-    """Build ArgumentParser"""
-    parser.add_argument('--config_file', type=str, default='./CRModel.yml',
-                        help='config file about hparams')
-    parser.add_argument('--config_name', type=str, default='default',
-                        help='config name for hparam')
 
-
-def main(unused_argv):
-    parser = argparse.ArgumentParser()
-    add_arguments(parser)
-    flags, unparsed = parser.parse_args()
-    yparams = cfg_process.YParams(flags.config_file, flags.config_name)
-    yparams = CRHParamsPreprocessor(yparams, flags).preprocess()
-    yparams.save()
-    model = CRModel.CRModel(yparams)
-    l_data = load_data.load_data(yparams)
-    d_set = data_set.DataSet(l_data, yparams)
-    crmodel_run = CRModelRun(model)
-    crmodel_run.run(d_set)
-
-
-if __name__ == '__main__':
-    tf.app.run(main=main)

@@ -3,6 +3,10 @@ import os
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 
+# import sys;
+#
+# sys.path.append("..")  # Adds higher directory to python modules path.
+
 
 class LoadedData(object):
     def __init__(self):
@@ -124,7 +128,7 @@ def load_data(hparams):
     test_y = []
     test_sids = []
     test_genders = []
-    sample_num_vec = np.zeros(len(hparams.classes))
+    sample_num_vec = np.zeros(len(hparams.emos))
     for filename in filenames:
         is_load = False
         for sens_type in hparams.consider_sent_types:

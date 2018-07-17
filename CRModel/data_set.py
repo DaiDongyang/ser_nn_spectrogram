@@ -1,6 +1,10 @@
 import tensorflow as tf
 import collections
 
+# import sys;
+#
+# sys.path.append("..")  # Adds higher directory to python modules path.
+
 
 class BatchedInput(
     collections.namedtuple("BatchedInput",

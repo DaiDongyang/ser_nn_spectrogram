@@ -1,9 +1,6 @@
 import tensorflow as tf
 from collections import defaultdict
 
-import sys;
-
-sys.path.append("..")  # Adds higher directory to python modules path.
 from utils import var_cnn_util
 
 
@@ -41,9 +38,9 @@ class CRModel(object):
     def cnn(self, inputs, seq_lens):
         h_conv = tf.expand_dims(inputs, 3)
         with tf.name_scope('conv'):
-            for cnn_kernal in self.hparams.cnn_kernals:
-                w_conv = self.weight_variable(cnn_kernal)
-                b_conv = self.bias_variable(cnn_kernal[-1:])
+            for cnn_kernel in self.hparams.cnn_kernels:
+                w_conv = self.weight_variable(cnn_kernel)
+                b_conv = self.bias_variable(cnn_kernel[-1:])
                 h_conv, seq_lens = var_conv2d_relu(h_conv, w_conv, b_conv, seq_lens)
                 h_conv, seq_lens = var_max_pool2x2(h_conv, seq_lens)
             h_cnn = tf.reshape(h_conv,
