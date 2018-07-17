@@ -25,6 +25,7 @@ class CRModel(object):
         self.metric_d = None
         self.loss_d = None
         self.train_op_d = None
+        self.graph = None
         self.build_graph()
 
     @staticmethod
@@ -94,14 +95,19 @@ class CRModel(object):
         return metric_d
 
     def get_loss(self):
+        if self.hparams.loss_reduction == 'SUM_BY_NONZERO_WEIGHTS':
+            reduction = tf.losses.Reduction.SUM_BY_NONZERO_WEIGHTS
+        else:
+            reduction = tf.losses.Reduction.MEAN
         with tf.name_scope('loss'):
-            losses = tf.losses.sparse_softmax_cross_entropy(labels=self.label_ph,
-                                                            logits=self.output_d['logits'],
-                                                            weights=self.loss_weight_ph)
-            loss = tf.reduce_mean(losses)
+            loss = tf.losses.sparse_softmax_cross_entropy(labels=self.label_ph,
+                                                          logits=self.output_d['logits'],
+                                                          weights=self.loss_weight_ph,
+                                                          reduction=reduction)
+            # loss = tf.reduce_mean(losses)
         loss_d = defaultdict(lambda: None)
         loss_d['emo_loss'] = loss
-        return loss
+        return loss_d
 
     def get_train_op(self):
         optimizer_type = self.hparams.optimizer_type
@@ -123,17 +129,24 @@ class CRModel(object):
         self.metric_d = self.get_metric()
         self.loss_d = self.get_loss()
         self.train_op_d = self.get_train_op()
+        self.graph = tf.get_default_graph()
 
-    def get_feed_dict(self, x, seq_lens, ws, label, lr, fc_kprob=1.0):
-        return {
-            self.x_ph: x,
-            self.seq_lens_ph: seq_lens,
-            self.loss_weight_ph: ws,
-            self.label_ph: label,
-            self.lr_ph: lr,
-            self.fc_kprob: fc_kprob
-        }
+    # def get_feed_dict(self, x, seq_lens, ws, label, lr, fc_kprob=1.0):
+    #     return {
+    #         self.x_ph: x,
+    #         self.seq_lens_ph: seq_lens,
+    #         self.loss_weight_ph: ws,
+    #         self.label_ph: label,
+    #         self.lr_ph: lr,
+    #         self.fc_kprob: fc_kprob
+    #     }
 
+    # def get_feed_dict(self, batchedInput):
+    #     # assert isinstance(batchedInput, )
+    #     return {
+    #         self.x_ph: batchedInput.x,
+    #         self.seq_lens_ph
+    #     }
 
 def var_conv2d_relu(inputs, w_conv, b_conv, seq_length):
     cnn_outputs, new_seq_len = var_cnn_util.var_cov2d(inputs, w_conv, strides=[1, 1, 1, 1],

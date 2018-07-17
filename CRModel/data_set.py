@@ -4,7 +4,13 @@ import collections
 
 class BatchedInput(
     collections.namedtuple("BatchedInput",
-                           ("initializer", "x", "y_", "ts", "ws", "sids", "genders"))
+                           ("x", "y_", "ts", "ws", "sids", "genders"))
+):
+    pass
+
+
+class BatchedIter(
+    collections.namedtuple("BatchedIter", ("initializer", "BatchedInput"))
 ):
     pass
 
@@ -57,21 +63,23 @@ class DataSet(object):
     def get_train_iter(self):
         batched_iter = self.train_set.make_initializable_iterator()
         x, y, ts, ws, sids, genders = batched_iter.get_next()
-        return BatchedInput(
-            initializer=batched_iter.initializer,
+        batched_input = BatchedInput(
             x=x,
             y_=y,
             ts=ts,
             ws=ws,
             sids=sids,
             genders=genders
+        )
+        return BatchedIter(
+            initializer=batched_iter.initializer,
+            BatchedInput=batched_input
         )
 
     def get_vali_iter(self):
         batched_iter = self.vali_set.make_initializable_iterator()
         x, y, ts, ws, sids, genders = batched_iter.get_next()
-        return BatchedInput(
-            initializer=batched_iter.initializer,
+        batched_input = BatchedInput(
             x=x,
             y_=y,
             ts=ts,
@@ -79,16 +87,23 @@ class DataSet(object):
             sids=sids,
             genders=genders
         )
+        return BatchedIter(
+            initializer=batched_iter.initializer,
+            BatchedInput=batched_input
+        )
 
     def get_test_iter(self):
         batched_iter = self.test_set.make_initializable_iterator()
         x, y, ts, ws, sids, genders = batched_iter.get_next()
-        return BatchedInput(
-            initializer=batched_iter.initializer,
+        batched_input = BatchedInput(
             x=x,
             y_=y,
             ts=ts,
             ws=ws,
             sids=sids,
             genders=genders
+        )
+        return BatchedIter(
+            initializer=batched_iter.initializer,
+            BatchedInput=batched_input
         )
