@@ -17,6 +17,10 @@ def add_arguments(parser):
                         help="Decoder depth, equal to num_layers if None.")
 
 
+def log(*args, sep=' ', end='\n'):
+    print(*args, sep=sep, end=end)
+
+
 if __name__ == '__main__':
     # model_parser = argparse.ArgumentParser()
     # add_arguments(model_parser)
@@ -25,6 +29,7 @@ if __name__ == '__main__':
     # print('flags:', FLAGS)
     # print('type unparsed:', type(unparsed))
     # print('unparsed:', unparsed)
-    yparams = cfg_process.YParams('./CRModel/CRModel.yml', 'default')
-    yparams = cr_model_run.CRHParamsPreprocessor(yparams, None).preprocess()
-    yparams.save()
+    # yparams = cfg_process.YParams('./CRModel/CRModel.yml', 'default')
+    # yparams = cr_model_run.CRHParamsPreprocessor(yparams, None).preprocess()
+    # yparams.save()
+    log('hello', 'world %f' % 1.1)

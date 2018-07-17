@@ -39,6 +39,7 @@ default: &DEFAULT
   id: ''
   id_str: ''
   tf_log_dir: ./cr_output/tf_log/
+  log_dir: ./cr_output/log
   result_dir: ./cr_output/result/
   cfg_out_dir: ./cr_output/cfg/
   ckpt_dir: ./cr_output/ckpt/
@@ -49,6 +50,10 @@ default: &DEFAULT
   pr_npy: 'pr_'
   sid_npy: 'sid_'
   ts_npy: 'ts_'
+
+  is_log_beside: True
+  stdout_level: 1
+  log_level: 0
 
   best_params_type: bestloss # bestloss, bestacc
   restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_output/bestacc_ckpt/07172216_e1vMtF'
