@@ -29,13 +29,13 @@ default: &DEFAULT
 
   feature_size: 400
   optimizer_type: 'adam'
-  loss_reduction: MEAN # MEAN, SUM_BY_NONZERO_WEIGHTS
+  loss_reduction: SUM_BY_NONZERO_WEIGHTS # MEAN, SUM_BY_NONZERO_WEIGHTS
 
   id_prefix: ''
   # update when pre-process
   id: ''
   id_str: ''
-  out_dir: ./cr_output/cr_output_meanloss
+  out_dir: ./cr_output/cr_output_meanele_loss
   tf_log_fold: tf_log
   log_fold: log
   result_fold: result
@@ -91,8 +91,9 @@ vt4:
 
 even: &EVEN
   <<: *DEFAULT
-  out_dir: ./output_even
-  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_even_impro'
+  out_dir: ./cr_output/cr_output_even_mix
+  consider_sent_types: ['impro', 'script']
+  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_even_mix'
 
 even_vt0:
   <<: *EVEN
