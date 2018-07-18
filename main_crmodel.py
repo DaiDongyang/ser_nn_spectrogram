@@ -15,17 +15,21 @@ def add_arguments(parser):
                         help='config file about hparams')
     parser.add_argument('--config_name', type=str, default='default',
                         help='config name for hparam')
+    parser.add_argument('--gpu', type=str, default='',
+                        help='config for CUDA_VISIBLE_DEVICES')
 
 
 def main(unused_argv):
     parser = argparse.ArgumentParser()
     add_arguments(parser)
     flags, unparsed = parser.parse_known_args()
-    print('config file', flags.config_file)
-    print('config name', flags.config_name)
+    print('config file:', flags.config_file)
+    print('config name:', flags.config_name)
+    # print(flags)
     yparams = cfg_process.YParams(flags.config_file, flags.config_name)
     yparams = cr_model_run.CRHParamsPreprocessor(yparams, flags).preprocess()
     yparams.save()
+    print('id str:', yparams.id_str)
     model = CRModel.CRModel(yparams)
     l_data = load_data.load_data(yparams)
     d_set = data_set.DataSet(l_data, yparams)

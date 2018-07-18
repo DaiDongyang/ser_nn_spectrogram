@@ -158,18 +158,20 @@ class CRModelRun(object):
         while True:
             try:
                 batch_input = session.run(train_iter.BatchedInput)
-                train_op.run(feed_dict={
+                _, batch_loss_d = session.run((train_op, self.model.loss_d), feed_dict={
                     self.model.x_ph: batch_input.x,
                     self.model.seq_lens_ph: batch_input.ts,
                     self.model.loss_weight_ph: batch_input.ws,
                     self.model.label_ph: batch_input.y_,
                     self.model.fc_kprob: self.hparams.fc_keep_prob,
                     self.model.lr_ph: lr,
-                }, session=session)
+                })
                 count += 1
                 self.global_step += 1
                 self.logger.log('  train step %d, global step %d,' % (count, self.global_step),
-                                'input shape ', batch_input.x.shape, level=1)
+                                'input shape ', batch_input.x.shape, 'batch loss_d ',
+                                dict(batch_loss_d),
+                                level=1)
                 if vali_iter:
                     vali_metric_d, vali_loss_d = self.eval(vali_iter, session)
                     self.logger.log('  dev set: metric_d', vali_metric_d, "loss_d", vali_loss_d,
@@ -208,7 +210,7 @@ class CRModelRun(object):
                              test_iter=test_iter)
             train_metric_d, train_loss_d = self.eval(train_iter, session)
             vali_metric_d, vali_loss_d = self.eval(vali_iter, session)
-            self.logger.log('train set: metric_d', train_metric_d, "train_d", vali_loss_d, level=2)
+            self.logger.log('train set: metric_d', train_metric_d, "train_d", train_loss_d, level=2)
             self.logger.log('dev set: metric_d', vali_metric_d, "loss_d", vali_loss_d, end=' ',
                             level=2)
             if self.hparams.best_params_type == 'bestacc':

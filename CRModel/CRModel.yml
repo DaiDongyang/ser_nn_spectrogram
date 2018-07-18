@@ -29,19 +29,20 @@ default: &DEFAULT
 
   feature_size: 400
   optimizer_type: 'adam'
-  loss_reduction: SUM_BY_NONZERO_WEIGHTS # MEAN
+  loss_reduction: SUM_BY_NONZERO_WEIGHTS # MEAN, SUM_BY_NONZERO_WEIGHTS
 
   id_prefix: ''
   # update when pre-process
   id: ''
   id_str: ''
-  tf_log_dir: ./cr_output/tf_log/
-  log_dir: ./cr_output/log
-  result_dir: ./cr_output/result/
-  cfg_out_dir: ./cr_output/cfg/
-  ckpt_dir: ./cr_output/ckpt/
-  bestloss_ckpt_dir: ./cr_output/bestloss_ckpt/
-  bestacc_ckpt_dir: ./cr_output/bestacc_ckpt/
+  out_dir: ./cr_output
+  tf_log_fold: tf_log
+  log_fold: log
+  result_fold: result
+  cfg_out_fold: cfg
+  ckpt_fold: ckpt
+  bestloss_ckpt_fold: bestloss_ckpt
+  bestacc_ckpt_fold: bestacc_ckpt
 
   gt_npy: 'gt_'
   pr_npy: 'pr_'
@@ -60,30 +61,42 @@ default: &DEFAULT
 
 debug:
   <<: *DEFAULT
-  stdout_level: 2
+  best_params_type: bestloss
+  train_epochs: [2]
+  lrs: [0.0003]
+  out_dir: ./output_debug
+  stdout_level: 0
+  CUDA_VISIBLE_DEVICES: '2'
   data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_simple'
 
-vt0:
+even: &EVEN
   <<: *DEFAULT
+  out_dir: ./output_even
+  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_even_impro'
+
+even_vt0:
+  <<: *EVEN
   CUDA_VISIBLE_DEVICES: '0'
   vali_test_ses: 0
 
-vt1:
-  <<: *DEFAULT
-  CUDA_VISIBLE_DEVICES: '1'
+even_vt1:
+  <<: *EVEN
+  CUDA_VISIBLE_DEVICES: '2'
   vali_test_ses: 1
 
-vt2:
-  <<: *DEFAULT
+even_vt2:
+  <<: *EVEN
+  CUDA_VISIBLE_DEVICES: '0'
   vali_test_ses: 2
 
-vt3:
-  <<: *DEFAULT
+even_vt3:
+  <<: *EVEN
+  CUDA_VISIBLE_DEVICES: '2'
   vali_test_ses: 3
 
-vt4:
-  <<: *DEFAULT
-  CUDA_VISIBLE_DEVICES: '1'
+even_vt4:
+  <<: *EVEN
+  CUDA_VISIBLE_DEVICES: '2'
   vali_test_ses: 4
 
 

@@ -43,25 +43,75 @@ class HParamsPreprocessor(object):
                 hparams.add_hparam(k, v)
 
     def _check_dir(self):
-        if ('tf_log_dir' in self.hparams) and (not os.path.exists(self.hparams.tf_log_dir)):
-            os.makedirs(self.hparams.tf_log_dir)
-        if ('result_dir' in self.hparams) and (not os.path.exists(self.hparams.result_dir)):
-            os.makedirs(self.hparams.result_dir)
-        if ('cfg_out_dir' in self.hparams) and (not os.path.exists(self.hparams.cfg_out_dir)):
-            os.makedirs(self.hparams.cfg_out_dir)
-        if ('ckpt_dir' in self.hparams) and (not os.path.exists(self.hparams.ckpt_dir)):
-            os.makedirs(self.hparams.ckpt_dir)
-        if ('bestloss_ckpt_dir' in self.hparams) and (
-                not os.path.exists(self.hparams.bestloss_ckpt_dir)):
-            os.makedirs(self.hparams.bestloss_ckpt_dir)
-        if ('bestacc_ckpt_dir' in self.hparams) and (
-                not os.path.exists(self.hparams.bestacc_ckpt_dir)):
-            os.makedirs(self.hparams.bestacc_ckpt_dir)
-        if ('log_dir' in self.hparams) and (
-                not os.path.exists(self.hparams.log_dir)):
-            os.makedirs(self.hparams.log_dir)
+        if not os.path.exists(self.hparams.out_dir):
+            os.makedirs(self.hparams.out_dir)
+        if 'tf_log_fold' in self.hparams:
+            self.hparams.add_hparam('tf_log_dir',
+                                    os.path.join(self.hparams.out_dir, self.hparams.tf_log_fold))
+            if not os.path.exists(self.hparams.tf_log_dir):
+                os.makedirs(self.hparams.tf_log_dir)
+        if 'result_fold' in self.hparams:
+            self.hparams.add_hparam('result_dir',
+                                    os.path.join(self.hparams.out_dir, self.hparams.result_fold))
+            if not os.path.exists(self.hparams.result_dir):
+                os.makedirs(self.hparams.result_dir)
+        if 'cfg_out_fold' in self.hparams:
+            self.hparams.add_hparam('cfg_out_dir',
+                                    os.path.join(self.hparams.out_dir, self.hparams.cfg_out_fold))
+            if not os.path.exists(self.hparams.cfg_out_dir):
+                os.makedirs(self.hparams.cfg_out_dir)
+        if 'ckpt_fold' in self.hparams:
+            self.hparams.add_hparam('ckpt_dir',
+                                    os.path.join(self.hparams.out_dir, self.hparams.ckpt_fold))
+            if not os.path.exists(self.hparams.ckpt_dir):
+                os.makedirs(self.hparams.ckpt_dir)
+        if 'bestloss_ckpt_fold' in self.hparams:
+            self.hparams.add_hparam('bestloss_ckpt_dir',
+                                    os.path.join(self.hparams.out_dir,
+                                                 self.hparams.bestloss_ckpt_fold))
+            if not os.path.exists(self.hparams.bestloss_ckpt_dir):
+                os.makedirs(self.hparams.bestloss_ckpt_dir)
+        if 'bestacc_ckpt_fold' in self.hparams:
+            self.hparams.add_hparam('bestacc_ckpt_dir',
+                                    os.path.join(self.hparams.out_dir,
+                                                 self.hparams.bestacc_ckpt_fold))
+            if not os.path.exists(self.hparams.bestacc_ckpt_dir):
+                os.makedirs(self.hparams.bestacc_ckpt_dir)
+        if 'log_fold' in self.hparams:
+            self.hparams.add_hparam('log_dir',
+                                    os.path.join(self.hparams.out_dir, self.hparams.log_fold))
+            if not os.path.exists(self.hparams.log_dir):
+                os.makedirs(self.hparams.log_dir)
+
+    # def _check_dir(self):
+    #     if not os.path.exists(self.hparams.out_dir):
+    #         os.makedirs(self.hparams.out_dir)
+    #     if ('tf_log_fold' in self.hparams) and (not os.path.exists(self.hparams.tf_log_dir)):
+    #         self.hparams.add_hparam('tf_log_dir',
+    #                                 os.path.join(self.hparams.out_dir, self.hparams.tf_log_fold))
+    #         os.makedirs(self.hparams.tf_log_dir)
+    #     if ('result_fold' in self.hparams) and (not os.path.exists(self.hparams.result_dir)):
+    #         os.makedirs(self.hparams.result_dir)
+    #     if ('cfg_out_dir' in self.hparams) and (not os.path.exists(self.hparams.cfg_out_dir)):
+    #         os.makedirs(self.hparams.cfg_out_dir)
+    #     if ('ckpt_dir' in self.hparams) and (not os.path.exists(self.hparams.ckpt_dir)):
+    #         os.makedirs(self.hparams.ckpt_dir)
+    #     if ('bestloss_ckpt_dir' in self.hparams) and (
+    #             not os.path.exists(self.hparams.bestloss_ckpt_dir)):
+    #         os.makedirs(self.hparams.bestloss_ckpt_dir)
+    #     if ('bestacc_ckpt_dir' in self.hparams) and (
+    #             not os.path.exists(self.hparams.bestacc_ckpt_dir)):
+    #         os.makedirs(self.hparams.bestacc_ckpt_dir)
+    #     if ('log_dir' in self.hparams) and (
+    #             not os.path.exists(self.hparams.log_dir)):
+    #         os.makedirs(self.hparams.log_dir)
 
     def _cuda_visiable_devices(self):
+        if 'gpu' in self.hparams and self.hparams.gpu != '':
+            if 'CUDA_VISIBLE_DEVICES' not in self.hparams:
+                self.hparams.add_hparam('CUDA_VISIBLE_DEVICES', self.hparams.gpu)
+            else:
+                self.hparams.CUDA_VISIBLE_DEVICES = self.hparams.gpu
         if 'CUDA_VISIBLE_DEVICES' in self.hparams:
             os.environ['CUDA_VISIBLE_DEVICES'] = self.hparams.CUDA_VISIBLE_DEVICES
 
