@@ -29,13 +29,13 @@ default: &DEFAULT
 
   feature_size: 400
   optimizer_type: 'adam'
-  loss_reduction: SUM_BY_NONZERO_WEIGHTS # MEAN, SUM_BY_NONZERO_WEIGHTS
+  loss_reduction: MEAN # MEAN, SUM_BY_NONZERO_WEIGHTS
 
   id_prefix: ''
   # update when pre-process
   id: ''
   id_str: ''
-  out_dir: ./cr_output
+  out_dir: ./cr_output/cr_output_meanloss
   tf_log_fold: tf_log
   log_fold: log
   result_fold: result
@@ -68,6 +68,26 @@ debug:
   stdout_level: 0
   CUDA_VISIBLE_DEVICES: '2'
   data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_simple'
+
+vt0:
+  <<: *DEFAULT
+  vali_test_ses: 0
+
+vt1:
+  <<: *DEFAULT
+  vali_test_ses: 1
+
+vt2:
+  <<: *DEFAULT
+  vali_test_ses: 2
+
+vt3:
+  <<: *DEFAULT
+  vali_test_ses: 3
+
+vt4:
+  <<: *DEFAULT
+  vali_test_ses: 4
 
 even: &EVEN
   <<: *DEFAULT
