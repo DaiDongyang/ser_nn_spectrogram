@@ -91,6 +91,7 @@ vt4:
 
 even: &EVEN
   <<: *DEFAULT
+  loss_reduction: MEAN
   out_dir: ./cr_output/cr_output_even_mix
   consider_sent_types: ['impro', 'script']
   data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_even_mix'
