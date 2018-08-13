@@ -17,7 +17,7 @@ default: &DEFAULT
   fc_keep_prob: 0.5
 
   CUDA_VISIBLE_DEVICES: '1'
-  gpu_allow_growth: True
+  gpu_allow_growth: False
 
   is_post_calc_len: False
   is_seq_len_weight: True
