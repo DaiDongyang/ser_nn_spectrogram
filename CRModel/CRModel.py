@@ -64,12 +64,14 @@ class CRModel(object):
         output_d = len(self.hparams.emos)
         input_d = self.hparams.rnn_hidden_size * 2
         h_fc = inputs
+        h_fc_drop = h_fc
         with tf.name_scope('fc'):
             fc_sizes = [input_d] + self.hparams.fc_hiddens + [output_d]
             for d1, d2 in zip(fc_sizes[:-1], fc_sizes[1:]):
                 w_fc = self.weight_variable([d1, d2])
                 b_fc = self.bias_variable([d2])
-                h_fc = tf.nn.relu(tf.matmul(h_fc, w_fc) + b_fc)
+                h_fc = tf.nn.relu(tf.matmul(h_fc_drop, w_fc) + b_fc)
+                h_fc_drop = tf.nn.dropout(h_fc, self.fc_kprob)
         return h_fc
 
     def model(self, inputs, seq_lens):
@@ -151,9 +153,9 @@ class CRModel(object):
 
 
 def var_conv2d_relu(inputs, w_conv, b_conv, seq_length):
-    cnn_outputs, new_seq_len = var_cnn_util.var_cov2d(inputs, w_conv, strides=[1, 1, 1, 1],
-                                                      padding='SAME', bias=b_conv,
-                                                      seq_length=seq_length)
+    cnn_outputs, new_seq_len = var_cnn_util.var_conv2d(inputs, w_conv, strides=[1, 1, 1, 1],
+                                                       padding='SAME', bias=b_conv,
+                                                       seq_length=seq_length)
     return tf.nn.relu(cnn_outputs), new_seq_len
 
 

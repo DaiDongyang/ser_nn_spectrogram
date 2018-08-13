@@ -7,7 +7,7 @@ def get_mask(seq_lens, max_len, dtype=tf.float32):
     return mask
 
 
-def var_cov2d(inputs, w, strides, padding, bias, seq_length, is_clip_output_size=False):
+def var_conv2d(inputs, w, strides, padding, bias, seq_length, is_clip_output_size=False):
     """
     conv2d process variable length sequence input, without activate function.
     :param inputs: A tensor, [batch_size, max_time, dim, channel].
