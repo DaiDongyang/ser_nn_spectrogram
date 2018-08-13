@@ -35,10 +35,12 @@ class HParamsPreprocessor(object):
         if flags is None:
             return
         # if flags is argparse.Namespace:
-        flags = vars(flags)
         for k, v in flags.items():
             if k in hparams:
-                hparams.set_hparam(k, v)
+                try:
+                    hparams.set_hparam(k, v)
+                except ValueError:
+                    hparams.set_hparam(k, str(v))
             else:
                 hparams.add_hparam(k, v)
 
