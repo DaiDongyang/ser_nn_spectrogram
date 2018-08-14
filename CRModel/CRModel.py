@@ -98,10 +98,14 @@ class CRModel(object):
             reduction = tf.losses.Reduction.SUM_BY_NONZERO_WEIGHTS
         else:
             reduction = tf.losses.Reduction.MEAN
+        if self.hparams.is_weighted_loss:
+            weights = self.loss_weight_ph
+        else:
+            weights = 1.0
         with tf.name_scope('loss'):
             loss = tf.losses.sparse_softmax_cross_entropy(labels=self.label_ph,
                                                           logits=self.output_d['logits'],
-                                                          weights=self.loss_weight_ph,
+                                                          weights=weights,
                                                           reduction=reduction)
             # loss = tf.reduce_mean(losses)
         loss_d = defaultdict(lambda: None)

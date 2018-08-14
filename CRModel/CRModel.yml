@@ -1,9 +1,12 @@
 default: &DEFAULT
   batch_size: 32
+#  train_epochs: [2]
+#  lrs: [0.0003]
   train_epochs: [20, 20, 20]
   lrs: [0.0003, 0.0002, 0.0001]
   #  mode: train # mode: train, re-train, eval
   data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
+#  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_simple'
   emos: ['neu', 'ang', 'hap', 'sad']
   sess: ['Ses01', 'Ses02', 'Ses03', 'Ses04', 'Ses05']
   consider_sent_types: ['impro']
@@ -19,23 +22,25 @@ default: &DEFAULT
   CUDA_VISIBLE_DEVICES: '1'
   gpu_allow_growth: False
 
+  is_weighted_loss: True
   is_post_calc_len: False
   is_seq_len_weight: True
-  is_shuffle_train: False
+  is_shuffle_train: True
   is_norm_weight: False
   is_save_emo_result: False
+
   is_train: True
   is_restore: False
 
   feature_size: 400
   optimizer_type: 'adam'
-  loss_reduction: SUM_BY_NONZERO_WEIGHTS # MEAN, SUM_BY_NONZERO_WEIGHTS
+  loss_reduction: MEAN # MEAN, SUM_BY_NONZERO_WEIGHTS
 
   id_prefix: ''
   # update when pre-process
   id: ''
   id_str: ''
-  out_dir: ./cr_output/cr_output_meanele_loss
+  out_dir: ./cr_output/cr_output_no_weighted_loss
   tf_log_fold: tf_log
   log_fold: log
   result_fold: result
@@ -69,59 +74,18 @@ debug:
   CUDA_VISIBLE_DEVICES: '2'
   data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_simple'
 
-vt0:
+not_seq_len_weight:
   <<: *DEFAULT
-  vali_test_ses: 0
+  is_seq_len_weight: False
+  is_shuffle_train: False
+  out_dir: ./cr_output2/not_seq_len_weight
 
-vt1:
+mix_data: &MIX_DATA
   <<: *DEFAULT
-  vali_test_ses: 1
-
-vt2:
-  <<: *DEFAULT
-  vali_test_ses: 2
-
-vt3:
-  <<: *DEFAULT
-  vali_test_ses: 3
-
-vt4:
-  <<: *DEFAULT
-  vali_test_ses: 4
-
-even: &EVEN
-  <<: *DEFAULT
-  loss_reduction: MEAN
-  out_dir: ./cr_output/cr_output_even_mix
   consider_sent_types: ['impro', 'script']
-  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_even_mix'
+  out_dir: ./cr_output2/mix_data
 
-even_vt0:
-  <<: *EVEN
-  CUDA_VISIBLE_DEVICES: '0'
-  vali_test_ses: 0
-
-even_vt1:
-  <<: *EVEN
-  CUDA_VISIBLE_DEVICES: '2'
-  vali_test_ses: 1
-
-even_vt2:
-  <<: *EVEN
-  CUDA_VISIBLE_DEVICES: '0'
-  vali_test_ses: 2
-
-even_vt3:
-  <<: *EVEN
-  CUDA_VISIBLE_DEVICES: '2'
-  vali_test_ses: 3
-
-even_vt4:
-  <<: *EVEN
-  CUDA_VISIBLE_DEVICES: '2'
-  vali_test_ses: 4
-
-
-#large_hidden:
-#  <<: *DEFAULT
-#  num_hidden: 1024
+mix_data_no_shuffle:
+  <<: *MIX_DATA
+  out_dir: ./cr_output2/mix_data_no_shuffle
+  is_shuffle_train: False

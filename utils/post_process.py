@@ -43,4 +43,5 @@ def print_csv_confustion_matrix(gt, pr, classes, file=None):
     print('  average(unweighted) accurate is %.4f' % (avg / len(classes)), file=file)
     print('  total(weighted) accurate is %.4f' % float(total_acc), file=file)
     print(file=file)
+    return matrix, classes
 

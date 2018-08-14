@@ -142,9 +142,10 @@ class CRModelRun(object):
             np.save(pr_npy_path, pr_np)
             np.save(ts_npy_path, ts_np)
             np.save(sid_npy_path, sid_np)
-        post_process.print_csv_confustion_matrix(gt_np, pr_np, hparams.emos)
-        if 'result_path' in self.hparams:
-            with open(self.hparams.result_path, 'w') as f:
+        matrix, _ = post_process.print_csv_confustion_matrix(gt_np, pr_np, hparams.emos)
+        np.save(hparams.result_matrix_path, matrix)
+        if 'result_txt_path' in self.hparams:
+            with open(self.hparams.result_txt_path, 'w') as f:
                 post_process.print_csv_confustion_matrix(gt_np, pr_np, hparams.emos, file=f)
         # post_process.self.logger.log_csv_confustion_matrix(gt_np, pr_np, hparams.emos)
 
