@@ -79,8 +79,8 @@ class GDannModel(object):
             outputs_concat = tf.concat([fw_outputs, bw_outputs], axis=1)
         return outputs_concat
 
-    def fc(self, inputs, fc_hiddens, kprob):
-        out_d = len(self.hparams.emos)
+    def fc(self, inputs, fc_hiddens, kprob, out_d):
+        # out_d = len(self.hparams.emos)
         in_d = self.hparams.rnn_hidden_size * 2
         h_fc = inputs
         h_fc_drop = h_fc
@@ -101,12 +101,12 @@ class GDannModel(object):
             # please make sure first m samples are labeled with emotion
             m = tf.shape(self.e_label_ph)[0]
             e_inputs = h_rnn[0:m, :]
-            e_logits = self.fc(e_inputs, self.hparams.e_fc_hiddens, self.e_fc_kprob)
+            e_logits = self.fc(e_inputs, self.hparams.e_fc_hiddens, self.e_fc_kprob, len(self.hparams.emos))
         with tf.name_scope('flip_grad_op'):
             flip_g = flip_gradient.FlipGradientBuilder()
             g_inputs = flip_g(h_rnn, self.rev_grad_lambda_ph)
         with tf.name_scope('gender_classifier'):
-            g_logits = self.fc(g_inputs, self.hparams.g_fc_hiddens, self.g_fc_kprob)
+            g_logits = self.fc(g_inputs, self.hparams.g_fc_hiddens, self.g_fc_kprob, out_d=2)
         output_d = defaultdict(lambda: None)
         output_d['e_logits'] = e_logits
         output_d['g_logits'] = g_logits
@@ -142,8 +142,17 @@ class GDannModel(object):
                                                             weights=self.e_loss_weight_ph,
                                                             reduction=reduction)
         with tf.name_scope('g_loss'):
-            g_loss = tf.losses.sparse_softmax_cross_entropy(labels=self.g_label_ph,
-                                                            logits=self.output_d['g_logits'])
+            m = tf.shape(self.e_label_ph)[0]
+            labeled_g_loss = tf.losses.sparse_softmax_cross_entropy(labels=self.g_label_ph[0:m],
+                                                                    logits=self.output_d[
+                                                                               'g_logits'][0:m, :])
+            unlabeled_g_loss = tf.losses.sparse_softmax_cross_entropy(labels=self.g_label_ph[m:],
+                                                                      logits=self.output_d[
+                                                                                 'g_logits'][m:, :])
+            g_unlabeled_alpha = self.hparams.g_unlabeled_alpha
+            g_loss = (1 - g_unlabeled_alpha) * labeled_g_loss + g_unlabeled_alpha * unlabeled_g_loss
+            # g_loss = tf.losses.sparse_softmax_cross_entropy(labels=self.g_label_ph,
+            #                                                 logits=self.output_d['g_logits'])
         gender_alpha = self.hparams.gender_alpha
         loss = (1 - gender_alpha) * e_loss + gender_alpha * g_loss
         loss_d = defaultdict(lambda: None)
