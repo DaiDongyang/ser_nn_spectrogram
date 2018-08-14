@@ -154,9 +154,12 @@ class HParamsPreprocessor(object):
                                 os.path.join(self.hparams.result_dir, self.hparams.sid_npy))
         self.hparams.add_hparam('ts_npy_path',
                                 os.path.join(self.hparams.result_dir, self.hparams.ts_npy))
-        self.hparams.add_hparam('result_path',
+        self.hparams.add_hparam('result_txt_path',
                                 os.path.join(self.hparams.log_dir,
                                              'result_' + self.hparams.id_str + '.txt'))
+        self.hparams.add_hparam('result_matrix_path',
+                                os.path.join(self.hparams.result_dir,
+                                             'matrix_' + self.hparams.id_str + '.npy'))
         self.hparams.add_hparam('log_path',
                                 os.path.join(self.hparams.log_dir, self.hparams.id_str + '.log'))
 

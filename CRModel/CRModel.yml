@@ -78,71 +78,14 @@ not_seq_len_weight:
   <<: *DEFAULT
   is_seq_len_weight: False
   is_shuffle_train: False
-  out_dir: ./cr_output/cr_output_not_seq_len_weight
+  out_dir: ./cr_output2/not_seq_len_weight
 
 mix_data: &MIX_DATA
   <<: *DEFAULT
   consider_sent_types: ['impro', 'script']
-  out_dir: ./cr_output/cr_output_mix_data
+  out_dir: ./cr_output2/mix_data
 
 mix_data_no_shuffle:
   <<: *MIX_DATA
-  out_dir: ./cr_output/cr_output_mix_data_no_shuffle
+  out_dir: ./cr_output2/mix_data_no_shuffle
   is_shuffle_train: False
-
-#vt0:
-#  <<: *DEFAULT
-#  vali_test_ses: 0
-#
-#vt1:
-#  <<: *DEFAULT
-#  vali_test_ses: 1
-#
-#vt2:
-#  <<: *DEFAULT
-#  vali_test_ses: 2
-#
-#vt3:
-#  <<: *DEFAULT
-#  vali_test_ses: 3
-#
-#vt4:
-#  <<: *DEFAULT
-#  vali_test_ses: 4
-#
-#even: &EVEN
-#  <<: *DEFAULT
-#  loss_reduction: MEAN
-#  out_dir: ./cr_output/cr_output_even_mix2
-#  consider_sent_types: ['impro', 'script']
-#  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_even_mix'
-#
-#even_vt0:
-#  <<: *EVEN
-#  CUDA_VISIBLE_DEVICES: '0'
-#  vali_test_ses: 0
-#
-#even_vt1:
-#  <<: *EVEN
-#  CUDA_VISIBLE_DEVICES: '2'
-#  vali_test_ses: 1
-#
-#even_vt2:
-#  <<: *EVEN
-#  CUDA_VISIBLE_DEVICES: '0'
-#  vali_test_ses: 2
-#
-#even_vt3:
-#  <<: *EVEN
-#  CUDA_VISIBLE_DEVICES: '2'
-#  vali_test_ses: 3
-#
-#even_vt4:
-#  <<: *EVEN
-#  CUDA_VISIBLE_DEVICES: '2'
-#  vali_test_ses: 4
-
-
-#large_hidden:
-#  <<: *DEFAULT
-#  num_hidden: 1024
