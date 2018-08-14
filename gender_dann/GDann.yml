@@ -1,0 +1,60 @@
+default: &DEFAULT
+  source_batch_size: 16
+  target_batch_size: 16
+  lr_steps: [2000, 2000, 2000]
+  lrs: [0.0003, 0.0002, 0.0001]
+  r_l_steps: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 6000]
+  r_ls: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+  tran_op_steps: [1000, 1000, 1000, 1000, 1000]
+  tran_ops: ['co_train_step', 'fe_train_step', 'predictor_train_step', 'fe_train_step', 'predictor_train_step']
+
+  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
+  emos: ['neu', 'ang', 'hap', 'sad']
+
+  consider_sent_types: ['impro']
+  source_data: ['1M', '2M', '3M']
+  target_data: ['1F', '2F', '3F']
+  dev_data: ['4F']
+  test_data: ['5F']
+
+  cnn_kernels: [[3, 3, 1, 8], [3, 3, 8, 8], [3, 3, 8, 16], [3, 3, 16, 16]]
+  rnn_hidden_size: 128
+  e_fc_hiddens: [64]
+  g_fc_hiddens: [64]
+  e_fc_kprob: 0.5
+  g_fc_kprob: 0.5
+  g_unlabeled_alpha: 0.5
+  gender_alpha: 0.5
+
+  feature_size: 400
+  optimizer_type: 'adam'
+
+  is_log_beside: True
+  stdout_level: 2
+  log_level: 0
+
+  CUDA_VISIBLE_DEVICES: '1'
+  gpu_allow_growth: False
+
+  id_prefix: ''
+  # update when pre-process
+  id: ''
+  id_str: ''
+  out_dir: ./cr_output/cr_output_meanele_loss
+  tf_log_fold: tf_log
+  log_fold: log
+  result_fold: result
+  cfg_out_fold: cfg
+  ckpt_fold: ckpt
+  bestloss_ckpt_fold: bestloss_ckpt
+  bestacc_ckpt_fold: bestacc_ckpt
+
+  gt_npy: 'gt_'
+  pr_npy: 'pr_'
+
+  best_params_type: bestacc # bestloss, bestacc
+  restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_output/bestacc_ckpt/07172216_e1vMtF'
+  restart_train_epoch: 5
+  persist_interval: 20
+  saver_max_to_keep: 30
+
