@@ -5,7 +5,8 @@ from sklearn.preprocessing import StandardScaler
 
 
 class LoadedData(object):
-    def __init__(self):
+    def __init__(self, hparams):
+        self.hparams = hparams
         self.source_x = None
         self.source_e = None
         self.source_g = None
@@ -34,7 +35,10 @@ class LoadedData(object):
         target_x_np = np.vstack(self.target_x)
         target_scaler = StandardScaler().fit(target_x_np)
         self.target_x = [target_scaler.transform(x) for x in self.target_x]
-        self.dev_x = [target_scaler.transform(x) for x in self.dev_x]
+        if self.hparams.norm_dev_source:
+            self.dev_x = [source_scaler.transform(x) for x in self.dev_x]
+        else:
+            self.dev_x = [target_scaler.transform(x) for x in self.dev_x]
         self.test_x = [target_scaler.transform(x) for x in self.test_x]
 
 

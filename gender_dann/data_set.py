@@ -9,6 +9,13 @@ class BatchedInput(
     pass
 
 
+class BatchedIter(
+    collections.namedtuple('BatchedIter',
+                           ('initializer', 'BatchedInput'))
+):
+    pass
+
+
 class DataSet(object):
     def __init__(self, loaded_data, hparams):
         batch_size = hparams.source_batch_size + hparams.target_batch_size
@@ -59,7 +66,11 @@ class DataSet(object):
             w=w,
             t=t
         )
-        return batched_iter.initializer, batched_input
+        # return batched_iter.initializer, batched_input
+        return BatchedIter(
+            initializer=batched_iter.initializer,
+            BatchedInput=batched_input
+        )
 
     def get_target_iter(self):
         batched_iter = self.target_set.make_initializable_iterator()
@@ -71,7 +82,11 @@ class DataSet(object):
             w=w,
             t=t
         )
-        return batched_iter.initializer, batched_input
+        # return batched_iter.initializer, batched_input
+        return BatchedIter(
+            initializer=batched_iter.initializer,
+            BatchedInput=batched_input
+        )
 
     def get_dev_iter(self):
         batched_iter = self.dev_set.make_initializable_iterator()
@@ -83,7 +98,11 @@ class DataSet(object):
             w=w,
             t=t
         )
-        return batched_iter.initializer, batched_input
+        # return batched_iter.initializer, batched_input
+        return BatchedIter(
+            initializer=batched_iter.initializer,
+            BatchedInput=batched_input
+        )
 
     def get_test_iter(self):
         batched_iter = self.test_set.make_initializable_iterator()
@@ -95,4 +114,8 @@ class DataSet(object):
             w=w,
             t=t
         )
-        return batched_iter.initializer, batched_input
+        # return batched_iter.initializer, batched_input
+        return BatchedIter(
+            initializer=batched_iter.initializer,
+            BatchedInput=batched_input
+        )
