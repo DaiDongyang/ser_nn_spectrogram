@@ -80,10 +80,17 @@ not_seq_len_weight:
   is_shuffle_train: False
   out_dir: ./cr_output2/not_seq_len_weight
 
+not_seq_len_weight_shuffle:
+  <<: *DEFAULT
+  is_seq_len_weight: False
+  is_shuffle_train: True
+  out_dir: ./cr_output2/not_seq_len_weight_shuffle2
+
 mix_data: &MIX_DATA
   <<: *DEFAULT
   consider_sent_types: ['impro', 'script']
-  out_dir: ./cr_output2/mix_data
+  out_dir: ./cr_output2/mix_data_shuffle
+  is_shuffle_train: True
 
 mix_data_no_shuffle:
   <<: *MIX_DATA
