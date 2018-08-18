@@ -191,7 +191,7 @@ class CRModelRun(object):
                         self.logger.log('best_loss: %f' % self.best_loss, level=1)
                 if test_iter:
                     test_metric_d, test_loss_d = self.eval(test_iter, session)
-                    self.logger.log('  test set: metric_d', test_metric_d, 'loss_d', test_loss_d,
+                    self.logger.log('  tmp set: metric_d', test_metric_d, 'loss_d', test_loss_d,
                                     level=1)
             except tf.errors.OutOfRangeError:
                 break
@@ -260,6 +260,6 @@ class CRModelRun(object):
             self.saver.restore(sess, eval_ckpt_file)
             test_iter = d_set.get_test_iter()
             metric_d, loss_d = self.eval(test_iter, sess)
-            self.logger.log('test set: metric_d', metric_d, "loss_d", loss_d, level=2)
+            self.logger.log('tmp set: metric_d', metric_d, "loss_d", loss_d, level=2)
             self.process_result(test_iter, sess)
         self.exit()

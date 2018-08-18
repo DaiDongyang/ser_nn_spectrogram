@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+import random
 from sklearn.preprocessing import StandardScaler
 
 # import sys;
@@ -9,7 +10,8 @@ from sklearn.preprocessing import StandardScaler
 
 
 class LoadedData(object):
-    def __init__(self):
+    def __init__(self, hparams):
+        self.hparams = hparams
         self.train_x = None
         self.train_y = None
         self.train_ts = None
@@ -43,6 +45,81 @@ class LoadedData(object):
         self.train_ws = [x/ws_mu for x in self.train_ws]
         self.vali_ws = [x/ws_mu for x in self.vali_ws]
         self.test_ws = [x/ws_mu for x in self.test_ws]
+
+    def pre_shuffle_trains(self):
+        train_list = [(x, y, t, w, s, g) for x, y, t, w, s, g in
+                      zip(self.train_x, self.train_y, self.train_ts, self.train_ws, self.train_sids,
+                          self.train_genders)]
+        random.shuffle(train_list)
+        self.train_x = [ele[0] for ele in train_list]
+        self.train_y = [ele[1] for ele in train_list]
+        self.train_ts = [ele[2] for ele in train_list]
+        self.train_ws = [ele[3] for ele in train_list]
+        self.train_sids = [ele[4] for ele in train_list]
+        self.train_genders = [ele[5] for ele in train_list]
+
+    def repeat_emo(self, emo_idx):
+        x = []
+        y = []
+        ts = []
+        ws = []
+        sids = []
+        genders = []
+        for x_ele, y_ele, t_ele, w_ele, s_ele, g_ele in zip(self.train_x, self.train_y, self.train_ts, self.train_ws, self.train_sids,
+                self.train_genders):
+            if y_ele == emo_idx:
+                x.append(x_ele)
+                y.append(y_ele)
+                ts.append(t_ele)
+                ws.append(w_ele)
+                sids.append(s_ele)
+                genders.append(g_ele)
+        # idx = self.train_y == emo_idx
+        # x = self.train_x[idx]
+        # y = self.train_y[idx]
+        # ts = self.train_ts[idx]
+        # ws = self.train_ws[idx]
+        # sids = self.train_sids[idx]
+        # genders = self.train_genders[idx]
+        self.train_x = self.train_x + x
+        self.train_y = self.train_y + y
+        self.train_ts = self.train_ts + ts
+        self.train_ws = self.train_ws + ws
+        self.train_sids = self.train_sids + sids
+        self.train_genders = self.train_genders + genders
+
+    def update_weights(self):
+        train_ws = []
+        vali_ws = []
+        test_ws = []
+        hparams = self.hparams
+        sample_num_vec = np.zeros(len(hparams.emos))
+        for y in self.train_y:
+            sample_num_vec[y] += 1
+        class_weight_vec = max(sample_num_vec) / (sample_num_vec + 0.5)
+
+        max_len = max(self.train_x, key=lambda ele: ele.shape[0]).shape[0]
+        for x_ele, y_ele in zip(self.train_x, self.train_y):
+            if hparams.is_seq_len_weight:
+                train_w = class_weight_vec[y_ele] * (max_len / x_ele.shape[0])
+            else:
+                train_w = class_weight_vec[y_ele]
+            train_ws.append(train_w)
+        for x_ele, y_ele in zip(self.vali_x, self.vali_y):
+            if hparams.is_seq_len_weight:
+                vali_w = class_weight_vec[y_ele] * (max_len / x_ele.shape[0])
+            else:
+                vali_w = class_weight_vec[y_ele]
+            vali_ws.append(vali_w)
+        for x_ele, y_ele in zip(self.test_x, self.test_y):
+            if hparams.is_seq_len_weight:
+                test_w = class_weight_vec[y_ele] * (max_len / x_ele.shape[0])
+            else:
+                test_w = class_weight_vec[y_ele]
+            test_ws.append(test_w)
+        self.train_ws = train_ws
+        self.vali_ws = vali_ws
+        self.test_ws = test_ws
 
     def sort_trains(self):
         train_list = [(x, y, t, w, s, g) for x, y, t, w, s, g in
@@ -89,7 +166,7 @@ class LoadedData(object):
         print("train")
         for x in self.train_x:
             print(x.shape)
-        print("test")
+        print("tmp")
         for x in self.test_x:
             print(x.shape)
         print("vali")
@@ -168,7 +245,9 @@ def load_data(hparams):
     train_ws = []
     vali_ws = []
     test_ws = []
+
     class_weight_vec = max(sample_num_vec)/(sample_num_vec + 0.5)
+    #
     max_len = max(train_x, key=lambda ele: ele.shape[0]).shape[0]
     # assert len(train_x) == len(train_y)
     for x_ele, y_ele in zip(train_x, train_y):
@@ -189,7 +268,7 @@ def load_data(hparams):
         else:
             test_w = class_weight_vec[y_ele]
         test_ws.append(test_w)
-    l_data = LoadedData()
+    l_data = LoadedData(hparams)
     l_data.train_x = train_x
     l_data.train_y = train_y
     l_data.train_ts = [x.shape[0] for x in train_x]
@@ -208,8 +287,17 @@ def load_data(hparams):
     l_data.test_ws = test_ws
     l_data.test_sids = test_sids
     l_data.test_genders = test_genders
-    l_data.sort_data()
+    # if hparams.is_repeat_hap:
+    #     l_data.repeat_emo(2)
+    if hparams.is_repeat_emos:
+        for emo_idx in hparams.repeat_emos:
+            l_data.repeat_emo(emo_idx)
+    if hparams.is_pre_shuffle:
+        l_data.pre_shuffle_trains()
+    else:
+        l_data.sort_data()
     l_data.normalize()
+    l_data.update_weights()
     if hparams.is_norm_weight:
         l_data.norm_w()
     return l_data

@@ -64,6 +64,10 @@ default: &DEFAULT
   persist_interval: 20
   saver_max_to_keep: 30
 
+  is_pre_shuffle: False
+  repeat_emos: [1, 2]
+  is_repeat_emos: True
+
 debug:
   <<: *DEFAULT
   best_params_type: bestloss
@@ -79,6 +83,20 @@ not_seq_len_weight:
   is_seq_len_weight: False
   is_shuffle_train: False
   out_dir: ./cr_output2/not_seq_len_weight
+
+script_not_seq_len_weight:
+  <<: *DEFAULT
+  is_seq_len_weight: False
+  consider_sent_types: ['script']
+  is_shuffle_train: False
+  out_dir: ./cr_output2/script_not_seq_len_weight
+
+
+not_weight:
+  <<: *DEFAULT
+  is_weighted_loss: False
+  is_shuffle_train: False
+  out_dir: ./cr_output2/not_weight_not_shuffle
 
 not_seq_len_weight_shuffle:
   <<: *DEFAULT
@@ -96,3 +114,18 @@ mix_data_no_shuffle:
   <<: *MIX_DATA
   out_dir: ./cr_output2/mix_data_no_shuffle
   is_shuffle_train: False
+
+pre_shuffle_no_weight_shuffle:
+  <<: *DEFAULT
+  is_weighted_loss: False
+  is_shuffle_train: True
+  is_pre_shuffle: True
+  out_dir: ./cr_output2/pre_shuffle_no_weight_shuffle
+
+pre_shuffle_no_repeatemo_no_weight_shuffle:
+  <<: *DEFAULT
+  is_weighted_loss: False
+  is_shuffle_train: True
+  is_pre_shuffle: True
+  is_repeat_emos: False
+  out_dir: ./cr_output2/pre_shuffle_no_repeatemo_no_weight_shuffle

@@ -40,8 +40,8 @@ class GDannModelRun(object):
         self.acc_lr_steps = accumulate(self.hparams.lr_steps)
         self.acc_r_l_steps = accumulate(self.hparams.r_l_steps)
         self.acc_train_op_steps = accumulate(self.hparams.train_op_steps)
-        self.max_steps = min(self.acc_lr_steps[-1], self.acc_r_l_steps[-1],
-                             self.acc_train_op_steps[-1])
+        self.max_steps = min(sum(self.acc_lr_steps), sum(self.acc_r_l_steps),
+                             sum(self.acc_train_op_steps))
 
     def exit(self):
         self.logger.close()
@@ -72,9 +72,9 @@ class GDannModelRun(object):
             d[k] = value
         return d
 
-    # only used for dev set or test set
+    # only used for dev set or tmp set
     def eval(self, batched_iter, session):
-        assert isinstance(batched_iter, data_set.BatchedInput)
+        assert isinstance(batched_iter, data_set.BatchedIter)
         model = self.model
         metrics_d = defaultdict(list)
         losses_d = defaultdict(list)
@@ -104,7 +104,7 @@ class GDannModelRun(object):
         loss_d = self._dict_list_weighed_avg(losses_d, weights)
         return metric_d, loss_d
 
-    # used for test set
+    # used for tmp set
     def process_result(self, test_iter, session):
         assert isinstance(test_iter, data_set.BatchedIter)
         hparams = self.hparams
@@ -113,7 +113,7 @@ class GDannModelRun(object):
         g_ts = list()
         p_rs = list()
         session.run(test_iter.initializer)
-        logits = model.output_d['e_logtis']
+        logits = model.output_d['e_logits']
 
         MAX_LOOP = 9999
         for _ in range(MAX_LOOP):
@@ -170,9 +170,9 @@ class GDannModelRun(object):
             s0, s1, s2 = source_batch.x.shape
             t0, t1, t2 = target_batch.x.shape
             max_seq_len = max((s1, t1))
-            batch_x = np.zeros((s0 + s1, max_seq_len, self.hparams.feature_size))
+            batch_x = np.zeros((s0 + t0, max_seq_len, self.hparams.feature_size))
             batch_x[0:s0, 0:s1, :] = source_batch.x
-            batch_x[s0:, 0:t1, :] = target_batch.y
+            batch_x[s0:, 0:t1, :] = target_batch.x
             batch_t = np.concatenate((source_batch.t, target_batch.t), axis=0)
             batch_g = np.concatenate((source_batch.g, target_batch.g), axis=0)
             if self.hparams.is_target_e:
@@ -195,28 +195,35 @@ class GDannModelRun(object):
             })
             self.logger.log('train_step %d,' % i, 'input shape ', batch_x.shape, 'batch loss_d',
                             dict(batch_loss_d), level=1)
-            if i % self.hparams.eval_interval:
+
+            if i % self.hparams.eval_interval == 0:
                 dev_metric_d, dev_loss_d = self.eval(dev_iter, session)
-                self.logger.log('  dev set: metric_d', dev_metric_d, "loss_d", dev_loss_d,
-                                end=' ', level=1)
+                self.logger.log('  dev set: metric_d', dev_metric_d, "loss_d", dev_loss_d, level=1)
                 v_acc = dev_metric_d[self.metric_k]
                 if v_acc > self.best_acc:
                     self.best_acc = v_acc
+                    self.best_acc_steps = i
                     self.saver.save(session, self.hparams.bestacc_ckpt_path)
-                self.logger.log('best_acc: %f' % self.best_acc, level=1)
+                self.logger.log(
+                    '    best_acc: %f, best_acc_steps: %d' % (self.best_acc, self.best_acc_steps),
+                    level=1)
                 v_loss = dev_loss_d[self.loss_k]
                 if v_loss < self.best_loss:
-                    self.best_acc = v_loss
+                    self.best_loss = v_loss
+                    self.best_loss_steps = i
                     self.saver.save(session, self.hparams.bestloss_ckpt_path)
-                self.logger.log('best_loss: %f' % self.best_loss, level=1)
+                self.logger.log(
+                    '    best_loss: %f, best_loss_steps: %d' % (
+                        self.best_loss, self.best_loss_steps),
+                    level=1)
                 if self.hparams.is_eval_test:
                     test_metric_d, test_loss_d = self.eval(test_iter, session)
-                    self.logger.log('  test set: metric_d', test_metric_d, 'loss_d', test_loss_d,
+                    self.logger.log('  tmp set: metric_d', test_metric_d, 'loss_d', test_loss_d,
                                     level=1)
-                self.logger.log('  Duration: %f' %(time.time() - self.start_time), level=2)
-            if i % self.hparams.persist_interval:
+                self.logger.log('  Duration: %f' % (time.time() - self.start_time), level=2)
+            if i % self.hparams.persist_interval == 0 and i > 0:
                 self.saver.save(session, self.hparams.ckpt_path, global_step=i)
-        self.saver.save(session, self.hparams.ckpt_path, global_step=self.max_steps)
+        # self.saver.save(session, self.hparams.ckpt_path)
 
     def run(self, d_set):
         tf_config = tf.ConfigProto()
@@ -240,15 +247,11 @@ class GDannModelRun(object):
                 elif self.hparams.best_params_type == 'bestloss':
                     eval_ckpt_file = self.hparams.bestloss_ckpt_path
                 else:
-                    eval_ckpt_file = self.hparams.ckpt_path
-            self.saver.restore(sess, eval_ckpt_file)
+                    eval_ckpt_file = None
+            if eval_ckpt_file:
+                self.saver.restore(sess, eval_ckpt_file)
             test_iter = d_set.get_test_iter()
             metric_d, loss_d = self.eval(test_iter, sess)
-            self.logger.log('test set: metric_d', metric_d, "loss_d", loss_d, level=2)
+            self.logger.log('tmp set: metric_d', metric_d, "loss_d", loss_d, level=2)
             self.process_result(test_iter, sess)
         self.exit()
-
-
-
-
-

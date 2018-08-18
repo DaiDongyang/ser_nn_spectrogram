@@ -1,7 +1,7 @@
 default: &DEFAULT
   source_batch_size: 16
   target_batch_size: 16
-  lr_steps: [2000, 2000, 2000]
+  lr_steps: [2000]
   lrs: [0.0003, 0.0002, 0.0001]
   r_l_steps: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 6000]
   r_ls: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
@@ -12,9 +12,9 @@ default: &DEFAULT
   emos: ['neu', 'ang', 'hap', 'sad']
 
   consider_sent_types: ['impro']
-  source_data: ['1M', '2M', '3M']
-  target_data: ['1F', '2F', '3F']
-  dev_data: ['4F']
+  source_data: ['1M', '2M', '3M', '4M']
+  target_data: ['1F', '2F', '3F', '4F']
+  dev_data: ['5M']
   test_data: ['5F']
   # normalize dev set with source data or target data
   norm_dev_source: True
@@ -33,7 +33,7 @@ default: &DEFAULT
   optimizer_type: 'adam'
 
   is_log_beside: True
-  stdout_level: 2
+  stdout_level: 0
   log_level: 0
 
   CUDA_VISIBLE_DEVICES: '1'
@@ -43,7 +43,7 @@ default: &DEFAULT
   # update when pre-process
   id: ''
   id_str: ''
-  out_dir: ./cr_output/cr_output_meanele_loss
+  out_dir: ./gdann_output/default
   tf_log_fold: tf_log
   log_fold: log
   result_fold: result
@@ -55,12 +55,15 @@ default: &DEFAULT
   gt_npy: 'gt_'
   pr_npy: 'pr_'
 
-  best_params_type: bestacc # bestloss, bestacc
+  best_params_type: '' # bestloss, bestacc
   restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_output/bestacc_ckpt/07172216_e1vMtF'
   restart_train_epoch: 5
-  persist_interval: 2000
-  eval_interval: 2
+  persist_interval: 1000
+  eval_interval: 10
   is_eval_test: False
   saver_max_to_keep: 30
   is_save_emo_result: False
+
+  is_train: True
+  is_restore: False
 
