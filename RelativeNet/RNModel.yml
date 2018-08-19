@@ -1,0 +1,15 @@
+default: &DEFAULT
+  batch_size: 32
+
+  emos: ['neu', 'ang', 'hap', 'sad']
+  consider_sent_types: ['impro', 'script']
+  sess: ['Ses01', 'Ses02', 'Ses03', 'Ses04', 'Ses05']
+  vali_type: 'M'
+  test_type: 'F'
+  vali_test_ses: 1
+  eval_fold: './eval_txts/'
+  anchors_per_emo: 20
+  select_anchors_strategy: 'random' # 'sort'
+  is_pre_shuffle: False
+  repeat_emos: [1, 2]
+  is_repeat_emos: True

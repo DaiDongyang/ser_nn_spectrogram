@@ -47,5 +47,5 @@ def process_txt(filename):
             line = f.readline()
 
 
-if __name__ == '__main__':
-    process_txt('./tmp.txt')
+# if __name__ == '__main__':
+    # process_txt('./tmp.txt')

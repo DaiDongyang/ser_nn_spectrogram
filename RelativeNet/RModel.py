@@ -110,7 +110,7 @@ class RModel(object):
     def get_metric(self):
         with tf.name_scope('accuracy'):
             correct_prediction = tf.equal(
-                tf.argmax(self.output_d['logits'], axis=1, output_type=tf.int32),
+                tf.cast(tf.round(tf.nn.sigmoid(self.output_d['logits'])), tf.int32),
                 self.label_ph)
             correct_prediction = tf.cast(correct_prediction, tf.float32)
             accuracy = tf.reduce_mean(correct_prediction)
