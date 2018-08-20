@@ -102,10 +102,13 @@ def load_data(hparams):
             train_e.append(e)
 
     valid_sess = hparams.sess[:hparams.vali_test_ses] + hparams.sess[hparams.vali_test_ses + 1:]
-    anchor_filenames = utter_manual_eval.get_npy_filenames(hparams.eval_fold,
-                                                           hparams.anchors_per_emo, hparams.emos,
-                                                           valid_sess, hparams.consider_sent_types,
-                                                           hparams.select_anchors_strategy)
+    anchor_filenames, anchors_per_emo = utter_manual_eval.get_npy_filenames(hparams.eval_fold,
+                                                                            hparams.anchors_per_emo,
+                                                                            hparams.emos,
+                                                                            valid_sess,
+                                                                            hparams.consider_sent_types,
+                                                                            hparams.select_anchors_strategy)
+    hparams.anchors_per_emo = anchors_per_emo
     for anchor_filename in anchor_filenames:
         e = judge_label(anchor_filename)
         file_path = os.path.join(data_dir, anchor_filename)
@@ -137,7 +140,3 @@ def load_data(hparams):
         l_data.pre_shuffle_train()
     l_data.normalize()
     return l_data
-
-
-
-    # load anchors

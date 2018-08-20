@@ -37,9 +37,9 @@ class GDannModelRun(object):
         self.saver = None
         self.logger = log_util.MyLogger(self.hparams)
 
-        self.acc_lr_steps = accumulate(self.hparams.lr_steps)
-        self.acc_r_l_steps = accumulate(self.hparams.r_l_steps)
-        self.acc_train_op_steps = accumulate(self.hparams.train_op_steps)
+        self.acc_lr_steps = list(accumulate(self.hparams.lr_steps))
+        self.acc_r_l_steps = list(accumulate(self.hparams.r_l_steps))
+        self.acc_train_op_steps = list(accumulate(self.hparams.train_op_steps))
         self.max_steps = min(sum(self.acc_lr_steps), sum(self.acc_r_l_steps),
                              sum(self.acc_train_op_steps))
 
@@ -72,7 +72,7 @@ class GDannModelRun(object):
             d[k] = value
         return d
 
-    # only used for dev set or tmp set
+    # only used for dev set or test set
     def eval(self, batched_iter, session):
         assert isinstance(batched_iter, data_set.BatchedIter)
         model = self.model
@@ -104,7 +104,7 @@ class GDannModelRun(object):
         loss_d = self._dict_list_weighed_avg(losses_d, weights)
         return metric_d, loss_d
 
-    # used for tmp set
+    # used for test set
     def process_result(self, test_iter, session):
         assert isinstance(test_iter, data_set.BatchedIter)
         hparams = self.hparams
@@ -218,9 +218,9 @@ class GDannModelRun(object):
                     level=1)
                 if self.hparams.is_eval_test:
                     test_metric_d, test_loss_d = self.eval(test_iter, session)
-                    self.logger.log('  tmp set: metric_d', test_metric_d, 'loss_d', test_loss_d,
+                    self.logger.log('  test set: metric_d', test_metric_d, 'loss_d', test_loss_d,
                                     level=1)
-                self.logger.log('  Duration: %f' % (time.time() - self.start_time), level=2)
+                self.logger.log('  Duration: %f' % (time.time() - self.start_time), level=1)
             if i % self.hparams.persist_interval == 0 and i > 0:
                 self.saver.save(session, self.hparams.ckpt_path, global_step=i)
         # self.saver.save(session, self.hparams.ckpt_path)
@@ -252,6 +252,6 @@ class GDannModelRun(object):
                 self.saver.restore(sess, eval_ckpt_file)
             test_iter = d_set.get_test_iter()
             metric_d, loss_d = self.eval(test_iter, sess)
-            self.logger.log('tmp set: metric_d', metric_d, "loss_d", loss_d, level=2)
+            self.logger.log('test set: metric_d', metric_d, "loss_d", loss_d, level=2)
             self.process_result(test_iter, sess)
         self.exit()

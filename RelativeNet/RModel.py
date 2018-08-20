@@ -30,7 +30,7 @@ class RModel(object):
         self.x2_ph = tf.placeholder(tf.float32, [None, None, hparams.feature_size])
         self.seq_lens2_ph = tf.placeholder(tf.int32, shape=[None], name='seq_lens_ph')
         self.label_ph = tf.placeholder(tf.int32, [None], name='label_ph')
-        self.loss_weight_ph = tf.placeholder(tf.float32, [None], name='loss_weight_ph')
+        #self.loss_weight_ph = tf.placeholder(tf.float32, [None], name='loss_weight_ph')
 
         # build graph
         self.output_d = None

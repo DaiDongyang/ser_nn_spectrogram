@@ -1,6 +1,7 @@
 default: &DEFAULT
   batch_size: 32
-
+  anchor_batch_size: 80
+  anchors_per_emo: 20
   emos: ['neu', 'ang', 'hap', 'sad']
   consider_sent_types: ['impro', 'script']
   sess: ['Ses01', 'Ses02', 'Ses03', 'Ses04', 'Ses05']
@@ -8,8 +9,60 @@ default: &DEFAULT
   test_type: 'F'
   vali_test_ses: 1
   eval_fold: './eval_txts/'
-  anchors_per_emo: 20
   select_anchors_strategy: 'random' # 'sort'
   is_pre_shuffle: False
   repeat_emos: [1, 2]
   is_repeat_emos: True
+
+  is_log_beside: True
+  stdout_level: 2
+  log_level: 0
+
+#  cnn_kernels: [[3, 3, 1, 8], [3, 3, 8, 8], [3, 3, 8, 16], [3, 3, 16, 16]]
+#  rnn_hidden_size: 128
+#  e_fc_hiddens: [64]
+#  g_fc_hiddens: [64]
+#  e_fc_kprob: 0.5
+#  g_fc_kprob: 0.5
+#  g_unlabeled_alpha: 0.5
+#  gender_alpha: 0.5
+#  is_target_e: False
+
+  feature_size: 400
+  optimizer_type: 'adam'
+
+  is_log_beside: True
+  stdout_level: 0
+  log_level: 0
+
+  CUDA_VISIBLE_DEVICES: '1'
+  gpu_allow_growth: False
+
+  id_prefix: ''
+  # update when pre-process
+  id: ''
+  id_str: ''
+  out_dir: ./gdann_output/default
+  tf_log_fold: tf_log
+  log_fold: log
+  result_fold: result
+  cfg_out_fold: cfg
+  ckpt_fold: ckpt
+  bestloss_ckpt_fold: bestloss_ckpt
+  bestacc_ckpt_fold: bestacc_ckpt
+
+  gt_npy: 'gt_'
+  pr_npy: 'pr_'
+
+  best_params_type: '' # bestloss, bestacc
+  restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_output/bestacc_ckpt/07172216_e1vMtF'
+  restart_train_epoch: 5
+  persist_interval: 1000
+  train_eval_interval: 10
+  eval_interval: 10
+  is_eval_test: False
+  saver_max_to_keep: 30
+  is_save_emo_result: False
+
+  is_train: True
+  is_restore: False

@@ -172,16 +172,41 @@ def get_npy_filenames(eval_fold, anchors_per_emo, emos, valid_sess, consider_sen
     return filenames, anchors_per_emo
 
 
+def get_avg_std_vad(e_list):
+    # vad_sum = np.zeros((1, 3), dtype=float)
+    vads = []
+    for e in e_list:
+        vads.append(e.vad)
+    vads_np = np.vstack(vads)
+    return np.mean(vads_np, axis=0), np.std(vads_np, axis=0)
+
+
 if __name__ == '__main__':
     eval_fold = './eval_txts/'
-    anchors_per_emo = 20
-    valid_sess = ['Ses01', 'Ses02', 'Ses03', 'Ses04']
-    consider_sent_types = ['impro', 'script']
-    select_anchors_strategy = 'random'
+    # anchors_per_emo = 20
+    # valid_sess = ['Ses01', 'Ses02', 'Ses03', 'Ses04', 'Ses04']
+    consider_sent_types = ['impro']
+    # select_anchors_strategy = 'random'
     emos = ['neu', 'ang', 'hap', 'sad']
-    filenames = get_npy_filenames(eval_fold, anchors_per_emo, emos, valid_sess, consider_sent_types,
-                                  select_anchors_strategy)
-    print(filenames)
+    e_list = process_fold(eval_fold)
+    e_list = filter_type(e_list, consider_sent_types)
+    for emo in emos:
+        tmp_list = filter_emo(e_list, emo)
+        avg_vad, std_vad = get_avg_std_vad(tmp_list)
+        print(emo, avg_vad, std_vad)
+
+    # filenames = get_npy_filenames(eval_fold, anchors_per_emo, emos, valid_sess, consider_sent_types,
+    #                               select_anchors_strategy)
+    # print(filenames)
+    # eval_fold = './eval_txts/'
+    # anchors_per_emo = 20
+    # valid_sess = ['Ses01', 'Ses02', 'Ses03', 'Ses04']
+    # consider_sent_types = ['impro', 'script']
+    # select_anchors_strategy = 'random'
+    # emos = ['neu', 'ang', 'hap', 'sad']
+    # filenames = get_npy_filenames(eval_fold, anchors_per_emo, emos, valid_sess, consider_sent_types,
+    #                               select_anchors_strategy)
+    # print(filenames)
 
 # if __name__ == '__main__':
 #     EMOS = []
