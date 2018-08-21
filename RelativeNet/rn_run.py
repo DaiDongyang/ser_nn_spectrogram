@@ -68,10 +68,67 @@ class RModelRun(object):
             d[k] = value
         return d
 
+    def _get_eval_emo(self, ref_emos_list, probs_list):
+        ref_emos = np.concatenate(ref_emos_list, axis=0)
+        probs = np.concatenate(probs_list, axis=0)
+        emo_probs = np.zeros((len(self.hparams.emos)))
+        for i in range(len(self.hparams.emos)):
+            emo_probs[i] = np.mean(probs[ref_emos == i])
+        return np.argmax(emo_probs)
+
     # only used for dev set or test set
-    def eval(self, batched_iter, anchor_iter, session):
-        # todo: implement
-        return None, None, None
+    def eval(self, batched_iter, anchor_iter, session, is_return_result=False):
+
+        assert isinstance(batched_iter, data_set.BatchedIter)
+        assert isinstance(anchor_iter, data_set.BatchedIter)
+        MAX_LOOP = 99999
+        model = self.model
+        metrics_d = defaultdict(list)
+        losses_d = defaultdict(list)
+        weights = list()
+        eval_e_prs = list()
+        eval_e_gts = list()
+        session.run(batched_iter.initializer)
+        for _ in range(MAX_LOOP):
+            try:
+                batched_input = session.run(batched_iter.BatchedInput)
+                eval_e_gt = batched_input.e[0]
+                ref_emos_list = list()
+                probs_list = list()
+                session.run(anchor_iter.initializer)
+                for _ in range(MAX_LOOP):
+                    anchor_input = session.run(anchor_iter.BatchedInput)
+                    anchor_batch_size = anchor_input.x.shape[0]
+                    eval_input_x = np.repeat(batched_input.x, anchor_batch_size, axis=0)
+                    eval_input_e = np.repeat(batched_input.e, anchor_batch_size, axis=0)
+                    eval_input_t = np.repeat(batched_input.t, anchor_batch_size, axis=0)
+                    label = np.equal(eval_input_e, anchor_input.e).astype(int)
+                    probs, batched_metric_d, batched_loss_d = session.run(
+                        (model.output_d['prob'], model.metric_d, model.loss_d), feed_dict={
+                            model.x1_ph: anchor_input.x,
+                            model.seq_lens1_ph: anchor_input.t,
+                            model.x2_ph: eval_input_x,
+                            model.seq_lens2_ph: eval_input_t,
+                            model.label_ph: label,
+                            model.fc_kprob: 1.0
+                        })
+                    probs_list.append(probs)
+                    ref_emos_list.append(anchor_input.e)
+                    eval_e_pr = self._get_eval_emo(ref_emos_list, probs_list)
+                    eval_e_gts.append(eval_e_gt)
+                    eval_e_prs.append(eval_e_pr)
+                    self._dict_list_append(metrics_d, batched_metric_d)
+                    self._dict_list_append(losses_d, batched_loss_d)
+                    weights.append(anchor_batch_size)
+            except tf.errors.OutOfRangeError:
+                break
+        metric_d = self._dict_list_weighted_avg(metrics_d, weights)
+        loss_d = self._dict_list_weighted_avg(losses_d, weights)
+        global_e_acc = np.sum(np.equal(eval_e_gts, eval_e_prs).astype(float)) / len(eval_e_gts)
+        if is_return_result:
+            return metric_d, loss_d, global_e_acc, eval_e_gts, eval_e_prs
+        else:
+            return metric_d, loss_d, global_e_acc
 
     # only used for test set
     def process_result(self, test_iter, anchor_iter, session):

@@ -105,12 +105,13 @@ class RModel(object):
         logits = tf.reshape(h_fc, [-1])
         output_d = defaultdict(lambda: None)
         output_d['logits'] = logits
+        output_d['prob'] = tf.nn.sigmoid(logits)
         return output_d
 
     def get_metric(self):
         with tf.name_scope('accuracy'):
             correct_prediction = tf.equal(
-                tf.cast(tf.round(tf.nn.sigmoid(self.output_d['logits'])), tf.int32),
+                tf.cast(tf.round(self.output_d['prob']), tf.int32),
                 self.label_ph)
             correct_prediction = tf.cast(correct_prediction, tf.float32)
             accuracy = tf.reduce_mean(correct_prediction)
@@ -119,10 +120,10 @@ class RModel(object):
         return metric_d
 
     def get_loss(self):
-        if self.hparams.loss_reduction == 'SUM_BY_NONZERO_WEIGHTS':
-            reduction = tf.losses.Reduction.SUM_BY_NONZERO_WEIGHTS
-        else:
-            reduction = tf.losses.Reduction.MEAN
+        # if self.hparams.loss_reduction == 'SUM_BY_NONZERO_WEIGHTS':
+        #     reduction = tf.losses.Reduction.SUM_BY_NONZERO_WEIGHTS
+        # else:
+        #     reduction = tf.losses.Reduction.MEAN
         # if self.hparams.is_weighted_loss:
         #     weights = self.loss_weight_ph
         # else:
