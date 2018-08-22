@@ -2,3 +2,4 @@
 .idea/
 */tf_log/*
 */*ckpt*/*
+*.npy
