@@ -1,8 +1,0 @@
-model_checkpoint_path: "08221021_e4vMtF"
-all_model_checkpoint_paths: "../ckpt/08221021_e4vMtF-3000"
-all_model_checkpoint_paths: "../bestloss_ckpt/08221021_e4vMtF"
-all_model_checkpoint_paths: "../ckpt/08221021_e4vMtF-6000"
-all_model_checkpoint_paths: "../ckpt/08221021_e4vMtF-9000"
-all_model_checkpoint_paths: "../ckpt/08221021_e4vMtF-12000"
-all_model_checkpoint_paths: "../ckpt/08221021_e4vMtF-15000"
-all_model_checkpoint_paths: "08221021_e4vMtF"
