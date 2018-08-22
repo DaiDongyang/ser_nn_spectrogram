@@ -1,4 +1,4 @@
 *output/
 .idea/
 */tf_log/*
-*.npy
+*/*ckpt*/*
