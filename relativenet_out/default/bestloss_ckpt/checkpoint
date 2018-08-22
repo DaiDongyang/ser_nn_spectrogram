@@ -1,0 +1,4 @@
+model_checkpoint_path: "08221021_e4vFtM"
+all_model_checkpoint_paths: "../ckpt/08221021_e4vFtM-3000"
+all_model_checkpoint_paths: "../bestacc_ckpt/08221021_e4vFtM"
+all_model_checkpoint_paths: "08221021_e4vFtM"

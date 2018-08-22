@@ -1,0 +1,16 @@
+
+  a\p	neu	ang	hap	sad	
+  neu	136.0	0.0	0.0	0.0	
+  ang	13.0	0.0	0.0	0.0	
+  hap	50.0	0.0	0.0	0.0	
+  sad	60.0	0.0	0.0	0.0	
+
+  a\p	  neu	  ang	  hap	  sad	
+  neu	1.0000	0.0000	0.0000	0.0000	
+  ang	1.0000	0.0000	0.0000	0.0000	
+  hap	1.0000	0.0000	0.0000	0.0000	
+  sad	1.0000	0.0000	0.0000	0.0000	
+
+  average(unweighted) accurate is 0.2500
+  total(weighted) accurate is 0.5251
+

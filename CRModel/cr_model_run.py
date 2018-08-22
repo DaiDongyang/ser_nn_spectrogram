@@ -1,5 +1,6 @@
 import operator
 import time
+import os
 from collections import defaultdict
 from functools import reduce
 from itertools import accumulate
@@ -110,12 +111,21 @@ class CRModelRun(object):
         p_rs = list()
         sids = list()
         ts = list()
+        h_rnn_list = list()
         session.run(test_iter.initializer)
         logits = model.output_d['logits']
+        h_rnn = model.output_d['h_rnn']
         while True:
             try:
                 batched_input = session.run(test_iter.BatchedInput)
-                batched_logits = logits.eval2(feed_dict={
+                batched_logits = logits.eval(feed_dict={
+                    model.x_ph: batched_input.x,
+                    model.seq_lens_ph: batched_input.ts,
+                    model.loss_weight_ph: batched_input.ws,
+                    model.label_ph: batched_input.y_,
+                    model.fc_kprob: 1.0,
+                }, session=session)
+                batched_h_rnn = h_rnn.eval(feed_dict={
                     model.x_ph: batched_input.x,
                     model.seq_lens_ph: batched_input.ts,
                     model.loss_weight_ph: batched_input.ws,
@@ -123,6 +133,7 @@ class CRModelRun(object):
                     model.fc_kprob: 1.0,
                 }, session=session)
                 batched_pr = np.argmax(batched_logits, 1)
+                h_rnn_list.append(batched_h_rnn)
                 g_ts += list(batched_input.y_)
                 p_rs += list(batched_pr)
                 sids += list(batched_input.sids)
@@ -133,15 +144,19 @@ class CRModelRun(object):
         pr_np = np.array(p_rs)
         sid_np = np.array(sids)
         ts_np = np.array(ts)
+        h_rnn_np = np.vstack(h_rnn_list)
         if hparams.is_save_emo_result:
             gt_npy_path = hparams.gt_npy_path
             pr_npy_path = hparams.pr_npy_path
             ts_npy_path = hparams.ts_npy_path
             sid_npy_path = hparams.sid_npy_path
+            h_rnn_npy_path = os.path.join(self.hparams.result_dir,
+                                          'hrnn_' + self.hparams.id_str + '.npy')
             np.save(gt_npy_path, gt_np)
             np.save(pr_npy_path, pr_np)
             np.save(ts_npy_path, ts_np)
             np.save(sid_npy_path, sid_np)
+            np.save(h_rnn_npy_path, h_rnn_np)
         matrix, _ = post_process.print_csv_confustion_matrix(gt_np, pr_np, hparams.emos)
         np.save(hparams.result_matrix_path, matrix)
         if 'result_txt_path' in self.hparams:
@@ -191,7 +206,7 @@ class CRModelRun(object):
                         self.logger.log('best_loss: %f' % self.best_loss, level=1)
                 if test_iter:
                     test_metric_d, test_loss_d = self.eval(test_iter, session)
-                    self.logger.log('  tmp set: metric_d', test_metric_d, 'loss_d', test_loss_d,
+                    self.logger.log('  test set: metric_d', test_metric_d, 'loss_d', test_loss_d,
                                     level=1)
             except tf.errors.OutOfRangeError:
                 break
@@ -260,6 +275,6 @@ class CRModelRun(object):
             self.saver.restore(sess, eval_ckpt_file)
             test_iter = d_set.get_test_iter()
             metric_d, loss_d = self.eval(test_iter, sess)
-            self.logger.log('tmp set: metric_d', metric_d, "loss_d", loss_d, level=2)
+            self.logger.log('test set: metric_d', metric_d, "loss_d", loss_d, level=2)
             self.process_result(test_iter, sess)
         self.exit()

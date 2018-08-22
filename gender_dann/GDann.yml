@@ -12,9 +12,9 @@ default: &DEFAULT
   emos: ['neu', 'ang', 'hap', 'sad']
 
   consider_sent_types: ['impro']
-  source_data: ['1M', '2M', '3M', '4M']
-  target_data: ['1F', '2F', '3F', '4F']
-  dev_data: ['5M']
+  source_data: ['1M', '2M', '3M']
+  target_data: ['1F', '2F', '3F']
+  dev_data: ['4M', '4F']
   test_data: ['5F']
   # normalize dev set with source data or target data
   norm_dev_source: True

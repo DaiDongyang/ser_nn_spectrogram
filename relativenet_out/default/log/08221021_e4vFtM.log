@@ -1,0 +1,584 @@
+train_step 0 batch loss_d {'emo_loss': 1.1985363} batch metric_d {'emo_acc': 0.25} positive sum 7.0
+train_step 30 batch loss_d {'emo_loss': 0.8520638} batch metric_d {'emo_acc': 0.53125} positive sum 12.0
+train_step 60 batch loss_d {'emo_loss': 0.9241376} batch metric_d {'emo_acc': 0.59375} positive sum 10.0
+train_step 90 batch loss_d {'emo_loss': 0.8154041} batch metric_d {'emo_acc': 0.625} positive sum 13.0
+train_step 120 batch loss_d {'emo_loss': 0.9923144} batch metric_d {'emo_acc': 0.53125} positive sum 9.0
+train_step 150 batch loss_d {'emo_loss': 0.9315786} batch metric_d {'emo_acc': 0.625} positive sum 10.0
+train_step 180 batch loss_d {'emo_loss': 1.0208702} batch metric_d {'emo_acc': 0.3125} positive sum 8.0
+train_step 210 batch loss_d {'emo_loss': 1.1236931} batch metric_d {'emo_acc': 0.6875} positive sum 5.0
+train_step 240 batch loss_d {'emo_loss': 0.7908901} batch metric_d {'emo_acc': 0.5625} positive sum 13.0
+train_step 270 batch loss_d {'emo_loss': 1.0405725} batch metric_d {'emo_acc': 0.71875} positive sum 7.0
+train_step 300 batch loss_d {'emo_loss': 0.7937038} batch metric_d {'emo_acc': 0.71875} positive sum 10.0
+train_step 330 batch loss_d {'emo_loss': 0.8400808} batch metric_d {'emo_acc': 0.625} positive sum 10.0
+train_step 360 batch loss_d {'emo_loss': 0.8396401} batch metric_d {'emo_acc': 0.71875} positive sum 8.0
+train_step 390 batch loss_d {'emo_loss': 1.2685921} batch metric_d {'emo_acc': 0.46875} positive sum 7.0
+train_step 420 batch loss_d {'emo_loss': 0.8362718} batch metric_d {'emo_acc': 0.5625} positive sum 11.0
+train_step 450 batch loss_d {'emo_loss': 0.86341107} batch metric_d {'emo_acc': 0.5} positive sum 11.0
+train_step 480 batch loss_d {'emo_loss': 0.95126003} batch metric_d {'emo_acc': 0.59375} positive sum 6.0
+  dev set: metric_d {'emo_acc': 0.6086409404973856} loss_d {'emo_loss': 1.0159722654611472} global_e_acc 0.3288590604026846
+    best_acc: 0.608641, best_acc_steps: 500
+    best_loss: 1.015972, best_loss_steps: 500
+  test set: metric_d {'emo_acc': 0.5585585624324769} loss_d {'emo_loss': 1.1348892181076138} global_e_acc 0.23552123552123552
+  Duration: 634.438471
+train_step 510 batch loss_d {'emo_loss': 1.2955188} batch metric_d {'emo_acc': 0.46875} positive sum 8.0
+train_step 540 batch loss_d {'emo_loss': 0.8585994} batch metric_d {'emo_acc': 0.78125} positive sum 9.0
+train_step 570 batch loss_d {'emo_loss': 0.840934} batch metric_d {'emo_acc': 0.65625} positive sum 10.0
+train_step 600 batch loss_d {'emo_loss': 1.164284} batch metric_d {'emo_acc': 0.5625} positive sum 6.0
+train_step 630 batch loss_d {'emo_loss': 0.93141055} batch metric_d {'emo_acc': 0.625} positive sum 10.0
+train_step 660 batch loss_d {'emo_loss': 0.9870098} batch metric_d {'emo_acc': 0.5} positive sum 8.0
+train_step 690 batch loss_d {'emo_loss': 0.97405607} batch metric_d {'emo_acc': 0.59375} positive sum 11.0
+train_step 720 batch loss_d {'emo_loss': 0.9130087} batch metric_d {'emo_acc': 0.53125} positive sum 7.0
+train_step 750 batch loss_d {'emo_loss': 0.80979776} batch metric_d {'emo_acc': 0.65625} positive sum 10.0
+train_step 780 batch loss_d {'emo_loss': 0.9491565} batch metric_d {'emo_acc': 0.59375} positive sum 7.0
+train_step 810 batch loss_d {'emo_loss': 0.63001156} batch metric_d {'emo_acc': 0.75} positive sum 13.0
+train_step 840 batch loss_d {'emo_loss': 0.81634724} batch metric_d {'emo_acc': 0.625} positive sum 10.0
+train_step 870 batch loss_d {'emo_loss': 0.8921037} batch metric_d {'emo_acc': 0.5} positive sum 8.0
+train_step 900 batch loss_d {'emo_loss': 0.7948525} batch metric_d {'emo_acc': 0.65625} positive sum 9.0
+train_step 930 batch loss_d {'emo_loss': 0.75434196} batch metric_d {'emo_acc': 0.625} positive sum 7.0
+train_step 960 batch loss_d {'emo_loss': 0.9964922} batch metric_d {'emo_acc': 0.5} positive sum 8.0
+train_step 990 batch loss_d {'emo_loss': 1.0654116} batch metric_d {'emo_acc': 0.53125} positive sum 8.0
+  dev set: metric_d {'emo_acc': 0.5605425055095014} loss_d {'emo_loss': 1.0270909416995593} global_e_acc 0.348993288590604
+    best_acc: 0.608641, best_acc_steps: 500
+    best_loss: 1.015972, best_loss_steps: 500
+  test set: metric_d {'emo_acc': 0.5283140300208538} loss_d {'emo_loss': 1.133317057920699} global_e_acc 0.23552123552123552
+  Duration: 1212.989241
+train_step 1020 batch loss_d {'emo_loss': 1.084427} batch metric_d {'emo_acc': 0.53125} positive sum 8.0
+train_step 1050 batch loss_d {'emo_loss': 0.9473455} batch metric_d {'emo_acc': 0.5625} positive sum 6.0
+train_step 1080 batch loss_d {'emo_loss': 0.9697387} batch metric_d {'emo_acc': 0.625} positive sum 7.0
+train_step 1110 batch loss_d {'emo_loss': 1.2203541} batch metric_d {'emo_acc': 0.53125} positive sum 5.0
+train_step 1140 batch loss_d {'emo_loss': 0.79089916} batch metric_d {'emo_acc': 0.6875} positive sum 9.0
+train_step 1170 batch loss_d {'emo_loss': 0.80909824} batch metric_d {'emo_acc': 0.5625} positive sum 9.0
+train_step 1200 batch loss_d {'emo_loss': 0.68723047} batch metric_d {'emo_acc': 0.71875} positive sum 8.0
+train_step 1230 batch loss_d {'emo_loss': 0.94778717} batch metric_d {'emo_acc': 0.5} positive sum 7.0
+train_step 1260 batch loss_d {'emo_loss': 0.69313455} batch metric_d {'emo_acc': 0.6875} positive sum 8.0
+train_step 1290 batch loss_d {'emo_loss': 0.7505483} batch metric_d {'emo_acc': 0.71875} positive sum 9.0
+train_step 1320 batch loss_d {'emo_loss': 0.68921244} batch metric_d {'emo_acc': 0.71875} positive sum 11.0
+train_step 1350 batch loss_d {'emo_loss': 0.7426683} batch metric_d {'emo_acc': 0.65625} positive sum 10.0
+train_step 1380 batch loss_d {'emo_loss': 0.7453482} batch metric_d {'emo_acc': 0.78125} positive sum 8.0
+train_step 1410 batch loss_d {'emo_loss': 0.89274895} batch metric_d {'emo_acc': 0.5625} positive sum 9.0
+train_step 1440 batch loss_d {'emo_loss': 0.8239237} batch metric_d {'emo_acc': 0.53125} positive sum 8.0
+train_step 1470 batch loss_d {'emo_loss': 0.7742332} batch metric_d {'emo_acc': 0.59375} positive sum 8.0
+  dev set: metric_d {'emo_acc': 0.6861017841420718} loss_d {'emo_loss': 1.2191462024746325} global_e_acc 0.35906040268456374
+    best_acc: 0.686102, best_acc_steps: 1500
+    best_loss: 1.015972, best_loss_steps: 500
+  test set: metric_d {'emo_acc': 0.643661518930008} loss_d {'emo_loss': 1.4503101867598456} global_e_acc 0.23166023166023167
+  Duration: 1742.362695
+train_step 1500 batch loss_d {'emo_loss': 0.64148295} batch metric_d {'emo_acc': 0.75} positive sum 12.0
+train_step 1530 batch loss_d {'emo_loss': 1.1806527} batch metric_d {'emo_acc': 0.625} positive sum 5.0
+train_step 1560 batch loss_d {'emo_loss': 0.9712895} batch metric_d {'emo_acc': 0.46875} positive sum 7.0
+train_step 1590 batch loss_d {'emo_loss': 1.1076987} batch metric_d {'emo_acc': 0.65625} positive sum 6.0
+train_step 1620 batch loss_d {'emo_loss': 0.609898} batch metric_d {'emo_acc': 0.71875} positive sum 12.0
+train_step 1650 batch loss_d {'emo_loss': 0.70196986} batch metric_d {'emo_acc': 0.75} positive sum 9.0
+train_step 1680 batch loss_d {'emo_loss': 0.7813741} batch metric_d {'emo_acc': 0.6875} positive sum 7.0
+train_step 1710 batch loss_d {'emo_loss': 0.8813666} batch metric_d {'emo_acc': 0.53125} positive sum 9.0
+train_step 1740 batch loss_d {'emo_loss': 0.79520464} batch metric_d {'emo_acc': 0.65625} positive sum 10.0
+train_step 1770 batch loss_d {'emo_loss': 1.2210295} batch metric_d {'emo_acc': 0.5625} positive sum 6.0
+train_step 1800 batch loss_d {'emo_loss': 0.92038864} batch metric_d {'emo_acc': 0.625} positive sum 8.0
+train_step 1830 batch loss_d {'emo_loss': 0.85900974} batch metric_d {'emo_acc': 0.625} positive sum 7.0
+train_step 1860 batch loss_d {'emo_loss': 0.8078555} batch metric_d {'emo_acc': 0.59375} positive sum 10.0
+train_step 1890 batch loss_d {'emo_loss': 0.78273916} batch metric_d {'emo_acc': 0.75} positive sum 8.0
+train_step 1920 batch loss_d {'emo_loss': 0.700248} batch metric_d {'emo_acc': 0.65625} positive sum 8.0
+train_step 1950 batch loss_d {'emo_loss': 0.9360907} batch metric_d {'emo_acc': 0.46875} positive sum 7.0
+train_step 1980 batch loss_d {'emo_loss': 0.5982884} batch metric_d {'emo_acc': 0.71875} positive sum 13.0
+  dev set: metric_d {'emo_acc': 0.6620525705234316} loss_d {'emo_loss': 1.354929724995722} global_e_acc 0.35906040268456374
+    best_acc: 0.686102, best_acc_steps: 1500
+    best_loss: 1.015972, best_loss_steps: 500
+  test set: metric_d {'emo_acc': 0.6140604897700682} loss_d {'emo_loss': 1.6276471253527638} global_e_acc 0.22393822393822393
+  Duration: 2311.482747
+train_step 2010 batch loss_d {'emo_loss': 0.80206394} batch metric_d {'emo_acc': 0.53125} positive sum 10.0
+train_step 2040 batch loss_d {'emo_loss': 0.83940434} batch metric_d {'emo_acc': 0.78125} positive sum 5.0
+train_step 2070 batch loss_d {'emo_loss': 1.295042} batch metric_d {'emo_acc': 0.59375} positive sum 4.0
+train_step 2100 batch loss_d {'emo_loss': 0.8172971} batch metric_d {'emo_acc': 0.5625} positive sum 9.0
+train_step 2130 batch loss_d {'emo_loss': 0.84844106} batch metric_d {'emo_acc': 0.53125} positive sum 11.0
+train_step 2160 batch loss_d {'emo_loss': 0.79424524} batch metric_d {'emo_acc': 0.625} positive sum 10.0
+train_step 2190 batch loss_d {'emo_loss': 0.8089084} batch metric_d {'emo_acc': 0.75} positive sum 6.0
+train_step 2220 batch loss_d {'emo_loss': 0.839638} batch metric_d {'emo_acc': 0.625} positive sum 7.0
+train_step 2250 batch loss_d {'emo_loss': 0.95023084} batch metric_d {'emo_acc': 0.6875} positive sum 6.0
+train_step 2280 batch loss_d {'emo_loss': 0.62661016} batch metric_d {'emo_acc': 0.8125} positive sum 6.0
+train_step 2310 batch loss_d {'emo_loss': 0.738484} batch metric_d {'emo_acc': 0.75} positive sum 9.0
+train_step 2340 batch loss_d {'emo_loss': 0.6571708} batch metric_d {'emo_acc': 0.75} positive sum 10.0
+train_step 2370 batch loss_d {'emo_loss': 0.8459322} batch metric_d {'emo_acc': 0.75} positive sum 7.0
+train_step 2400 batch loss_d {'emo_loss': 0.7807678} batch metric_d {'emo_acc': 0.75} positive sum 12.0
+train_step 2430 batch loss_d {'emo_loss': 0.71193767} batch metric_d {'emo_acc': 0.75} positive sum 8.0
+train_step 2460 batch loss_d {'emo_loss': 0.8568558} batch metric_d {'emo_acc': 0.625} positive sum 6.0
+train_step 2490 batch loss_d {'emo_loss': 1.0351925} batch metric_d {'emo_acc': 0.625} positive sum 9.0
+  dev set: metric_d {'emo_acc': 0.6461129755581785} loss_d {'emo_loss': 1.1701852805262445} global_e_acc 0.3523489932885906
+    best_acc: 0.686102, best_acc_steps: 1500
+    best_loss: 1.015972, best_loss_steps: 500
+  test set: metric_d {'emo_acc': 0.5857464646970904} loss_d {'emo_loss': 1.367738559209242} global_e_acc 0.23938223938223938
+  Duration: 2878.826073
+train_step 2520 batch loss_d {'emo_loss': 0.5978333} batch metric_d {'emo_acc': 0.78125} positive sum 13.0
+train_step 2550 batch loss_d {'emo_loss': 0.8236086} batch metric_d {'emo_acc': 0.5625} positive sum 12.0
+train_step 2580 batch loss_d {'emo_loss': 0.7536379} batch metric_d {'emo_acc': 0.6875} positive sum 10.0
+train_step 2610 batch loss_d {'emo_loss': 0.79375494} batch metric_d {'emo_acc': 0.6875} positive sum 8.0
+train_step 2640 batch loss_d {'emo_loss': 0.5768774} batch metric_d {'emo_acc': 0.78125} positive sum 14.0
+train_step 2670 batch loss_d {'emo_loss': 0.91709733} batch metric_d {'emo_acc': 0.6875} positive sum 6.0
+train_step 2700 batch loss_d {'emo_loss': 0.95110965} batch metric_d {'emo_acc': 0.53125} positive sum 9.0
+train_step 2730 batch loss_d {'emo_loss': 0.7275801} batch metric_d {'emo_acc': 0.6875} positive sum 8.0
+train_step 2760 batch loss_d {'emo_loss': 0.779747} batch metric_d {'emo_acc': 0.53125} positive sum 14.0
+train_step 2790 batch loss_d {'emo_loss': 0.87720275} batch metric_d {'emo_acc': 0.59375} positive sum 7.0
+train_step 2820 batch loss_d {'emo_loss': 0.85310143} batch metric_d {'emo_acc': 0.71875} positive sum 10.0
+train_step 2850 batch loss_d {'emo_loss': 0.5119517} batch metric_d {'emo_acc': 0.78125} positive sum 13.0
+train_step 2880 batch loss_d {'emo_loss': 0.67320174} batch metric_d {'emo_acc': 0.6875} positive sum 11.0
+train_step 2910 batch loss_d {'emo_loss': 0.74010503} batch metric_d {'emo_acc': 0.625} positive sum 13.0
+train_step 2940 batch loss_d {'emo_loss': 0.78321075} batch metric_d {'emo_acc': 0.65625} positive sum 11.0
+train_step 2970 batch loss_d {'emo_loss': 0.6735238} batch metric_d {'emo_acc': 0.6875} positive sum 9.0
+  dev set: metric_d {'emo_acc': 0.6536633065782937} loss_d {'emo_loss': 1.0414262497985123} global_e_acc 0.37583892617449666
+    best_acc: 0.686102, best_acc_steps: 1500
+    best_loss: 1.015972, best_loss_steps: 500
+  test set: metric_d {'emo_acc': 0.5888030887455553} loss_d {'emo_loss': 1.2955435349904432} global_e_acc 0.23552123552123552
+  Duration: 3425.917596
+train_step 3000 batch loss_d {'emo_loss': 0.9868828} batch metric_d {'emo_acc': 0.6875} positive sum 5.0
+train_step 3030 batch loss_d {'emo_loss': 0.5590814} batch metric_d {'emo_acc': 0.8125} positive sum 10.0
+train_step 3060 batch loss_d {'emo_loss': 0.56727225} batch metric_d {'emo_acc': 0.6875} positive sum 15.0
+train_step 3090 batch loss_d {'emo_loss': 0.82761043} batch metric_d {'emo_acc': 0.59375} positive sum 8.0
+train_step 3120 batch loss_d {'emo_loss': 0.79220885} batch metric_d {'emo_acc': 0.59375} positive sum 10.0
+train_step 3150 batch loss_d {'emo_loss': 0.72913736} batch metric_d {'emo_acc': 0.6875} positive sum 9.0
+train_step 3180 batch loss_d {'emo_loss': 0.7428283} batch metric_d {'emo_acc': 0.625} positive sum 13.0
+train_step 3210 batch loss_d {'emo_loss': 0.5906445} batch metric_d {'emo_acc': 0.8125} positive sum 10.0
+train_step 3240 batch loss_d {'emo_loss': 0.6444369} batch metric_d {'emo_acc': 0.6875} positive sum 9.0
+train_step 3270 batch loss_d {'emo_loss': 0.7763747} batch metric_d {'emo_acc': 0.65625} positive sum 11.0
+train_step 3300 batch loss_d {'emo_loss': 0.8018637} batch metric_d {'emo_acc': 0.5625} positive sum 13.0
+train_step 3330 batch loss_d {'emo_loss': 0.7767601} batch metric_d {'emo_acc': 0.625} positive sum 7.0
+train_step 3360 batch loss_d {'emo_loss': 0.6623899} batch metric_d {'emo_acc': 0.8125} positive sum 8.0
+train_step 3390 batch loss_d {'emo_loss': 0.660195} batch metric_d {'emo_acc': 0.78125} positive sum 8.0
+train_step 3420 batch loss_d {'emo_loss': 0.44932187} batch metric_d {'emo_acc': 0.8125} positive sum 14.0
+train_step 3450 batch loss_d {'emo_loss': 0.685161} batch metric_d {'emo_acc': 0.78125} positive sum 8.0
+train_step 3480 batch loss_d {'emo_loss': 0.54639864} batch metric_d {'emo_acc': 0.8125} positive sum 12.0
+  dev set: metric_d {'emo_acc': 0.6902964181147966} loss_d {'emo_loss': 1.1741914549129921} global_e_acc 0.412751677852349
+    best_acc: 0.690296, best_acc_steps: 3500
+    best_loss: 1.015972, best_loss_steps: 500
+  test set: metric_d {'emo_acc': 0.6324002564413668} loss_d {'emo_loss': 1.4398257510312276} global_e_acc 0.2625482625482625
+  Duration: 3995.102219
+train_step 3510 batch loss_d {'emo_loss': 0.7135273} batch metric_d {'emo_acc': 0.78125} positive sum 9.0
+train_step 3540 batch loss_d {'emo_loss': 0.6407989} batch metric_d {'emo_acc': 0.8125} positive sum 7.0
+train_step 3570 batch loss_d {'emo_loss': 0.9184488} batch metric_d {'emo_acc': 0.625} positive sum 9.0
+train_step 3600 batch loss_d {'emo_loss': 1.1372676} batch metric_d {'emo_acc': 0.75} positive sum 8.0
+train_step 3630 batch loss_d {'emo_loss': 0.8674449} batch metric_d {'emo_acc': 0.625} positive sum 4.0
+train_step 3660 batch loss_d {'emo_loss': 0.6850115} batch metric_d {'emo_acc': 0.75} positive sum 9.0
+train_step 3690 batch loss_d {'emo_loss': 0.549262} batch metric_d {'emo_acc': 0.78125} positive sum 15.0
+train_step 3720 batch loss_d {'emo_loss': 0.6653621} batch metric_d {'emo_acc': 0.6875} positive sum 10.0
+train_step 3750 batch loss_d {'emo_loss': 0.52734405} batch metric_d {'emo_acc': 0.8125} positive sum 11.0
+train_step 3780 batch loss_d {'emo_loss': 0.44230068} batch metric_d {'emo_acc': 0.8125} positive sum 12.0
+train_step 3810 batch loss_d {'emo_loss': 0.7101929} batch metric_d {'emo_acc': 0.6875} positive sum 7.0
+train_step 3840 batch loss_d {'emo_loss': 0.82349914} batch metric_d {'emo_acc': 0.5625} positive sum 5.0
+train_step 3870 batch loss_d {'emo_loss': 0.60925925} batch metric_d {'emo_acc': 0.78125} positive sum 9.0
+train_step 3900 batch loss_d {'emo_loss': 0.704556} batch metric_d {'emo_acc': 0.65625} positive sum 10.0
+train_step 3930 batch loss_d {'emo_loss': 0.61733365} batch metric_d {'emo_acc': 0.6875} positive sum 11.0
+train_step 3960 batch loss_d {'emo_loss': 0.79099405} batch metric_d {'emo_acc': 0.6875} positive sum 8.0
+train_step 3990 batch loss_d {'emo_loss': 0.4624955} batch metric_d {'emo_acc': 0.84375} positive sum 13.0
+  dev set: metric_d {'emo_acc': 0.7168624168074371} loss_d {'emo_loss': 0.9435245379205518} global_e_acc 0.5604026845637584
+    best_acc: 0.716862, best_acc_steps: 4000
+    best_loss: 0.943525, best_loss_steps: 4000
+  test set: metric_d {'emo_acc': 0.6566924064430951} loss_d {'emo_loss': 1.3191382593860037} global_e_acc 0.3552123552123552
+  Duration: 4578.015395
+train_step 4020 batch loss_d {'emo_loss': 0.7677765} batch metric_d {'emo_acc': 0.625} positive sum 10.0
+train_step 4050 batch loss_d {'emo_loss': 0.76007223} batch metric_d {'emo_acc': 0.6875} positive sum 10.0
+train_step 4080 batch loss_d {'emo_loss': 0.58756924} batch metric_d {'emo_acc': 0.71875} positive sum 8.0
+train_step 4110 batch loss_d {'emo_loss': 0.62525284} batch metric_d {'emo_acc': 0.75} positive sum 10.0
+train_step 4140 batch loss_d {'emo_loss': 0.81382394} batch metric_d {'emo_acc': 0.75} positive sum 9.0
+train_step 4170 batch loss_d {'emo_loss': 0.51931465} batch metric_d {'emo_acc': 0.75} positive sum 12.0
+train_step 4200 batch loss_d {'emo_loss': 1.0577588} batch metric_d {'emo_acc': 0.625} positive sum 9.0
+train_step 4230 batch loss_d {'emo_loss': 0.52687716} batch metric_d {'emo_acc': 0.75} positive sum 9.0
+train_step 4260 batch loss_d {'emo_loss': 0.73656267} batch metric_d {'emo_acc': 0.71875} positive sum 11.0
+train_step 4290 batch loss_d {'emo_loss': 0.6695818} batch metric_d {'emo_acc': 0.71875} positive sum 9.0
+train_step 4320 batch loss_d {'emo_loss': 0.7269507} batch metric_d {'emo_acc': 0.75} positive sum 8.0
+train_step 4350 batch loss_d {'emo_loss': 0.94427943} batch metric_d {'emo_acc': 0.6875} positive sum 7.0
+train_step 4380 batch loss_d {'emo_loss': 0.7781056} batch metric_d {'emo_acc': 0.625} positive sum 11.0
+train_step 4410 batch loss_d {'emo_loss': 0.6850852} batch metric_d {'emo_acc': 0.65625} positive sum 7.0
+train_step 4440 batch loss_d {'emo_loss': 0.76311696} batch metric_d {'emo_acc': 0.6875} positive sum 7.0
+train_step 4470 batch loss_d {'emo_loss': 0.55403805} batch metric_d {'emo_acc': 0.6875} positive sum 9.0
+  dev set: metric_d {'emo_acc': 0.7073545864964491} loss_d {'emo_loss': 0.8562925541460914} global_e_acc 0.6140939597315436
+    best_acc: 0.716862, best_acc_steps: 4000
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6198519944684385} loss_d {'emo_loss': 1.252108303506402} global_e_acc 0.3590733590733591
+  Duration: 5129.131916
+train_step 4500 batch loss_d {'emo_loss': 0.52558804} batch metric_d {'emo_acc': 0.90625} positive sum 9.0
+train_step 4530 batch loss_d {'emo_loss': 0.53290135} batch metric_d {'emo_acc': 0.78125} positive sum 9.0
+train_step 4560 batch loss_d {'emo_loss': 0.59584033} batch metric_d {'emo_acc': 0.8125} positive sum 7.0
+train_step 4590 batch loss_d {'emo_loss': 0.5826181} batch metric_d {'emo_acc': 0.8125} positive sum 8.0
+train_step 4620 batch loss_d {'emo_loss': 0.65538335} batch metric_d {'emo_acc': 0.6875} positive sum 10.0
+train_step 4650 batch loss_d {'emo_loss': 0.8204776} batch metric_d {'emo_acc': 0.71875} positive sum 6.0
+train_step 4680 batch loss_d {'emo_loss': 0.43482298} batch metric_d {'emo_acc': 0.84375} positive sum 8.0
+train_step 4710 batch loss_d {'emo_loss': 0.51966107} batch metric_d {'emo_acc': 0.8125} positive sum 10.0
+train_step 4740 batch loss_d {'emo_loss': 0.63162166} batch metric_d {'emo_acc': 0.78125} positive sum 7.0
+train_step 4770 batch loss_d {'emo_loss': 0.57540107} batch metric_d {'emo_acc': 0.78125} positive sum 9.0
+train_step 4800 batch loss_d {'emo_loss': 0.9022194} batch metric_d {'emo_acc': 0.6875} positive sum 8.0
+train_step 4830 batch loss_d {'emo_loss': 0.77926636} batch metric_d {'emo_acc': 0.8125} positive sum 8.0
+train_step 4860 batch loss_d {'emo_loss': 0.7557596} batch metric_d {'emo_acc': 0.6875} positive sum 5.0
+train_step 4890 batch loss_d {'emo_loss': 0.5682351} batch metric_d {'emo_acc': 0.71875} positive sum 13.0
+train_step 4920 batch loss_d {'emo_loss': 0.96003366} batch metric_d {'emo_acc': 0.59375} positive sum 8.0
+train_step 4950 batch loss_d {'emo_loss': 0.8466595} batch metric_d {'emo_acc': 0.59375} positive sum 4.0
+train_step 4980 batch loss_d {'emo_loss': 0.7470497} batch metric_d {'emo_acc': 0.6875} positive sum 6.0
+  dev set: metric_d {'emo_acc': 0.7135067131095285} loss_d {'emo_loss': 1.0302137995026255} global_e_acc 0.6073825503355704
+    best_acc: 0.716862, best_acc_steps: 4000
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6513835297588216} loss_d {'emo_loss': 1.4070526538668453} global_e_acc 0.4594594594594595
+  Duration: 5689.135726
+train_step 5010 batch loss_d {'emo_loss': 0.6063762} batch metric_d {'emo_acc': 0.75} positive sum 12.0
+train_step 5040 batch loss_d {'emo_loss': 0.5057837} batch metric_d {'emo_acc': 0.78125} positive sum 10.0
+train_step 5070 batch loss_d {'emo_loss': 0.43437856} batch metric_d {'emo_acc': 0.84375} positive sum 9.0
+train_step 5100 batch loss_d {'emo_loss': 0.5875142} batch metric_d {'emo_acc': 0.75} positive sum 10.0
+train_step 5130 batch loss_d {'emo_loss': 0.6417248} batch metric_d {'emo_acc': 0.71875} positive sum 5.0
+train_step 5160 batch loss_d {'emo_loss': 0.7724652} batch metric_d {'emo_acc': 0.625} positive sum 10.0
+train_step 5190 batch loss_d {'emo_loss': 0.9097868} batch metric_d {'emo_acc': 0.5625} positive sum 6.0
+train_step 5220 batch loss_d {'emo_loss': 0.5621382} batch metric_d {'emo_acc': 0.9375} positive sum 11.0
+train_step 5250 batch loss_d {'emo_loss': 0.5764395} batch metric_d {'emo_acc': 0.71875} positive sum 8.0
+train_step 5280 batch loss_d {'emo_loss': 0.76115173} batch metric_d {'emo_acc': 0.8125} positive sum 4.0
+train_step 5310 batch loss_d {'emo_loss': 0.6654637} batch metric_d {'emo_acc': 0.84375} positive sum 4.0
+train_step 5340 batch loss_d {'emo_loss': 0.4170499} batch metric_d {'emo_acc': 0.8125} positive sum 9.0
+train_step 5370 batch loss_d {'emo_loss': 0.77546024} batch metric_d {'emo_acc': 0.8125} positive sum 8.0
+train_step 5400 batch loss_d {'emo_loss': 0.7733666} batch metric_d {'emo_acc': 0.6875} positive sum 10.0
+train_step 5430 batch loss_d {'emo_loss': 0.69442713} batch metric_d {'emo_acc': 0.6875} positive sum 11.0
+train_step 5460 batch loss_d {'emo_loss': 0.96046925} batch metric_d {'emo_acc': 0.625} positive sum 7.0
+train_step 5490 batch loss_d {'emo_loss': 0.53779113} batch metric_d {'emo_acc': 0.78125} positive sum 11.0
+  dev set: metric_d {'emo_acc': 0.6722595096634538} loss_d {'emo_loss': 0.9674058184527711} global_e_acc 0.4563758389261745
+    best_acc: 0.716862, best_acc_steps: 4000
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.5849420845968843} loss_d {'emo_loss': 1.315124411610563} global_e_acc 0.277992277992278
+  Duration: 6257.478517
+train_step 5520 batch loss_d {'emo_loss': 0.4846823} batch metric_d {'emo_acc': 0.78125} positive sum 11.0
+train_step 5550 batch loss_d {'emo_loss': 0.48542476} batch metric_d {'emo_acc': 0.84375} positive sum 11.0
+train_step 5580 batch loss_d {'emo_loss': 0.45163172} batch metric_d {'emo_acc': 0.875} positive sum 12.0
+train_step 5610 batch loss_d {'emo_loss': 0.56736946} batch metric_d {'emo_acc': 0.75} positive sum 10.0
+train_step 5640 batch loss_d {'emo_loss': 0.22676833} batch metric_d {'emo_acc': 0.875} positive sum 15.0
+train_step 5670 batch loss_d {'emo_loss': 0.6059414} batch metric_d {'emo_acc': 0.75} positive sum 14.0
+train_step 5700 batch loss_d {'emo_loss': 0.38426507} batch metric_d {'emo_acc': 0.9375} positive sum 9.0
+train_step 5730 batch loss_d {'emo_loss': 0.53243846} batch metric_d {'emo_acc': 0.75} positive sum 7.0
+train_step 5760 batch loss_d {'emo_loss': 1.1473105} batch metric_d {'emo_acc': 0.625} positive sum 4.0
+train_step 5790 batch loss_d {'emo_loss': 0.42974117} batch metric_d {'emo_acc': 0.84375} positive sum 7.0
+train_step 5820 batch loss_d {'emo_loss': 0.461291} batch metric_d {'emo_acc': 0.84375} positive sum 12.0
+train_step 5850 batch loss_d {'emo_loss': 0.6831159} batch metric_d {'emo_acc': 0.71875} positive sum 7.0
+train_step 5880 batch loss_d {'emo_loss': 0.47218937} batch metric_d {'emo_acc': 0.84375} positive sum 11.0
+train_step 5910 batch loss_d {'emo_loss': 0.64939797} batch metric_d {'emo_acc': 0.625} positive sum 10.0
+train_step 5940 batch loss_d {'emo_loss': 0.50574994} batch metric_d {'emo_acc': 0.84375} positive sum 5.0
+train_step 5970 batch loss_d {'emo_loss': 0.47603166} batch metric_d {'emo_acc': 0.8125} positive sum 8.0
+  dev set: metric_d {'emo_acc': 0.735458617542414} loss_d {'emo_loss': 1.1418764649221562} global_e_acc 0.5302013422818792
+    best_acc: 0.735459, best_acc_steps: 6000
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6533140313441229} loss_d {'emo_loss': 1.8240291713862806} global_e_acc 0.3127413127413127
+  Duration: 6825.474734
+train_step 6000 batch loss_d {'emo_loss': 1.4933932} batch metric_d {'emo_acc': 0.78125} positive sum 4.0
+train_step 6030 batch loss_d {'emo_loss': 0.4818539} batch metric_d {'emo_acc': 0.75} positive sum 12.0
+train_step 6060 batch loss_d {'emo_loss': 0.53655887} batch metric_d {'emo_acc': 0.8125} positive sum 12.0
+train_step 6090 batch loss_d {'emo_loss': 0.47695196} batch metric_d {'emo_acc': 0.84375} positive sum 10.0
+train_step 6120 batch loss_d {'emo_loss': 0.43926266} batch metric_d {'emo_acc': 0.78125} positive sum 7.0
+train_step 6150 batch loss_d {'emo_loss': 0.7731659} batch metric_d {'emo_acc': 0.84375} positive sum 11.0
+train_step 6180 batch loss_d {'emo_loss': 0.31493962} batch metric_d {'emo_acc': 0.875} positive sum 13.0
+train_step 6210 batch loss_d {'emo_loss': 0.88301533} batch metric_d {'emo_acc': 0.6875} positive sum 9.0
+train_step 6240 batch loss_d {'emo_loss': 0.5016268} batch metric_d {'emo_acc': 0.8125} positive sum 7.0
+train_step 6270 batch loss_d {'emo_loss': 0.46280175} batch metric_d {'emo_acc': 0.8125} positive sum 7.0
+train_step 6300 batch loss_d {'emo_loss': 0.7991919} batch metric_d {'emo_acc': 0.78125} positive sum 9.0
+train_step 6330 batch loss_d {'emo_loss': 0.29671258} batch metric_d {'emo_acc': 0.90625} positive sum 5.0
+train_step 6360 batch loss_d {'emo_loss': 0.7159235} batch metric_d {'emo_acc': 0.75} positive sum 9.0
+train_step 6390 batch loss_d {'emo_loss': 0.68491966} batch metric_d {'emo_acc': 0.84375} positive sum 9.0
+train_step 6420 batch loss_d {'emo_loss': 0.28852355} batch metric_d {'emo_acc': 0.9375} positive sum 7.0
+train_step 6450 batch loss_d {'emo_loss': 0.72452354} batch metric_d {'emo_acc': 0.625} positive sum 8.0
+train_step 6480 batch loss_d {'emo_loss': 0.602891} batch metric_d {'emo_acc': 0.8125} positive sum 10.0
+  dev set: metric_d {'emo_acc': 0.7625838916173717} loss_d {'emo_loss': 1.0636510690236651} global_e_acc 0.6442953020134228
+    best_acc: 0.762584, best_acc_steps: 6500
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6640926640351307} loss_d {'emo_loss': 1.6587312583987777} global_e_acc 0.4247104247104247
+  Duration: 7391.044542
+train_step 6510 batch loss_d {'emo_loss': 0.5796464} batch metric_d {'emo_acc': 0.875} positive sum 7.0
+train_step 6540 batch loss_d {'emo_loss': 0.42219177} batch metric_d {'emo_acc': 0.875} positive sum 9.0
+train_step 6570 batch loss_d {'emo_loss': 0.3679486} batch metric_d {'emo_acc': 0.875} positive sum 10.0
+train_step 6600 batch loss_d {'emo_loss': 0.24937627} batch metric_d {'emo_acc': 0.90625} positive sum 11.0
+train_step 6630 batch loss_d {'emo_loss': 0.39982575} batch metric_d {'emo_acc': 0.875} positive sum 8.0
+train_step 6660 batch loss_d {'emo_loss': 0.801285} batch metric_d {'emo_acc': 0.65625} positive sum 8.0
+train_step 6690 batch loss_d {'emo_loss': 0.5393172} batch metric_d {'emo_acc': 0.84375} positive sum 10.0
+train_step 6720 batch loss_d {'emo_loss': 0.6354177} batch metric_d {'emo_acc': 0.8125} positive sum 10.0
+train_step 6750 batch loss_d {'emo_loss': 0.4527375} batch metric_d {'emo_acc': 0.8125} positive sum 5.0
+train_step 6780 batch loss_d {'emo_loss': 0.37079382} batch metric_d {'emo_acc': 0.96875} positive sum 8.0
+train_step 6810 batch loss_d {'emo_loss': 0.49098173} batch metric_d {'emo_acc': 0.75} positive sum 7.0
+train_step 6840 batch loss_d {'emo_loss': 0.39808488} batch metric_d {'emo_acc': 0.9375} positive sum 6.0
+train_step 6870 batch loss_d {'emo_loss': 0.4845385} batch metric_d {'emo_acc': 0.8125} positive sum 11.0
+train_step 6900 batch loss_d {'emo_loss': 0.57239246} batch metric_d {'emo_acc': 0.84375} positive sum 8.0
+train_step 6930 batch loss_d {'emo_loss': 0.5092235} batch metric_d {'emo_acc': 0.8125} positive sum 9.0
+train_step 6960 batch loss_d {'emo_loss': 0.45978865} batch metric_d {'emo_acc': 0.8125} positive sum 10.0
+train_step 6990 batch loss_d {'emo_loss': 0.3228046} batch metric_d {'emo_acc': 0.96875} positive sum 9.0
+  dev set: metric_d {'emo_acc': 0.7569910553877786} loss_d {'emo_loss': 1.4022043181798927} global_e_acc 0.5838926174496645
+    best_acc: 0.762584, best_acc_steps: 6500
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6497747765774893} loss_d {'emo_loss': 2.2269817853928995} global_e_acc 0.36293436293436293
+  Duration: 7948.406711
+train_step 7020 batch loss_d {'emo_loss': 0.38779423} batch metric_d {'emo_acc': 0.8125} positive sum 10.0
+train_step 7050 batch loss_d {'emo_loss': 0.67873096} batch metric_d {'emo_acc': 0.71875} positive sum 11.0
+train_step 7080 batch loss_d {'emo_loss': 0.44184536} batch metric_d {'emo_acc': 0.84375} positive sum 5.0
+train_step 7110 batch loss_d {'emo_loss': 0.46957296} batch metric_d {'emo_acc': 0.78125} positive sum 14.0
+train_step 7140 batch loss_d {'emo_loss': 0.48544592} batch metric_d {'emo_acc': 0.875} positive sum 5.0
+train_step 7170 batch loss_d {'emo_loss': 0.4861831} batch metric_d {'emo_acc': 0.875} positive sum 11.0
+train_step 7200 batch loss_d {'emo_loss': 0.43659708} batch metric_d {'emo_acc': 0.84375} positive sum 11.0
+train_step 7230 batch loss_d {'emo_loss': 0.49952316} batch metric_d {'emo_acc': 0.8125} positive sum 7.0
+train_step 7260 batch loss_d {'emo_loss': 0.97182417} batch metric_d {'emo_acc': 0.75} positive sum 9.0
+train_step 7290 batch loss_d {'emo_loss': 0.6978953} batch metric_d {'emo_acc': 0.75} positive sum 9.0
+train_step 7320 batch loss_d {'emo_loss': 0.5120872} batch metric_d {'emo_acc': 0.8125} positive sum 8.0
+train_step 7350 batch loss_d {'emo_loss': 0.8257109} batch metric_d {'emo_acc': 0.75} positive sum 6.0
+train_step 7380 batch loss_d {'emo_loss': 0.35881203} batch metric_d {'emo_acc': 0.9375} positive sum 9.0
+train_step 7410 batch loss_d {'emo_loss': 0.47341198} batch metric_d {'emo_acc': 0.78125} positive sum 5.0
+train_step 7440 batch loss_d {'emo_loss': 0.43892527} batch metric_d {'emo_acc': 0.875} positive sum 6.0
+train_step 7470 batch loss_d {'emo_loss': 0.43427855} batch metric_d {'emo_acc': 0.90625} positive sum 7.0
+  dev set: metric_d {'emo_acc': 0.7274888186846804} loss_d {'emo_loss': 1.4234646101850992} global_e_acc 0.47651006711409394
+    best_acc: 0.762584, best_acc_steps: 6500
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6386743892113674} loss_d {'emo_loss': 2.187274640303781} global_e_acc 0.2625482625482625
+  Duration: 8530.454712
+train_step 7500 batch loss_d {'emo_loss': 0.38869733} batch metric_d {'emo_acc': 0.84375} positive sum 16.0
+train_step 7530 batch loss_d {'emo_loss': 0.5456182} batch metric_d {'emo_acc': 0.84375} positive sum 4.0
+train_step 7560 batch loss_d {'emo_loss': 0.22138724} batch metric_d {'emo_acc': 0.96875} positive sum 7.0
+train_step 7590 batch loss_d {'emo_loss': 0.34738636} batch metric_d {'emo_acc': 0.84375} positive sum 8.0
+train_step 7620 batch loss_d {'emo_loss': 0.27610946} batch metric_d {'emo_acc': 0.875} positive sum 13.0
+train_step 7650 batch loss_d {'emo_loss': 0.6929573} batch metric_d {'emo_acc': 0.65625} positive sum 12.0
+train_step 7680 batch loss_d {'emo_loss': 0.31031} batch metric_d {'emo_acc': 0.90625} positive sum 9.0
+train_step 7710 batch loss_d {'emo_loss': 0.19447476} batch metric_d {'emo_acc': 0.9375} positive sum 16.0
+train_step 7740 batch loss_d {'emo_loss': 0.21523958} batch metric_d {'emo_acc': 0.96875} positive sum 11.0
+train_step 7770 batch loss_d {'emo_loss': 0.2192346} batch metric_d {'emo_acc': 0.9375} positive sum 8.0
+train_step 7800 batch loss_d {'emo_loss': 0.3308019} batch metric_d {'emo_acc': 0.875} positive sum 4.0
+train_step 7830 batch loss_d {'emo_loss': 0.23041838} batch metric_d {'emo_acc': 0.90625} positive sum 11.0
+train_step 7860 batch loss_d {'emo_loss': 0.38039505} batch metric_d {'emo_acc': 0.875} positive sum 6.0
+train_step 7890 batch loss_d {'emo_loss': 0.1894561} batch metric_d {'emo_acc': 0.90625} positive sum 11.0
+train_step 7920 batch loss_d {'emo_loss': 0.18627012} batch metric_d {'emo_acc': 0.9375} positive sum 13.0
+train_step 7950 batch loss_d {'emo_loss': 0.65634227} batch metric_d {'emo_acc': 0.78125} positive sum 5.0
+train_step 7980 batch loss_d {'emo_loss': 0.38041782} batch metric_d {'emo_acc': 0.84375} positive sum 11.0
+  dev set: metric_d {'emo_acc': 0.7651006697408305} loss_d {'emo_loss': 1.2757176091142886} global_e_acc 0.6040268456375839
+    best_acc: 0.765101, best_acc_steps: 8000
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6562097814782706} loss_d {'emo_loss': 2.01486398619294} global_e_acc 0.4015444015444015
+  Duration: 9077.185452
+train_step 8010 batch loss_d {'emo_loss': 0.37295103} batch metric_d {'emo_acc': 0.90625} positive sum 11.0
+train_step 8040 batch loss_d {'emo_loss': 0.26212618} batch metric_d {'emo_acc': 0.90625} positive sum 9.0
+train_step 8070 batch loss_d {'emo_loss': 0.21190262} batch metric_d {'emo_acc': 0.9375} positive sum 12.0
+train_step 8100 batch loss_d {'emo_loss': 0.9318861} batch metric_d {'emo_acc': 0.75} positive sum 9.0
+train_step 8130 batch loss_d {'emo_loss': 0.3389118} batch metric_d {'emo_acc': 0.90625} positive sum 8.0
+train_step 8160 batch loss_d {'emo_loss': 0.24576484} batch metric_d {'emo_acc': 0.96875} positive sum 7.0
+train_step 8190 batch loss_d {'emo_loss': 0.18840072} batch metric_d {'emo_acc': 0.9375} positive sum 8.0
+train_step 8220 batch loss_d {'emo_loss': 0.17685142} batch metric_d {'emo_acc': 0.90625} positive sum 13.0
+train_step 8250 batch loss_d {'emo_loss': 0.14642793} batch metric_d {'emo_acc': 1.0} positive sum 9.0
+train_step 8280 batch loss_d {'emo_loss': 0.11880799} batch metric_d {'emo_acc': 0.96875} positive sum 11.0
+train_step 8310 batch loss_d {'emo_loss': 0.7420275} batch metric_d {'emo_acc': 0.78125} positive sum 10.0
+train_step 8340 batch loss_d {'emo_loss': 0.22683176} batch metric_d {'emo_acc': 0.90625} positive sum 4.0
+train_step 8370 batch loss_d {'emo_loss': 0.49770337} batch metric_d {'emo_acc': 0.90625} positive sum 4.0
+train_step 8400 batch loss_d {'emo_loss': 0.29016456} batch metric_d {'emo_acc': 0.90625} positive sum 9.0
+train_step 8430 batch loss_d {'emo_loss': 0.28573436} batch metric_d {'emo_acc': 0.9375} positive sum 7.0
+train_step 8460 batch loss_d {'emo_loss': 0.36368823} batch metric_d {'emo_acc': 0.875} positive sum 6.0
+train_step 8490 batch loss_d {'emo_loss': 0.16908601} batch metric_d {'emo_acc': 0.9375} positive sum 8.0
+  dev set: metric_d {'emo_acc': 0.7776845654585217} loss_d {'emo_loss': 1.5575979044864066} global_e_acc 0.5973154362416108
+    best_acc: 0.777685, best_acc_steps: 8500
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6737451733999731} loss_d {'emo_loss': 2.684189645426067} global_e_acc 0.3359073359073359
+  Duration: 9670.418351
+train_step 8520 batch loss_d {'emo_loss': 0.11791607} batch metric_d {'emo_acc': 0.9375} positive sum 13.0
+train_step 8550 batch loss_d {'emo_loss': 0.45965543} batch metric_d {'emo_acc': 0.96875} positive sum 4.0
+train_step 8580 batch loss_d {'emo_loss': 0.3270643} batch metric_d {'emo_acc': 0.90625} positive sum 9.0
+train_step 8610 batch loss_d {'emo_loss': 0.37788087} batch metric_d {'emo_acc': 0.84375} positive sum 9.0
+train_step 8640 batch loss_d {'emo_loss': 0.6343255} batch metric_d {'emo_acc': 0.84375} positive sum 8.0
+train_step 8670 batch loss_d {'emo_loss': 0.46703136} batch metric_d {'emo_acc': 0.84375} positive sum 11.0
+train_step 8700 batch loss_d {'emo_loss': 0.44097337} batch metric_d {'emo_acc': 0.875} positive sum 11.0
+train_step 8730 batch loss_d {'emo_loss': 0.17899792} batch metric_d {'emo_acc': 0.90625} positive sum 8.0
+train_step 8760 batch loss_d {'emo_loss': 0.18875529} batch metric_d {'emo_acc': 0.9375} positive sum 8.0
+train_step 8790 batch loss_d {'emo_loss': 0.2218337} batch metric_d {'emo_acc': 0.9375} positive sum 10.0
+train_step 8820 batch loss_d {'emo_loss': 0.2053951} batch metric_d {'emo_acc': 0.9375} positive sum 7.0
+train_step 8850 batch loss_d {'emo_loss': 1.1647924} batch metric_d {'emo_acc': 0.5625} positive sum 10.0
+train_step 8880 batch loss_d {'emo_loss': 0.2969245} batch metric_d {'emo_acc': 0.90625} positive sum 10.0
+train_step 8910 batch loss_d {'emo_loss': 0.2350929} batch metric_d {'emo_acc': 0.90625} positive sum 6.0
+train_step 8940 batch loss_d {'emo_loss': 0.088547304} batch metric_d {'emo_acc': 1.0} positive sum 12.0
+train_step 8970 batch loss_d {'emo_loss': 0.4041519} batch metric_d {'emo_acc': 0.84375} positive sum 8.0
+  dev set: metric_d {'emo_acc': 0.718260624564734} loss_d {'emo_loss': 2.1896023650297383} global_e_acc 0.412751677852349
+    best_acc: 0.777685, best_acc_steps: 8500
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6417310149283022} loss_d {'emo_loss': 3.179898129236744} global_e_acc 0.23552123552123552
+  Duration: 10242.864163
+train_step 9000 batch loss_d {'emo_loss': 0.22730865} batch metric_d {'emo_acc': 0.9375} positive sum 12.0
+train_step 9030 batch loss_d {'emo_loss': 0.20445468} batch metric_d {'emo_acc': 0.9375} positive sum 10.0
+train_step 9060 batch loss_d {'emo_loss': 0.30781484} batch metric_d {'emo_acc': 0.9375} positive sum 7.0
+train_step 9090 batch loss_d {'emo_loss': 0.12544686} batch metric_d {'emo_acc': 0.96875} positive sum 12.0
+train_step 9120 batch loss_d {'emo_loss': 0.16297814} batch metric_d {'emo_acc': 0.9375} positive sum 10.0
+train_step 9150 batch loss_d {'emo_loss': 0.5487069} batch metric_d {'emo_acc': 0.875} positive sum 10.0
+train_step 9180 batch loss_d {'emo_loss': 0.11906843} batch metric_d {'emo_acc': 1.0} positive sum 9.0
+train_step 9210 batch loss_d {'emo_loss': 0.31362563} batch metric_d {'emo_acc': 0.875} positive sum 9.0
+train_step 9240 batch loss_d {'emo_loss': 0.13485461} batch metric_d {'emo_acc': 0.96875} positive sum 6.0
+train_step 9270 batch loss_d {'emo_loss': 0.12172156} batch metric_d {'emo_acc': 0.96875} positive sum 12.0
+train_step 9300 batch loss_d {'emo_loss': 0.29820043} batch metric_d {'emo_acc': 0.9375} positive sum 8.0
+train_step 9330 batch loss_d {'emo_loss': 0.14081728} batch metric_d {'emo_acc': 0.96875} positive sum 7.0
+train_step 9360 batch loss_d {'emo_loss': 0.11445038} batch metric_d {'emo_acc': 1.0} positive sum 7.0
+train_step 9390 batch loss_d {'emo_loss': 0.044053994} batch metric_d {'emo_acc': 1.0} positive sum 8.0
+train_step 9420 batch loss_d {'emo_loss': 0.15067989} batch metric_d {'emo_acc': 0.96875} positive sum 14.0
+train_step 9450 batch loss_d {'emo_loss': 0.34537897} batch metric_d {'emo_acc': 0.875} positive sum 12.0
+train_step 9480 batch loss_d {'emo_loss': 0.2066997} batch metric_d {'emo_acc': 0.9375} positive sum 6.0
+  dev set: metric_d {'emo_acc': 0.764821031549633} loss_d {'emo_loss': 1.7546657682864282} global_e_acc 0.5604026845637584
+    best_acc: 0.777685, best_acc_steps: 8500
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6666666667433779} loss_d {'emo_loss': 2.86439046923464} global_e_acc 0.3783783783783784
+  Duration: 10789.589619
+train_step 9510 batch loss_d {'emo_loss': 0.108896084} batch metric_d {'emo_acc': 0.96875} positive sum 3.0
+train_step 9540 batch loss_d {'emo_loss': 0.0822761} batch metric_d {'emo_acc': 0.96875} positive sum 6.0
+train_step 9570 batch loss_d {'emo_loss': 0.2658357} batch metric_d {'emo_acc': 0.875} positive sum 8.0
+train_step 9600 batch loss_d {'emo_loss': 1.4228656} batch metric_d {'emo_acc': 0.90625} positive sum 4.0
+train_step 9630 batch loss_d {'emo_loss': 1.0129528} batch metric_d {'emo_acc': 0.875} positive sum 6.0
+train_step 9660 batch loss_d {'emo_loss': 0.24856487} batch metric_d {'emo_acc': 0.875} positive sum 9.0
+train_step 9690 batch loss_d {'emo_loss': 0.13361785} batch metric_d {'emo_acc': 0.96875} positive sum 11.0
+train_step 9720 batch loss_d {'emo_loss': 0.37528837} batch metric_d {'emo_acc': 0.875} positive sum 5.0
+train_step 9750 batch loss_d {'emo_loss': 0.45242256} batch metric_d {'emo_acc': 0.875} positive sum 9.0
+train_step 9780 batch loss_d {'emo_loss': 0.12860426} batch metric_d {'emo_acc': 0.90625} positive sum 9.0
+train_step 9810 batch loss_d {'emo_loss': 0.17798585} batch metric_d {'emo_acc': 0.96875} positive sum 10.0
+train_step 9840 batch loss_d {'emo_loss': 0.3818947} batch metric_d {'emo_acc': 0.875} positive sum 11.0
+train_step 9870 batch loss_d {'emo_loss': 0.24922201} batch metric_d {'emo_acc': 0.90625} positive sum 8.0
+train_step 9900 batch loss_d {'emo_loss': 0.5942664} batch metric_d {'emo_acc': 0.84375} positive sum 6.0
+train_step 9930 batch loss_d {'emo_loss': 0.15101016} batch metric_d {'emo_acc': 0.9375} positive sum 6.0
+train_step 9960 batch loss_d {'emo_loss': 0.57182705} batch metric_d {'emo_acc': 0.875} positive sum 3.0
+train_step 9990 batch loss_d {'emo_loss': 0.24950969} batch metric_d {'emo_acc': 1.0} positive sum 8.0
+  dev set: metric_d {'emo_acc': 0.7873322166652488} loss_d {'emo_loss': 2.161764206031131} global_e_acc 0.6073825503355704
+    best_acc: 0.787332, best_acc_steps: 10000
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6805019336087363} loss_d {'emo_loss': 3.5167263005311784} global_e_acc 0.35135135135135137
+  Duration: 11326.462602
+train_step 10020 batch loss_d {'emo_loss': 0.06600651} batch metric_d {'emo_acc': 1.0} positive sum 11.0
+train_step 10050 batch loss_d {'emo_loss': 0.78740615} batch metric_d {'emo_acc': 0.8125} positive sum 8.0
+train_step 10080 batch loss_d {'emo_loss': 0.31203586} batch metric_d {'emo_acc': 0.9375} positive sum 8.0
+train_step 10110 batch loss_d {'emo_loss': 0.14576952} batch metric_d {'emo_acc': 0.96875} positive sum 14.0
+train_step 10140 batch loss_d {'emo_loss': 0.06899701} batch metric_d {'emo_acc': 1.0} positive sum 6.0
+train_step 10170 batch loss_d {'emo_loss': 0.138686} batch metric_d {'emo_acc': 0.96875} positive sum 7.0
+train_step 10200 batch loss_d {'emo_loss': 0.259528} batch metric_d {'emo_acc': 0.875} positive sum 10.0
+train_step 10230 batch loss_d {'emo_loss': 0.027894434} batch metric_d {'emo_acc': 1.0} positive sum 8.0
+train_step 10260 batch loss_d {'emo_loss': 0.43878603} batch metric_d {'emo_acc': 0.875} positive sum 15.0
+train_step 10290 batch loss_d {'emo_loss': 0.11487572} batch metric_d {'emo_acc': 0.9375} positive sum 16.0
+train_step 10320 batch loss_d {'emo_loss': 0.1481274} batch metric_d {'emo_acc': 0.96875} positive sum 9.0
+train_step 10350 batch loss_d {'emo_loss': 0.30394894} batch metric_d {'emo_acc': 0.875} positive sum 11.0
+train_step 10380 batch loss_d {'emo_loss': 0.045463525} batch metric_d {'emo_acc': 1.0} positive sum 9.0
+train_step 10410 batch loss_d {'emo_loss': 0.13997012} batch metric_d {'emo_acc': 0.96875} positive sum 11.0
+train_step 10440 batch loss_d {'emo_loss': 0.19047168} batch metric_d {'emo_acc': 0.96875} positive sum 8.0
+train_step 10470 batch loss_d {'emo_loss': 0.12029058} batch metric_d {'emo_acc': 1.0} positive sum 11.0
+  dev set: metric_d {'emo_acc': 0.7757270662176529} loss_d {'emo_loss': 2.0812156905526384} global_e_acc 0.5838926174496645
+    best_acc: 0.787332, best_acc_steps: 10000
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6922458184731973} loss_d {'emo_loss': 3.509957989836004} global_e_acc 0.37065637065637064
+  Duration: 11862.785739
+train_step 10500 batch loss_d {'emo_loss': 0.34201968} batch metric_d {'emo_acc': 0.90625} positive sum 13.0
+train_step 10530 batch loss_d {'emo_loss': 0.17159143} batch metric_d {'emo_acc': 0.96875} positive sum 8.0
+train_step 10560 batch loss_d {'emo_loss': 0.1423245} batch metric_d {'emo_acc': 0.96875} positive sum 7.0
+train_step 10590 batch loss_d {'emo_loss': 0.08276658} batch metric_d {'emo_acc': 1.0} positive sum 9.0
+train_step 10620 batch loss_d {'emo_loss': 0.10848104} batch metric_d {'emo_acc': 0.96875} positive sum 12.0
+train_step 10650 batch loss_d {'emo_loss': 0.2720319} batch metric_d {'emo_acc': 0.875} positive sum 9.0
+train_step 10680 batch loss_d {'emo_loss': 0.021153985} batch metric_d {'emo_acc': 1.0} positive sum 15.0
+train_step 10710 batch loss_d {'emo_loss': 0.1732933} batch metric_d {'emo_acc': 0.96875} positive sum 5.0
+train_step 10740 batch loss_d {'emo_loss': 0.20689479} batch metric_d {'emo_acc': 0.96875} positive sum 7.0
+train_step 10770 batch loss_d {'emo_loss': 0.15578985} batch metric_d {'emo_acc': 1.0} positive sum 8.0
+train_step 10800 batch loss_d {'emo_loss': 0.16980982} batch metric_d {'emo_acc': 1.0} positive sum 8.0
+train_step 10830 batch loss_d {'emo_loss': 0.038920894} batch metric_d {'emo_acc': 1.0} positive sum 8.0
+train_step 10860 batch loss_d {'emo_loss': 0.043425743} batch metric_d {'emo_acc': 1.0} positive sum 12.0
+train_step 10890 batch loss_d {'emo_loss': 0.10967177} batch metric_d {'emo_acc': 0.96875} positive sum 11.0
+train_step 10920 batch loss_d {'emo_loss': 0.10089816} batch metric_d {'emo_acc': 1.0} positive sum 9.0
+train_step 10950 batch loss_d {'emo_loss': 0.25559518} batch metric_d {'emo_acc': 0.96875} positive sum 9.0
+train_step 10980 batch loss_d {'emo_loss': 0.112245426} batch metric_d {'emo_acc': 0.9375} positive sum 9.0
+  dev set: metric_d {'emo_acc': 0.7887304246225613} loss_d {'emo_loss': 2.0366216349101394} global_e_acc 0.6006711409395973
+    best_acc: 0.788730, best_acc_steps: 11000
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6761583020788362} loss_d {'emo_loss': 3.454110600705448} global_e_acc 0.40540540540540543
+  Duration: 12434.488355
+train_step 11010 batch loss_d {'emo_loss': 0.19362241} batch metric_d {'emo_acc': 0.96875} positive sum 6.0
+train_step 11040 batch loss_d {'emo_loss': 0.17079033} batch metric_d {'emo_acc': 0.96875} positive sum 9.0
+train_step 11070 batch loss_d {'emo_loss': 0.09960134} batch metric_d {'emo_acc': 1.0} positive sum 12.0
+train_step 11100 batch loss_d {'emo_loss': 0.65080917} batch metric_d {'emo_acc': 0.875} positive sum 11.0
+train_step 11130 batch loss_d {'emo_loss': 0.09819923} batch metric_d {'emo_acc': 0.96875} positive sum 13.0
+train_step 11160 batch loss_d {'emo_loss': 0.11120494} batch metric_d {'emo_acc': 0.96875} positive sum 12.0
+train_step 11190 batch loss_d {'emo_loss': 0.19071017} batch metric_d {'emo_acc': 0.9375} positive sum 12.0
+train_step 11220 batch loss_d {'emo_loss': 0.06753415} batch metric_d {'emo_acc': 1.0} positive sum 10.0
+train_step 11250 batch loss_d {'emo_loss': 0.38505727} batch metric_d {'emo_acc': 0.90625} positive sum 9.0
+train_step 11280 batch loss_d {'emo_loss': 0.17277773} batch metric_d {'emo_acc': 0.9375} positive sum 7.0
+train_step 11310 batch loss_d {'emo_loss': 0.04350487} batch metric_d {'emo_acc': 1.0} positive sum 14.0
+train_step 11340 batch loss_d {'emo_loss': 0.04849785} batch metric_d {'emo_acc': 1.0} positive sum 12.0
+train_step 11370 batch loss_d {'emo_loss': 0.057317395} batch metric_d {'emo_acc': 1.0} positive sum 8.0
+train_step 11400 batch loss_d {'emo_loss': 0.36164993} batch metric_d {'emo_acc': 0.9375} positive sum 13.0
+train_step 11430 batch loss_d {'emo_loss': 0.0847622} batch metric_d {'emo_acc': 1.0} positive sum 13.0
+train_step 11460 batch loss_d {'emo_loss': 0.06373602} batch metric_d {'emo_acc': 1.0} positive sum 10.0
+train_step 11490 batch loss_d {'emo_loss': 0.034760542} batch metric_d {'emo_acc': 1.0} positive sum 12.0
+  dev set: metric_d {'emo_acc': 0.7930648762907758} loss_d {'emo_loss': 2.0101178497848164} global_e_acc 0.6208053691275168
+    best_acc: 0.793065, best_acc_steps: 11500
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6705276715249169} loss_d {'emo_loss': 3.7489798778895485} global_e_acc 0.3745173745173745
+  Duration: 12997.079097
+train_step 11520 batch loss_d {'emo_loss': 0.08881026} batch metric_d {'emo_acc': 0.96875} positive sum 10.0
+train_step 11550 batch loss_d {'emo_loss': 0.45811144} batch metric_d {'emo_acc': 0.90625} positive sum 7.0
+train_step 11580 batch loss_d {'emo_loss': 0.1184898} batch metric_d {'emo_acc': 0.9375} positive sum 13.0
+train_step 11610 batch loss_d {'emo_loss': 0.2163587} batch metric_d {'emo_acc': 0.96875} positive sum 12.0
+train_step 11640 batch loss_d {'emo_loss': 0.13804561} batch metric_d {'emo_acc': 0.96875} positive sum 8.0
+train_step 11670 batch loss_d {'emo_loss': 0.08756413} batch metric_d {'emo_acc': 0.96875} positive sum 13.0
+train_step 11700 batch loss_d {'emo_loss': 0.17758788} batch metric_d {'emo_acc': 0.96875} positive sum 8.0
+train_step 11730 batch loss_d {'emo_loss': 0.19550045} batch metric_d {'emo_acc': 0.9375} positive sum 9.0
+train_step 11760 batch loss_d {'emo_loss': 0.09278567} batch metric_d {'emo_acc': 0.96875} positive sum 10.0
+train_step 11790 batch loss_d {'emo_loss': 0.032271042} batch metric_d {'emo_acc': 1.0} positive sum 9.0
+train_step 11820 batch loss_d {'emo_loss': 0.0670318} batch metric_d {'emo_acc': 1.0} positive sum 8.0
+train_step 11850 batch loss_d {'emo_loss': 0.14783227} batch metric_d {'emo_acc': 0.9375} positive sum 14.0
+train_step 11880 batch loss_d {'emo_loss': 0.05206875} batch metric_d {'emo_acc': 1.0} positive sum 9.0
+train_step 11910 batch loss_d {'emo_loss': 0.21795778} batch metric_d {'emo_acc': 0.90625} positive sum 10.0
+train_step 11940 batch loss_d {'emo_loss': 0.07796325} batch metric_d {'emo_acc': 0.96875} positive sum 12.0
+train_step 11970 batch loss_d {'emo_loss': 0.12524222} batch metric_d {'emo_acc': 0.96875} positive sum 7.0
+  dev set: metric_d {'emo_acc': 0.7864932870904872} loss_d {'emo_loss': 2.3951264290491547} global_e_acc 0.5973154362416108
+    best_acc: 0.793065, best_acc_steps: 11500
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6811454311070755} loss_d {'emo_loss': 3.9838183287483773} global_e_acc 0.3783783783783784
+  Duration: 13541.935311
+train_step 12000 batch loss_d {'emo_loss': 0.5706244} batch metric_d {'emo_acc': 0.875} positive sum 6.0
+train_step 12030 batch loss_d {'emo_loss': 0.05170852} batch metric_d {'emo_acc': 1.0} positive sum 6.0
+train_step 12060 batch loss_d {'emo_loss': 0.088110924} batch metric_d {'emo_acc': 1.0} positive sum 12.0
+train_step 12090 batch loss_d {'emo_loss': 0.08507295} batch metric_d {'emo_acc': 1.0} positive sum 7.0
+train_step 12120 batch loss_d {'emo_loss': 0.13570285} batch metric_d {'emo_acc': 0.90625} positive sum 11.0
+train_step 12150 batch loss_d {'emo_loss': 0.52121747} batch metric_d {'emo_acc': 0.90625} positive sum 9.0
+train_step 12180 batch loss_d {'emo_loss': 0.07036247} batch metric_d {'emo_acc': 0.96875} positive sum 3.0
+train_step 12210 batch loss_d {'emo_loss': 0.034198496} batch metric_d {'emo_acc': 1.0} positive sum 12.0
+train_step 12240 batch loss_d {'emo_loss': 0.0751482} batch metric_d {'emo_acc': 0.96875} positive sum 8.0
+train_step 12270 batch loss_d {'emo_loss': 0.039886363} batch metric_d {'emo_acc': 1.0} positive sum 12.0
+train_step 12300 batch loss_d {'emo_loss': 0.37380755} batch metric_d {'emo_acc': 0.8125} positive sum 9.0
+train_step 12330 batch loss_d {'emo_loss': 0.106574655} batch metric_d {'emo_acc': 1.0} positive sum 13.0
+train_step 12360 batch loss_d {'emo_loss': 0.09999925} batch metric_d {'emo_acc': 0.96875} positive sum 8.0
+train_step 12390 batch loss_d {'emo_loss': 0.029068194} batch metric_d {'emo_acc': 1.0} positive sum 9.0
+train_step 12420 batch loss_d {'emo_loss': 0.10428575} batch metric_d {'emo_acc': 0.96875} positive sum 9.0
+train_step 12450 batch loss_d {'emo_loss': 0.88946277} batch metric_d {'emo_acc': 0.9375} positive sum 8.0
+train_step 12480 batch loss_d {'emo_loss': 0.06851572} batch metric_d {'emo_acc': 1.0} positive sum 7.0
+  dev set: metric_d {'emo_acc': 0.7860738249033089} loss_d {'emo_loss': 2.328752539404206} global_e_acc 0.5973154362416108
+    best_acc: 0.793065, best_acc_steps: 11500
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6695624202144652} loss_d {'emo_loss': 4.283237695412876} global_e_acc 0.3552123552123552
+  Duration: 14125.825416
+train_step 12510 batch loss_d {'emo_loss': 0.5786177} batch metric_d {'emo_acc': 0.9375} positive sum 9.0
+train_step 12540 batch loss_d {'emo_loss': 0.15584435} batch metric_d {'emo_acc': 1.0} positive sum 7.0
+train_step 12570 batch loss_d {'emo_loss': 0.18236694} batch metric_d {'emo_acc': 0.96875} positive sum 4.0
+train_step 12600 batch loss_d {'emo_loss': 0.20121847} batch metric_d {'emo_acc': 0.9375} positive sum 8.0
+train_step 12630 batch loss_d {'emo_loss': 0.09028934} batch metric_d {'emo_acc': 0.96875} positive sum 5.0
+train_step 12660 batch loss_d {'emo_loss': 0.22454621} batch metric_d {'emo_acc': 0.9375} positive sum 5.0
+train_step 12690 batch loss_d {'emo_loss': 0.11689967} batch metric_d {'emo_acc': 0.96875} positive sum 10.0
+train_step 12720 batch loss_d {'emo_loss': 0.1990725} batch metric_d {'emo_acc': 0.9375} positive sum 7.0
+train_step 12750 batch loss_d {'emo_loss': 0.10655813} batch metric_d {'emo_acc': 0.96875} positive sum 8.0
+train_step 12780 batch loss_d {'emo_loss': 0.05295946} batch metric_d {'emo_acc': 0.96875} positive sum 7.0
+train_step 12810 batch loss_d {'emo_loss': 0.16853166} batch metric_d {'emo_acc': 0.96875} positive sum 8.0
+train_step 12840 batch loss_d {'emo_loss': 0.0673351} batch metric_d {'emo_acc': 1.0} positive sum 6.0
+train_step 12870 batch loss_d {'emo_loss': 0.06024441} batch metric_d {'emo_acc': 1.0} positive sum 12.0
+train_step 12900 batch loss_d {'emo_loss': 0.094379306} batch metric_d {'emo_acc': 0.96875} positive sum 8.0
+train_step 12930 batch loss_d {'emo_loss': 0.017823854} batch metric_d {'emo_acc': 1.0} positive sum 7.0
+train_step 12960 batch loss_d {'emo_loss': 0.052300796} batch metric_d {'emo_acc': 1.0} positive sum 7.0
+train_step 12990 batch loss_d {'emo_loss': 0.07598631} batch metric_d {'emo_acc': 1.0} positive sum 6.0
+  dev set: metric_d {'emo_acc': 0.7866331098863742} loss_d {'emo_loss': 2.7733157800116564} global_e_acc 0.5738255033557047
+    best_acc: 0.793065, best_acc_steps: 11500
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6843629353985363} loss_d {'emo_loss': 4.6113346328765} global_e_acc 0.37065637065637064
+  Duration: 14658.193047
+train_step 13020 batch loss_d {'emo_loss': 0.012151232} batch metric_d {'emo_acc': 1.0} positive sum 7.0
+train_step 13050 batch loss_d {'emo_loss': 0.8653711} batch metric_d {'emo_acc': 0.90625} positive sum 8.0
+train_step 13080 batch loss_d {'emo_loss': 0.061340846} batch metric_d {'emo_acc': 0.96875} positive sum 7.0
+train_step 13110 batch loss_d {'emo_loss': 0.015190892} batch metric_d {'emo_acc': 1.0} positive sum 9.0
+train_step 13140 batch loss_d {'emo_loss': 0.023898773} batch metric_d {'emo_acc': 1.0} positive sum 13.0
+train_step 13170 batch loss_d {'emo_loss': 0.1372849} batch metric_d {'emo_acc': 0.9375} positive sum 5.0
+train_step 13200 batch loss_d {'emo_loss': 0.49812585} batch metric_d {'emo_acc': 0.96875} positive sum 7.0
+train_step 13230 batch loss_d {'emo_loss': 0.16949962} batch metric_d {'emo_acc': 0.96875} positive sum 6.0
+train_step 13260 batch loss_d {'emo_loss': 0.16770314} batch metric_d {'emo_acc': 0.96875} positive sum 6.0
+train_step 13290 batch loss_d {'emo_loss': 0.094221786} batch metric_d {'emo_acc': 1.0} positive sum 5.0
+train_step 13320 batch loss_d {'emo_loss': 0.09671862} batch metric_d {'emo_acc': 1.0} positive sum 8.0
+train_step 13350 batch loss_d {'emo_loss': 0.07913559} batch metric_d {'emo_acc': 0.96875} positive sum 11.0
+train_step 13380 batch loss_d {'emo_loss': 0.08482929} batch metric_d {'emo_acc': 0.96875} positive sum 6.0
+train_step 13410 batch loss_d {'emo_loss': 0.13074343} batch metric_d {'emo_acc': 0.96875} positive sum 8.0
+train_step 13440 batch loss_d {'emo_loss': 0.024564557} batch metric_d {'emo_acc': 1.0} positive sum 8.0
+train_step 13470 batch loss_d {'emo_loss': 0.018910896} batch metric_d {'emo_acc': 1.0} positive sum 11.0
+  dev set: metric_d {'emo_acc': 0.7778243847541361} loss_d {'emo_loss': 2.4564774741517015} global_e_acc 0.5704697986577181
+    best_acc: 0.793065, best_acc_steps: 11500
+    best_loss: 0.856293, best_loss_steps: 4500
+  test set: metric_d {'emo_acc': 0.6533140274318489}
