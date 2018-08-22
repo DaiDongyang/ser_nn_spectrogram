@@ -80,6 +80,7 @@ class CRModel(object):
         logits = self.fc(h_rnn)
         output_d = defaultdict(lambda: None)
         output_d['logits'] = logits
+        output_d['h_rnn'] = h_rnn
         return output_d
 
     def get_metric(self):
