@@ -29,7 +29,7 @@ class GDannModel(object):
         self.lr_ph = tf.placeholder(tf.float32, shape=[], name='lr_ph')
         self.x_ph = tf.placeholder(tf.float32, shape=[None, None, hparams.feature_size],
                                    name='x_input')
-        self.seq_lens_ph = tf.placeholder(tf.float32, shape=[None], name='seq_lens_ph')
+        self.seq_lens_ph = tf.placeholder(tf.int32, shape=[None], name='seq_lens_ph')
         self.rev_grad_lambda_ph = tf.placeholder(tf.float32, shape=[],
                                                  name='reverse_gradient_lambda')
         self.e_label_ph = tf.placeholder(tf.int32, [None], name='e_label_ph')
@@ -88,8 +88,8 @@ class GDannModel(object):
         for d1, d2 in zip(fc_sizes[:-1], fc_sizes[1:]):
             w_fc = self.weight_variable([d1, d2])
             b_fc = self.bias_variable([d2])
-            h_fc = tf.nn.relu(tf.matmul(h_fc_drop, w_fc) + b_fc)
-            h_fc_drop = tf.nn.dropout(h_fc, kprob)
+            h_fc = tf.matmul(h_fc_drop, w_fc) + b_fc
+            h_fc_drop = tf.nn.dropout(tf.nn.relu(h_fc), kprob)
         return h_fc
 
     def model(self, inputs, seq_lens):
@@ -181,9 +181,9 @@ class GDannModel(object):
                                                var_list=feature_extractor_vars)
             predictor_train_step = optimizer.minimize(self.loss_d['loss'],
                                                       var_list=emo_classifier_vars + gender_classifier_vars)
-            emo_task_train_step = optimizer.minimize(self.loss_d['loss'],
+            emo_task_train_step = optimizer.minimize(self.loss_d['e_loss'],
                                                      var_list=feature_extractor_vars + emo_classifier_vars)
-            g_predictor_train_step = optimizer.minimize(self.loss_d['loss'],
+            g_predictor_train_step = optimizer.minimize(self.loss_d['g_loss'],
                                                         var_list=gender_classifier_vars)
         train_op_d = defaultdict(lambda: None)
         train_op_d['co_train_step'] = co_train_step

@@ -119,7 +119,7 @@ def load_data(hparams):
     target_w = [class_weight_vec[e] for e in target_e]
     dev_w = [class_weight_vec[e] for e in dev_e]
     test_w = [class_weight_vec[e] for e in test_e]
-    l_data = LoadedData()
+    l_data = LoadedData(hparams)
     l_data.source_x = source_x
     l_data.source_e = source_e
     l_data.source_g = source_g
@@ -140,3 +140,4 @@ def load_data(hparams):
     l_data.test_g = test_g
     l_data.test_w = test_w
     l_data.test_t = [x.shape[0] for x in test_x]
+    return l_data
