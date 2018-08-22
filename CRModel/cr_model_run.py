@@ -115,7 +115,7 @@ class CRModelRun(object):
         while True:
             try:
                 batched_input = session.run(test_iter.BatchedInput)
-                batched_logits = logits.eval(feed_dict={
+                batched_logits = logits.eval2(feed_dict={
                     model.x_ph: batched_input.x,
                     model.seq_lens_ph: batched_input.ts,
                     model.loss_weight_ph: batched_input.ws,

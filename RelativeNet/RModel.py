@@ -29,8 +29,9 @@ class RModel(object):
         self.seq_lens1_ph = tf.placeholder(tf.int32, shape=[None], name='seq_lens_ph')
         self.x2_ph = tf.placeholder(tf.float32, [None, None, hparams.feature_size])
         self.seq_lens2_ph = tf.placeholder(tf.int32, shape=[None], name='seq_lens_ph')
-        self.label_ph = tf.placeholder(tf.int32, [None], name='label_ph')
-        #self.loss_weight_ph = tf.placeholder(tf.float32, [None], name='loss_weight_ph')
+        self.label_ph = tf.placeholder(tf.float32, [None], name='label_ph')
+        self.pos_weight_ph = tf.placeholder(tf.float32, [], name='pos_weight_ph')
+        # self.loss_weight_ph = tf.placeholder(tf.float32, [None], name='loss_weight_ph')
 
         # build graph
         self.output_d = None
@@ -91,8 +92,8 @@ class RModel(object):
             for d1, d2 in zip(fc_sizes[:-1], fc_sizes[1:]):
                 w_fc = self.weight_variable([d1, d2])
                 b_fc = self.bias_variable([d2])
-                h_fc = tf.nn.relu(tf.matmul(h_fc_drop, w_fc) + b_fc)
-                h_fc_drop = tf.nn.dropout(h_fc, self.fc_kprob)
+                h_fc = tf.matmul(h_fc_drop, w_fc) + b_fc
+                h_fc_drop = tf.nn.dropout(tf.nn.relu(h_fc), self.fc_kprob)
         return h_fc
 
     def model(self, x1, seq_len1, x2, seq_len2):
@@ -110,9 +111,8 @@ class RModel(object):
 
     def get_metric(self):
         with tf.name_scope('accuracy'):
-            correct_prediction = tf.equal(
-                tf.cast(tf.round(self.output_d['prob']), tf.int32),
-                self.label_ph)
+            correct_prediction = tf.equal(tf.round(self.output_d['prob']),
+                                          self.label_ph)
             correct_prediction = tf.cast(correct_prediction, tf.float32)
             accuracy = tf.reduce_mean(correct_prediction)
         metric_d = defaultdict(lambda: None)
@@ -134,8 +134,11 @@ class RModel(object):
             #                                               weights=weights,
             #                                               reduction=reduction)
             # loss = tf.reduce_mean(losses)
-            losses = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.label_ph,
-                                                             logits=self.output_d['logits'])
+            # losses = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.label_ph,
+            #                                                  logits=self.output_d['logits'])
+            losses = tf.nn.weighted_cross_entropy_with_logits(targets=self.label_ph,
+                                                              logits=self.output_d['logits'],
+                                                              pos_weight=self.pos_weight_ph)
             loss = tf.reduce_mean(losses)
         loss_d = defaultdict(lambda: None)
         loss_d['emo_loss'] = loss

@@ -158,7 +158,7 @@ def get_npy_filenames(eval_fold, anchors_per_emo, emos, valid_sess, consider_sen
     for emo in emos:
         emo_eval_list = filter_emo(e_list, emo)
         if len(emo_eval_list) < anchors_per_emo:
-            print('update anchors_per_emo to %d', len(emo_eval_list))
+            print('update anchors_per_emo to %d' % len(emo_eval_list))
             anchors_per_emo = len(emo_eval_list)
         emos_eval_list.append(emo_eval_list)
     eval_list = []

@@ -1,0 +1,1 @@
+python main_rnmodel.py  --gpu=0 --vali_test_ses=4 --vali_type=M --test_type=F

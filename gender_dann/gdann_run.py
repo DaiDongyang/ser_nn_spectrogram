@@ -119,7 +119,7 @@ class GDannModelRun(object):
         for _ in range(MAX_LOOP):
             try:
                 batched_input = session.run(test_iter.BatchedInput)
-                batched_logits = logits.eval(feed_dict={
+                batched_logits = logits.eval2(feed_dict={
                     model.x_ph: batched_input.x,
                     model.seq_lens_ph: batched_input.t,
                     model.e_label_ph: batched_input.e,
@@ -237,7 +237,7 @@ class GDannModelRun(object):
             if self.hparams.is_train:
                 start_i = 0
                 if self.hparams.is_restore:
-                    start_i = self.hparams.restart_train_epoch
+                    start_i = self.hparams.restart_train_steps
                     self.saver.restore(sess, self.hparams.restore_file)
                 else:
                     sess.run(tf.global_variables_initializer())

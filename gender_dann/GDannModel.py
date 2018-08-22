@@ -88,8 +88,8 @@ class GDannModel(object):
         for d1, d2 in zip(fc_sizes[:-1], fc_sizes[1:]):
             w_fc = self.weight_variable([d1, d2])
             b_fc = self.bias_variable([d2])
-            h_fc = tf.nn.relu(tf.matmul(h_fc_drop, w_fc) + b_fc)
-            h_fc_drop = tf.nn.dropout(h_fc, kprob)
+            h_fc = tf.matmul(h_fc_drop, w_fc) + b_fc
+            h_fc_drop = tf.nn.dropout(tf.nn.relu(h_fc), kprob)
         return h_fc
 
     def model(self, inputs, seq_lens):

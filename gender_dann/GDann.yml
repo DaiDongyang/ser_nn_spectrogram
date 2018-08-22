@@ -57,7 +57,7 @@ default: &DEFAULT
 
   best_params_type: '' # bestloss, bestacc
   restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_output/bestacc_ckpt/07172216_e1vMtF'
-  restart_train_epoch: 5
+  restart_train_steps: 5
   persist_interval: 1000
   eval_interval: 10
   is_eval_test: False

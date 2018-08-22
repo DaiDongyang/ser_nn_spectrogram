@@ -80,6 +80,7 @@ def load_data(hparams):
     # test_t = []
     anchor_x = []
     anchor_e = []
+
     for file_name in file_names:
         is_load = False
         for sens_type in hparams.consider_sent_types:
@@ -108,11 +109,14 @@ def load_data(hparams):
                                                                             valid_sess,
                                                                             hparams.consider_sent_types,
                                                                             hparams.select_anchors_strategy)
+    # print(anchor_filenames)
     hparams.anchors_per_emo = anchors_per_emo
     for anchor_filename in anchor_filenames:
         e = judge_label(anchor_filename)
         file_path = os.path.join(data_dir, anchor_filename)
         x = np.load(file_path)
+        # print(file_path)
+        # print(x.shape)
         anchor_x.append(x)
         anchor_e.append(e)
 
@@ -120,6 +124,11 @@ def load_data(hparams):
     dev_t = [x.shape[0] for x in dev_x]
     test_t = [x.shape[0] for x in test_x]
     anchor_t = [x.shape[0] for x in anchor_x]
+    #
+    # print('train size', len(train_x))
+    # print('dev size', len(dev_x))
+    # print('test size', len(test_x))
+    # print('anchor size', len(anchor_t))
 
     l_data = LoadedData(hparams)
     l_data.train_x = train_x
@@ -132,6 +141,7 @@ def load_data(hparams):
     l_data.test_e = test_e
     l_data.test_t = test_t
     l_data.anchor_x = anchor_x
+    l_data.anchor_e = anchor_e
     l_data.anchor_t = anchor_t
     if hparams.is_repeat_emos:
         for emo_idx in hparams.repeat_emos:
