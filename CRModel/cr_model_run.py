@@ -276,5 +276,7 @@ class CRModelRun(object):
             test_iter = d_set.get_test_iter()
             metric_d, loss_d = self.eval(test_iter, sess)
             self.logger.log('test set: metric_d', metric_d, "loss_d", loss_d, level=2)
-            self.process_result(test_iter, sess)
+            # todo: debug
+            self.process_result(d_set.get_train_iter(), sess)
+            # self.process_result(test_iter, sess)
         self.exit()

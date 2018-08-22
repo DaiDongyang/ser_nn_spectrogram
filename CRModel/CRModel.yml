@@ -28,6 +28,7 @@ default: &DEFAULT
   is_shuffle_train: True
   is_norm_weight: False
   is_save_emo_result: False
+#  is_process_result_train: False
 #  is_save_hrnn_feature: False
 
   is_train: True
@@ -136,9 +137,11 @@ restore:
   <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
   out_dir: ./cr_output2/restore/
   is_train: False
-  restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_output2/not_seq_len_weight_shuffle2/bestacc_ckpt/08151645_e4vFtM'
+  restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_output2/not_seq_len_weight_shuffle2/ckpt/08151645_e4vFtM-2214'
   is_save_emo_result: True
-  vali_type: 'F'
-  test_type: 'M'
+  vali_type: 'M'
+  test_type: 'F'
   vali_test_ses: 4
+  id_prefix: 'eval_train'
+
 
