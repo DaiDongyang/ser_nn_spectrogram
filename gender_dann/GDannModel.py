@@ -17,7 +17,7 @@ def var_max_pool2x2(inputs, seq_length):
                                      padding='SAME',
                                      seq_length=seq_length)
 
-
+# todo: add tensorboard
 class GDannModel(object):
 
     def __init__(self, hparams):
@@ -169,28 +169,31 @@ class GDannModel(object):
             optimizer = tf.train.AdadeltaOptimizer(self.lr_ph)
         else:
             optimizer = tf.train.GradientDescentOptimizer(self.lr_ph)
-        feature_extractor_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
+        # feature extractor, f for short
+        f_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
                                                    'feature_extractor')
-        emo_classifier_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
+        # emotion classifier, e for short
+        e_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
                                                 'emotion_classifier')
-        gender_classifier_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
+        # gender discriminator, g for short
+        g_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
                                                    'gender_classifier')
         with tf.name_scope('optimizer'):
-            co_train_step = optimizer.minimize(self.loss_d['loss'])
-            fe_train_step = optimizer.minimize(self.loss_d['loss'],
-                                               var_list=feature_extractor_vars)
-            predictor_train_step = optimizer.minimize(self.loss_d['loss'],
-                                                      var_list=emo_classifier_vars + gender_classifier_vars)
-            emo_task_train_step = optimizer.minimize(self.loss_d['e_loss'],
-                                                     var_list=feature_extractor_vars + emo_classifier_vars)
-            g_predictor_train_step = optimizer.minimize(self.loss_d['g_loss'],
-                                                        var_list=gender_classifier_vars)
+            v_feg_2eg_tp = optimizer.minimize(self.loss_d['loss'])
+            v_fe_2e_tp = optimizer.minimize(self.loss_d['e_loss'], var_list=f_vars+e_vars)
+            v_fg_2g_tp = optimizer.minimize(self.loss_d['g_loss'], var_list=f_vars+g_vars)
+            v_f_2g_tp = optimizer.minimize(self.loss_d['g_loss'], var_list=f_vars)
+            v_g_2g_tp = optimizer.minimize(self.loss_d['g_loss'], var_list=g_vars)
+            v_f_2eg_tp = optimizer.minimize(self.loss_d['loss'], var_list=f_vars)
+            v_eg_2eg_tp = optimizer.minimize(self.loss_d['loss'], var_list=e_vars+g_vars)
         train_op_d = defaultdict(lambda: None)
-        train_op_d['co_train_step'] = co_train_step
-        train_op_d['fe_train_step'] = fe_train_step
-        train_op_d['predictor_train_step'] = predictor_train_step
-        train_op_d['emo_task_train_step'] = emo_task_train_step
-        train_op_d['g_predictor_train_step'] = g_predictor_train_step
+        train_op_d['v_feg_2eg_tp'] = v_feg_2eg_tp
+        train_op_d['v_fe_2e_tp'] = v_fe_2e_tp
+        train_op_d['v_fg_2g_tp'] = v_fg_2g_tp
+        train_op_d['v_f_2g_tp'] = v_f_2g_tp
+        train_op_d['v_g_2g_tp'] = v_g_2g_tp
+        train_op_d['v_f_2eg_tp'] = v_f_2eg_tp
+        train_op_d['v_eg_2eg_tp'] = v_eg_2eg_tp
         return train_op_d
 
     def build_graph(self):

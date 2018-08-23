@@ -182,19 +182,20 @@ class GDannModelRun(object):
                 batch_e = source_batch.e
                 batch_w = source_batch.w
 
-            _, batch_loss_d = session.run((train_op, self.model.loss_d), feed_dict={
-                self.model.x_ph: batch_x,
-                self.model.e_label_ph: batch_e,
-                self.model.g_label_ph: batch_g,
-                self.model.e_loss_weight_ph: batch_w,
-                self.model.seq_lens_ph: batch_t,
-                self.model.e_fc_kprob: self.hparams.e_fc_kprob,
-                self.model.g_fc_kprob: self.hparams.g_fc_kprob,
-                self.model.lr_ph: lr,
-                self.model.rev_grad_lambda_ph: r_l
-            })
+            _, batch_loss_d, batch_metric_d = session.run(
+                (train_op, self.model.loss_d, self.model.metric_d), feed_dict={
+                    self.model.x_ph: batch_x,
+                    self.model.e_label_ph: batch_e,
+                    self.model.g_label_ph: batch_g,
+                    self.model.e_loss_weight_ph: batch_w,
+                    self.model.seq_lens_ph: batch_t,
+                    self.model.e_fc_kprob: self.hparams.e_fc_kprob,
+                    self.model.g_fc_kprob: self.hparams.g_fc_kprob,
+                    self.model.lr_ph: lr,
+                    self.model.rev_grad_lambda_ph: r_l
+                })
             self.logger.log('train_step %d,' % i, 'input shape ', batch_x.shape, 'batch loss_d',
-                            dict(batch_loss_d), level=1)
+                            dict(batch_loss_d), 'batch_metric_d', dict(batch_metric_d), level=1)
 
             if i % self.hparams.eval_interval == 0:
                 dev_metric_d, dev_loss_d = self.eval(dev_iter, session)

@@ -33,7 +33,7 @@ def main():
     #               [4, 5, 6],
     #               [7, 8, 9]])
     # l = np.array([1, 2, 1])
-    suffix = 'eval_train08151645_e4vFtM-2214_r221719_e4vMtF.npy'
+    suffix = 'eval_train08151645_e4vFtM-2214_r222114_e4vMtF.npy'
     hrnn_prefix = './tmp/hrnn_'
     gt_prefix = './tmp/gt_'
     features = np.load(hrnn_prefix + suffix)

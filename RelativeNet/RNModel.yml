@@ -6,6 +6,8 @@ default: &DEFAULT
   anchor_batch_size: 40
   anchors_per_emo: 6
   train2_k: 50
+  dist_loss_alpha: 0.5
+  dist_loss_margin: 0.2
   emos: ['neu', 'ang', 'hap', 'sad']
   data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
 #  consider_sent_types: ['impro', 'script']

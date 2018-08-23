@@ -224,23 +224,25 @@ class CRModelRun(object):
             self.train_epoch(train_iter, lr, session, train_op_k=train_op_k,
                              vali_iter=vali_iter,
                              test_iter=test_iter)
-            train_metric_d, train_loss_d = self.eval(train_iter, session)
-            vali_metric_d, vali_loss_d = self.eval(vali_iter, session)
-            self.logger.log('train set: metric_d', train_metric_d, "train_d", train_loss_d, level=2)
-            self.logger.log('dev set: metric_d', vali_metric_d, "loss_d", vali_loss_d, end=' ',
-                            level=2)
-            if self.hparams.best_params_type == 'bestacc':
-                v_acc = vali_metric_d[self.metric_k]
-                if v_acc > self.best_acc:
-                    self.best_acc = v_acc
-                    self.saver.save(session, self.hparams.bestacc_ckpt_path)
-                self.logger.log('best_acc: %f' % self.best_acc, level=2)
-            elif self.hparams.best_params_type == 'bestloss':
-                v_loss = vali_loss_d[self.loss_k]
-                if v_loss < self.best_loss:
-                    self.best_loss = v_loss
-                    self.saver.save(session, self.hparams.bestloss_ckpt_path)
-                self.logger.log('best_loss: %f' % self.best_loss, level=2)
+            # print(i)
+            # # todo: debug
+            # train_metric_d, train_loss_d = self.eval(train_iter, session)
+            # vali_metric_d, vali_loss_d = self.eval(vali_iter, session)
+            # self.logger.log('train set: metric_d', train_metric_d, "train_d", train_loss_d, level=2)
+            # self.logger.log('dev set: metric_d', vali_metric_d, "loss_d", vali_loss_d, end=' ',
+            #                 level=2)
+            # if self.hparams.best_params_type == 'bestacc':
+            #     v_acc = vali_metric_d[self.metric_k]
+            #     if v_acc > self.best_acc:
+            #         self.best_acc = v_acc
+            #         self.saver.save(session, self.hparams.bestacc_ckpt_path)
+            #     self.logger.log('best_acc: %f' % self.best_acc, level=2)
+            # elif self.hparams.best_params_type == 'bestloss':
+            #     v_loss = vali_loss_d[self.loss_k]
+            #     if v_loss < self.best_loss:
+            #         self.best_loss = v_loss
+            #         self.saver.save(session, self.hparams.bestloss_ckpt_path)
+            #     self.logger.log('best_loss: %f' % self.best_loss, level=2)
             if i % self.hparams.persist_interval == 0 and i > 0:
                 self.saver.save(session, self.hparams.ckpt_path, global_step=self.global_step)
             self.logger.log('  Duaraton: %f' % (time.time() - self.start_time), level=2)

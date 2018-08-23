@@ -44,6 +44,7 @@ def cal_spectrogram(WINDOW_LEN):
 
 def get_spectrogram(wav_file, seg_sec):
     tf.reset_default_graph()
+    print(wav_file)
     data, sample_rate = readwav(wav_file)
     data = data.astype(np.float32)
 
@@ -103,7 +104,7 @@ def wav_preprocess(wav_dir_path, spectrogram_dir_path, spectrogram_type):
     for file_name in wav_dir:
         file_path = os.path.join(wav_dir_path, file_name)
 
-        if os.path.isfile(file_path) and re.match(".*.wav", file_name):
+        if os.path.isfile(file_path) and '.wav' in file_path and '.' != file_name[0]:
             if spectrogram_type == "Const":
                 spectrogram_list = get_spectrogram(file_path, 3)
                 spectrogram_file_name = os.path.splitext(file_name)[0] + ".npy"
@@ -124,7 +125,7 @@ def main():
 
     start = time.time()
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = "2,3"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "3"
     wav_dir_path = sys.argv[1]
     spectrogram_dir_path = sys.argv[2]
     spectrogram_type = sys.argv[3]

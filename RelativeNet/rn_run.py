@@ -114,10 +114,15 @@ class RModelRun(object):
                         eval_input_t = np.repeat(batched_input.t, anchor_batch_size, axis=0)
                         label = np.equal(eval_input_e, anchor_input.e).astype(float)
                         positive_sum = np.sum(label)
-                        if positive_sum == 0 or positive_sum == anchor_batch_size:
+                        if positive_sum == 0:
                             pos_weight = 1.0
+                            dist_loss_flag = 0
+                        elif positive_sum == anchor_batch_size:
+                            pos_weight = 1.0
+                            dist_loss_flag = 1
                         else:
                             pos_weight = (anchor_batch_size - positive_sum) / positive_sum
+                            dist_loss_flag = 2
 
                         probs, batched_metric_d, batched_loss_d = session.run(
                             (model.output_d['prob'], model.metric_d, model.loss_d), feed_dict={
@@ -127,7 +132,8 @@ class RModelRun(object):
                                 model.seq_lens2_ph: eval_input_t,
                                 model.label_ph: label,
                                 model.fc_kprob: 1.0,
-                                model.pos_weight_ph: pos_weight
+                                model.pos_weight_ph: pos_weight,
+                                model.dist_loss_flag: dist_loss_flag
                             })
                         probs_list.append(probs)
                         ref_emos_list.append(anchor_input.e)
@@ -180,7 +186,7 @@ class RModelRun(object):
         anchor_iter = d_set.get_anchor_iter()
         session.run(train_iter1.initializer)
         session.run(train_iter2.initializer)
-        train_op = self.model.train_op_d['emo_train_op']
+        train_op = self.model.train_op_d['train_op']
         while self.i < self.max_step:
             lr = self.get_cur_hparam(self.i, self.acc_lr_steps, self.hparams.lrs)
 
@@ -190,10 +196,15 @@ class RModelRun(object):
                 label = np.equal(train_batch1.e, train_batch2.e).astype(float)
                 positive_sum = np.sum(label)
                 batch_size = train_batch2.x.shape[0]
-                if positive_sum == 0 or positive_sum == batch_size:
+                if positive_sum == 0:
                     pos_weight = 1.0
+                    dist_loss_flag = 0
+                elif positive_sum == batch_size:
+                    pos_weight = 1.0
+                    dist_loss_flag = 1
                 else:
                     pos_weight = (batch_size - positive_sum) / positive_sum
+                    dist_loss_flag = 2
                 # _, batch_loss_d, batch_metric_d = session.run(
                 #     (train_op, self.model.loss_d, self.model.metric_d), feed_dict={
                 #
@@ -208,7 +219,8 @@ class RModelRun(object):
                             self.model.label_ph: label,
                             self.model.lr_ph: lr,
                             self.model.fc_kprob: self.hparams.fc_kprob,
-                            self.model.pos_weight_ph: pos_weight
+                            self.model.pos_weight_ph: pos_weight,
+                            self.model.dist_loss_flag: dist_loss_flag
                         })
                     self.logger.log('train_step %d' % self.i, 'batch loss_d', dict(batch_loss_d),
                                     'batch metric_d', dict(batch_metric_d), 'positive sum',

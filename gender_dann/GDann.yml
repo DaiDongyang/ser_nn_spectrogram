@@ -3,10 +3,15 @@ default: &DEFAULT
   target_batch_size: 16
   lr_steps: [2000]
   lrs: [0.0003, 0.0002, 0.0001]
-  r_l_steps: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 6000]
-  r_ls: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-  train_op_steps: [1000, 1000, 1000, 1000, 1000]
-  train_ops: ['co_train_step', 'fe_train_step', 'predictor_train_step', 'fe_train_step', 'predictor_train_step']
+  r_l_steps: [1000]
+  r_ls: [1]
+  train_op_steps: [100, 100, 100, 100, 100, 100, 100, 100]
+  train_ops: ['v_g_2g_tp', 'v_f_2g_tp', 'v_g_2g_tp', 'v_f_2g_tp', 'v_g_2g_tp', 'v_f_2g_tp', 'v_g_2g_tp', 'v_f_2g_tp']
+
+#  r_l_steps: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 6000]
+#  r_ls: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+#  train_op_steps: [1000, 1000, 1000, 1000, 1000]
+#  train_ops: ['co_train_step', 'fe_train_step', 'predictor_train_step', 'fe_train_step', 'predictor_train_step']
 
   data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
   emos: ['neu', 'ang', 'hap', 'sad']

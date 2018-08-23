@@ -31,6 +31,8 @@ class RModel(object):
         self.seq_lens2_ph = tf.placeholder(tf.int32, shape=[None], name='seq_lens_ph')
         self.label_ph = tf.placeholder(tf.float32, [None], name='label_ph')
         self.pos_weight_ph = tf.placeholder(tf.float32, [], name='pos_weight_ph')
+        self.dist_loss_flag = tf.placeholder(tf.int32, shape=[], name='dist_loss_flag')
+
         # self.loss_weight_ph = tf.placeholder(tf.float32, [None], name='loss_weight_ph')
 
         # build graph
@@ -50,6 +52,40 @@ class RModel(object):
     def bias_variable(shape):
         initial = tf.constant(0.1, shape=shape)
         return tf.Variable(initial)
+
+    def calc_dist_loss(self, f1, f2, label, flag=2):
+        # w = label * 2 - 1
+        # dist = tf.reduce_sum(tf.square(tf.subtract(f1, f2)), axis=-1)
+        # w_dist = w * dist
+        # pos_dist_m = tf.maximum(w_dist, 0)
+        # neg_dist_m = tf.minimum(w_dist, 0)
+        # margin = self.hparams.dist_loss_margin
+        # basic_loss = pos_dist_m + neg_dist_m + margin
+        # flag == 0, all negative
+        # flag == 1, all positive
+        # falg == 2, default
+        print((tf.equal(label, 1.0)).shape)
+        print(tf.where(label == 1.0).shape)
+        print(f1.shape)
+        dist = tf.reduce_sum(tf.square(tf.subtract(f1, f2)), axis=1)
+        dist_p = tf.boolean_mask(dist, tf.equal(label, 1.0))
+        dist_n = tf.boolean_mask(dist, tf.equal(label, 0.0))
+        # f1_p = f1[tf.boolean_mask(tf.equal(label, 1.0))[0], :]
+        # f2_p = f2[tf.where(tf.equal(label, 1.0))[0], :]
+        # f1_n = f1[tf.where(tf.equal(label, 0.0))[0], :]
+        # f2_n = f2[tf.where(tf.equal(label, 0.0))[0], :]
+        margin = self.hparams.dist_loss_margin
+        if flag == 0:
+            pos_dist_max = 0
+        else:
+            pos_dist_max = tf.reduce_max(dist_p)
+        if flag == 1:
+            neg_dist_min = 0
+        else:
+            neg_dist_min = tf.reduce_min(dist_n)
+        basic_loss = tf.add(tf.subtract(pos_dist_max, neg_dist_min), margin)
+        loss = tf.reduce_mean(tf.maximum(basic_loss, 0))
+        return loss
 
     def cnn(self, inputs, seq_lens):
         h_conv = tf.expand_dims(inputs, 3)
@@ -107,6 +143,8 @@ class RModel(object):
         output_d = defaultdict(lambda: None)
         output_d['logits'] = logits
         output_d['prob'] = tf.nn.sigmoid(logits)
+        output_d['f1'] = tf.nn.l2_normalize(f1)
+        output_d['f2'] = tf.nn.l2_normalize(f2)
         return output_d
 
     def get_metric(self):
@@ -120,28 +158,20 @@ class RModel(object):
         return metric_d
 
     def get_loss(self):
-        # if self.hparams.loss_reduction == 'SUM_BY_NONZERO_WEIGHTS':
-        #     reduction = tf.losses.Reduction.SUM_BY_NONZERO_WEIGHTS
-        # else:
-        #     reduction = tf.losses.Reduction.MEAN
-        # if self.hparams.is_weighted_loss:
-        #     weights = self.loss_weight_ph
-        # else:
-        #     weights = 1.0
-        with tf.name_scope('loss'):
-            # loss = tf.losses.sparse_softmax_cross_entropy(labels=self.label_ph,
-            #                                               logits=self.output_d['logits'],
-            #                                               weights=weights,
-            #                                               reduction=reduction)
-            # loss = tf.reduce_mean(losses)
-            # losses = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.label_ph,
-            #                                                  logits=self.output_d['logits'])
-            losses = tf.nn.weighted_cross_entropy_with_logits(targets=self.label_ph,
-                                                              logits=self.output_d['logits'],
-                                                              pos_weight=self.pos_weight_ph)
-            loss = tf.reduce_mean(losses)
+
+        with tf.name_scope('emo_loss'):
+            emo_losses = tf.nn.weighted_cross_entropy_with_logits(targets=self.label_ph,
+                                                                  logits=self.output_d['logits'],
+                                                                  pos_weight=self.pos_weight_ph)
+            emo_loss = tf.reduce_mean(emo_losses)
+        with tf.name_scope('dist_loss'):
+            dist_loss = self.calc_dist_loss(self.output_d['f1'], self.output_d['f2'], self.label_ph,
+                                            self.dist_loss_flag)
         loss_d = defaultdict(lambda: None)
-        loss_d['emo_loss'] = loss
+        loss_d['emo_loss'] = emo_loss
+        loss_d['dist_loss'] = dist_loss
+        loss_d['loss'] = (1 - self.hparams.dist_loss_alpha) * loss_d[
+            'emo_loss'] + self.hparams.dist_loss_alpha * loss_d['dist_loss']
         return loss_d
 
     def get_train_op(self):
@@ -151,12 +181,12 @@ class RModel(object):
                 train_step = tf.train.AdamOptimizer(self.lr_ph).minimize(self.loss_d['emo_loss'])
             elif optimizer_type.lower() == 'adadelta':
                 train_step = tf.train.AdadeltaOptimizer(self.lr_ph).minimize(
-                    self.loss_d['emo_loss'])
+                    self.loss_d['loss'])
             else:
                 train_step = tf.train.GradientDescentOptimizer(self.lr_ph).minimize(
-                    self.loss_d['emo_loss'])
+                    self.loss_d['loss'])
         train_op_d = defaultdict(lambda: None)
-        train_op_d['emo_train_op'] = train_step
+        train_op_d['train_op'] = train_step
         return train_op_d
 
     def build_graph(self):

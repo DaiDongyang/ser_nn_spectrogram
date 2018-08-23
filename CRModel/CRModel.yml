@@ -136,12 +136,16 @@ pre_shuffle_no_repeatemo_no_weight_shuffle: &PRE_SHUFFLE_NO_REPEATEMO_NO_WEIGHT_
 restore:
   <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
   out_dir: ./cr_output2/restore/
-  is_train: False
+  is_train: True
+  is_restore: True
   restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_output2/not_seq_len_weight_shuffle2/ckpt/08151645_e4vFtM-2214'
   is_save_emo_result: True
   vali_type: 'M'
   test_type: 'F'
   vali_test_ses: 4
   id_prefix: 'eval_train'
+  stdout_level: 1
+  train_epochs: [100]
+  lrs: [0.0003]
 
 
