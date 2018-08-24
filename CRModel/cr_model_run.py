@@ -82,12 +82,25 @@ class CRModelRun(object):
         while True:
             try:
                 batched_input = session.run(batched_iter.BatchedInput)
+                batch_len = batched_input.x.shape[0]
+                pairs_len = batch_len // 2
+                pair_check_label = np.equal(batched_input.y_[:pairs_len],
+                                            batched_input.y_[pairs_len:2 * pairs_len]).astype(int)
+                positive_sum = np.sum(pair_check_label)
+                if positive_sum == 0:
+                    dist_loss_flag = 0
+                elif positive_sum == pairs_len:
+                    dist_loss_flag = 1
+                else:
+                    dist_loss_flag = 2
                 (metric_d, loss_d) = session.run((model.metric_d, model.loss_d), feed_dict={
                     model.x_ph: batched_input.x,
                     model.seq_lens_ph: batched_input.ts,
                     model.loss_weight_ph: batched_input.ws,
                     model.label_ph: batched_input.y_,
-                    model.fc_kprob: 1.0
+                    model.fc_kprob: 1.0,
+                    model.pair_check_label_ph: pair_check_label,
+                    model.dist_loss_flag_ph: dist_loss_flag
                 })
                 self._dict_list_append(metrics_d, metric_d)
                 self._dict_list_append(losses_d, loss_d)
@@ -164,7 +177,7 @@ class CRModelRun(object):
                 post_process.print_csv_confustion_matrix(gt_np, pr_np, hparams.emos, file=f)
         # post_process.self.logger.log_csv_confustion_matrix(gt_np, pr_np, hparams.emos)
 
-    def train_epoch(self, train_iter, lr, session, train_op_k='emo_train_op', vali_iter=None,
+    def train_epoch(self, train_iter, lr, session, train_op_k='co_train_op', vali_iter=None,
                     test_iter=None):
         count = 0
         assert isinstance(train_iter, data_set.BatchedIter)
@@ -174,6 +187,17 @@ class CRModelRun(object):
         while True:
             try:
                 batch_input = session.run(train_iter.BatchedInput)
+                batch_len = batch_input.x.shape[0]
+                pairs_len = batch_len // 2
+                pair_check_label = np.equal(batch_input.y_[:pairs_len],
+                                            batch_input.y_[pairs_len:2 * pairs_len]).astype(int)
+                positive_sum = np.sum(pair_check_label)
+                if positive_sum == 0:
+                    dist_loss_flag = 0
+                elif positive_sum == pairs_len:
+                    dist_loss_flag = 1
+                else:
+                    dist_loss_flag = 2
                 _, batch_loss_d = session.run((train_op, self.model.loss_d), feed_dict={
                     self.model.x_ph: batch_input.x,
                     self.model.seq_lens_ph: batch_input.ts,
@@ -181,6 +205,8 @@ class CRModelRun(object):
                     self.model.label_ph: batch_input.y_,
                     self.model.fc_kprob: self.hparams.fc_keep_prob,
                     self.model.lr_ph: lr,
+                    self.model.pair_check_label_ph: pair_check_label,
+                    self.model.dist_loss_flag_ph: dist_loss_flag
                 })
                 count += 1
                 self.global_step += 1
@@ -220,29 +246,30 @@ class CRModelRun(object):
         for i in range(start_i, end_i):
             self.logger.log('Epoch %d / %d' % (i, end_i))
             lr = self.get_cur_lr(i, self.hparams.train_epochs, self.hparams.lrs)
-            train_op_k = 'emo_train_op'
+            train_op_k = self.hparams.train_op_k
+            # self.train_epoch(train_iter, lr, session, train_op_k=train_op_k,
+            #                  vali_iter=None,
+            #                  test_iter=None)
             self.train_epoch(train_iter, lr, session, train_op_k=train_op_k,
                              vali_iter=vali_iter,
                              test_iter=test_iter)
-            # print(i)
-            # # todo: debug
-            # train_metric_d, train_loss_d = self.eval(train_iter, session)
-            # vali_metric_d, vali_loss_d = self.eval(vali_iter, session)
-            # self.logger.log('train set: metric_d', train_metric_d, "train_d", train_loss_d, level=2)
-            # self.logger.log('dev set: metric_d', vali_metric_d, "loss_d", vali_loss_d, end=' ',
-            #                 level=2)
-            # if self.hparams.best_params_type == 'bestacc':
-            #     v_acc = vali_metric_d[self.metric_k]
-            #     if v_acc > self.best_acc:
-            #         self.best_acc = v_acc
-            #         self.saver.save(session, self.hparams.bestacc_ckpt_path)
-            #     self.logger.log('best_acc: %f' % self.best_acc, level=2)
-            # elif self.hparams.best_params_type == 'bestloss':
-            #     v_loss = vali_loss_d[self.loss_k]
-            #     if v_loss < self.best_loss:
-            #         self.best_loss = v_loss
-            #         self.saver.save(session, self.hparams.bestloss_ckpt_path)
-            #     self.logger.log('best_loss: %f' % self.best_loss, level=2)
+            train_metric_d, train_loss_d = self.eval(train_iter, session)
+            vali_metric_d, vali_loss_d = self.eval(vali_iter, session)
+            self.logger.log('train set: metric_d', train_metric_d, "train_d", train_loss_d, level=2)
+            self.logger.log('dev set: metric_d', vali_metric_d, "loss_d", vali_loss_d, end=' ',
+                            level=2)
+            if self.hparams.best_params_type == 'bestacc':
+                v_acc = vali_metric_d[self.metric_k]
+                if v_acc > self.best_acc:
+                    self.best_acc = v_acc
+                    self.saver.save(session, self.hparams.bestacc_ckpt_path)
+                self.logger.log('best_acc: %f' % self.best_acc, level=2)
+            elif self.hparams.best_params_type == 'bestloss':
+                v_loss = vali_loss_d[self.loss_k]
+                if v_loss < self.best_loss:
+                    self.best_loss = v_loss
+                    self.saver.save(session, self.hparams.bestloss_ckpt_path)
+                self.logger.log('best_loss: %f' % self.best_loss, level=2)
             if i % self.hparams.persist_interval == 0 and i > 0:
                 self.saver.save(session, self.hparams.ckpt_path, global_step=self.global_step)
             self.logger.log('  Duaraton: %f' % (time.time() - self.start_time), level=2)
@@ -278,7 +305,6 @@ class CRModelRun(object):
             test_iter = d_set.get_test_iter()
             metric_d, loss_d = self.eval(test_iter, sess)
             self.logger.log('test set: metric_d', metric_d, "loss_d", loss_d, level=2)
-            # todo: debug
-            self.process_result(d_set.get_train_iter(), sess)
-            # self.process_result(test_iter, sess)
+
+            self.process_result(test_iter, sess)
         self.exit()

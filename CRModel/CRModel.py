@@ -16,6 +16,8 @@ class CRModel(object):
         self.seq_lens_ph = tf.placeholder(tf.int32, shape=[None], name='seq_lens_ph')
         self.label_ph = tf.placeholder(tf.int32, [None], name='label_ph')
         self.loss_weight_ph = tf.placeholder(tf.float32, [None], name='loss_weight_ph')
+        self.pair_check_label_ph = tf.placeholder(tf.int32, [None], name='pair_check_label_ph')
+        self.dist_loss_flag_ph = tf.placeholder(tf.int32, [], name='dist_loss_flag_ph')
 
         # build graph
         self.output_d = None
@@ -34,6 +36,27 @@ class CRModel(object):
     def bias_variable(shape):
         initial = tf.constant(0.1, shape=shape)
         return tf.Variable(initial)
+
+    def calc_dist_loss(self, unormed_f):
+        pair_len = tf.shape(self.pair_check_label_ph)[0]
+        f = tf.nn.l2_normalize(unormed_f)
+        f1 = f[:pair_len, :]
+        f2 = f[pair_len:2 * pair_len, :]
+        dist = tf.reduce_sum(tf.square(tf.subtract(f1, f2)), axis=1)
+        dist_p = tf.boolean_mask(dist, tf.equal(self.pair_check_label_ph, 1))
+        dist_n = tf.boolean_mask(dist, tf.equal(self.pair_check_label_ph, 0))
+        margin = self.hparams.dist_loss_margin
+        if self.dist_loss_flag_ph == 0:
+            pos_dist_max = 0
+        else:
+            pos_dist_max = tf.reduce_max(dist_p)
+        if self.dist_loss_flag_ph == 1:
+            neg_dist_min = 0
+        else:
+            neg_dist_min = tf.reduce_min(dist_n)
+        basic_loss = tf.add(tf.subtract(pos_dist_max, neg_dist_min), margin)
+        loss = tf.reduce_mean(tf.maximum(basic_loss, 0))
+        return loss
 
     def cnn(self, inputs, seq_lens):
         h_conv = tf.expand_dims(inputs, 3)
@@ -104,28 +127,35 @@ class CRModel(object):
         else:
             weights = 1.0
         with tf.name_scope('loss'):
-            loss = tf.losses.sparse_softmax_cross_entropy(labels=self.label_ph,
-                                                          logits=self.output_d['logits'],
-                                                          weights=weights,
-                                                          reduction=reduction)
+            e_loss = tf.losses.sparse_softmax_cross_entropy(labels=self.label_ph,
+                                                            logits=self.output_d['logits'],
+                                                            weights=weights,
+                                                            reduction=reduction)
             # loss = tf.reduce_mean(losses)
+            dist_loss = self.calc_dist_loss(self.output_d['h_rnn'])
         loss_d = defaultdict(lambda: None)
-        loss_d['emo_loss'] = loss
+        loss_d['emo_loss'] = e_loss
+        loss_d['dist_loss'] = dist_loss
+        a = self.hparams.dist_loss_alpha
+        loss_d['loss'] = (1 - a) * e_loss + a * dist_loss
         return loss_d
 
     def get_train_op(self):
         optimizer_type = self.hparams.optimizer_type
+        if optimizer_type.lower() == 'adam':
+            optimizer = tf.train.AdamOptimizer(self.lr_ph)
+        elif optimizer_type.lower() == 'adadelta':
+            optimizer = tf.train.AdadeltaOptimizer(self.lr_ph)
+        else:
+            optimizer = tf.train.GradientDescentOptimizer(self.lr_ph)
         with tf.name_scope('optimizer'):
-            if optimizer_type.lower() == 'adam':
-                train_step = tf.train.AdamOptimizer(self.lr_ph).minimize(self.loss_d['emo_loss'])
-            elif optimizer_type.lower() == 'adadelta':
-                train_step = tf.train.AdadeltaOptimizer(self.lr_ph).minimize(
-                    self.loss_d['emo_loss'])
-            else:
-                train_step = tf.train.GradientDescentOptimizer(self.lr_ph).minimize(
-                    self.loss_d['emo_loss'])
+            emo_train_op = optimizer.minimize(self.loss_d['emo_loss'])
+            dist_train_op = optimizer.minimize(self.loss_d['dist_loss'])
+            co_train_op = optimizer.minimize(self.loss_d['loss'])
         train_op_d = defaultdict(lambda: None)
-        train_op_d['emo_train_op'] = train_step
+        train_op_d['emo_train_op'] = emo_train_op
+        train_op_d['dist_train_op'] = dist_train_op
+        train_op_d['co_train_op'] = co_train_op
         return train_op_d
 
     def build_graph(self):
