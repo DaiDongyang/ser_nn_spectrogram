@@ -44,7 +44,8 @@ class CRModelRun(object):
         max_to_keep = 5
         if 'saver_max_to_keep' in self.hparams:
             max_to_keep = self.hparams.saver_max_to_keep
-        self.saver = tf.train.Saver(max_to_keep=max_to_keep)
+        variables_to_resotre = tf.trainable_variables()
+        self.saver = tf.train.Saver(var_list=variables_to_resotre, max_to_keep=max_to_keep)
 
     @staticmethod
     def _dict_list_append(dl, d):
@@ -99,8 +100,7 @@ class CRModelRun(object):
                     model.loss_weight_ph: batched_input.ws,
                     model.label_ph: batched_input.y_,
                     model.fc_kprob: 1.0,
-                    model.pair_check_label_ph: pair_check_label,
-                    model.dist_loss_flag_ph: dist_loss_flag
+
                 })
                 self._dict_list_append(metrics_d, metric_d)
                 self._dict_list_append(losses_d, loss_d)
@@ -175,6 +175,7 @@ class CRModelRun(object):
         if 'result_txt_path' in self.hparams:
             with open(self.hparams.result_txt_path, 'w') as f:
                 post_process.print_csv_confustion_matrix(gt_np, pr_np, hparams.emos, file=f)
+        self.logger.log('id str', self.hparams.id_str, level=2)
         # post_process.self.logger.log_csv_confustion_matrix(gt_np, pr_np, hparams.emos)
 
     def train_epoch(self, train_iter, lr, session, train_op_k='co_train_op', vali_iter=None,
@@ -198,6 +199,24 @@ class CRModelRun(object):
                     dist_loss_flag = 1
                 else:
                     dist_loss_flag = 2
+                # session.run(train_op, feed_dict={
+                #     self.model.x_ph: batch_input.x,
+                #     self.model.seq_lens_ph: batch_input.ts,
+                #     self.model.loss_weight_ph: batch_input.ws,
+                #     self.model.label_ph: batch_input.y_,
+                #     self.model.fc_kprob: self.hparams.fc_keep_prob,
+                #     self.model.lr_ph: lr,
+                #
+                # })
+                if self.hparams.train_op_k == 'co_train_op' or self.hparams.train_op_k == 'dist_train_op':
+                    session.run(self.model.centers_update_op, feed_dict={
+                        self.model.x_ph: batch_input.x,
+                        self.model.seq_lens_ph: batch_input.ts,
+                        self.model.loss_weight_ph: batch_input.ws,
+                        self.model.label_ph: batch_input.y_,
+                        self.model.fc_kprob: self.hparams.fc_keep_prob,
+                        self.model.lr_ph: lr,
+                    })
                 _, batch_loss_d = session.run((train_op, self.model.loss_d), feed_dict={
                     self.model.x_ph: batch_input.x,
                     self.model.seq_lens_ph: batch_input.ts,
@@ -205,9 +224,9 @@ class CRModelRun(object):
                     self.model.label_ph: batch_input.y_,
                     self.model.fc_kprob: self.hparams.fc_keep_prob,
                     self.model.lr_ph: lr,
-                    self.model.pair_check_label_ph: pair_check_label,
-                    self.model.dist_loss_flag_ph: dist_loss_flag
+
                 })
+
                 count += 1
                 self.global_step += 1
                 self.logger.log('  train step %d, global step %d,' % (count, self.global_step),
@@ -286,6 +305,7 @@ class CRModelRun(object):
             train_writer = tf.summary.FileWriter(self.hparams.tf_log_dir)
             # train_writer.add_graph(self.model.graph)
             train_writer.add_graph(tf.get_default_graph())
+            sess.run(tf.global_variables_initializer())
             eval_ckpt_file = self.hparams.restore_file
             if self.hparams.is_train:
                 start_i = 0

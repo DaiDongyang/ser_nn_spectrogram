@@ -1,5 +1,6 @@
-import tensorflow as tf
 from collections import defaultdict
+
+import tensorflow as tf
 
 from utils import var_cnn_util
 
@@ -16,14 +17,16 @@ class CRModel(object):
         self.seq_lens_ph = tf.placeholder(tf.int32, shape=[None], name='seq_lens_ph')
         self.label_ph = tf.placeholder(tf.int32, [None], name='label_ph')
         self.loss_weight_ph = tf.placeholder(tf.float32, [None], name='loss_weight_ph')
-        self.pair_check_label_ph = tf.placeholder(tf.int32, [None], name='pair_check_label_ph')
-        self.dist_loss_flag_ph = tf.placeholder(tf.int32, [], name='dist_loss_flag_ph')
+        # self.pair_check_label_ph = tf.placeholder(tf.int32, [None], name='pair_check_label_ph')
+        # self.dist_loss_flag_ph = tf.placeholder(tf.int32, [], name='dist_loss_flag_ph')
 
         # build graph
         self.output_d = None
         self.metric_d = None
         self.loss_d = None
         self.train_op_d = None
+        self.centers = None
+        self.centers_update_op = None
         # self.graph = None
         self.build_graph()
 
@@ -37,25 +40,72 @@ class CRModel(object):
         initial = tf.constant(0.1, shape=shape)
         return tf.Variable(initial)
 
-    def calc_dist_loss(self, unormed_f):
-        pair_len = tf.shape(self.pair_check_label_ph)[0]
-        f = tf.nn.l2_normalize(unormed_f)
-        f1 = f[:pair_len, :]
-        f2 = f[pair_len:2 * pair_len, :]
-        dist = tf.reduce_sum(tf.square(tf.subtract(f1, f2)), axis=1)
-        dist_p = tf.boolean_mask(dist, tf.equal(self.pair_check_label_ph, 1))
-        dist_n = tf.boolean_mask(dist, tf.equal(self.pair_check_label_ph, 0))
-        margin = self.hparams.dist_loss_margin
-        if self.dist_loss_flag_ph == 0:
-            pos_dist_max = 0
-        else:
-            pos_dist_max = tf.reduce_max(dist_p)
-        if self.dist_loss_flag_ph == 1:
-            neg_dist_min = 0
-        else:
-            neg_dist_min = tf.reduce_min(dist_n)
-        basic_loss = tf.add(tf.subtract(pos_dist_max, neg_dist_min), margin)
-        loss = tf.reduce_mean(tf.maximum(basic_loss, 0))
+    # def calc_dist_loss(self, unormed_f):
+    #     pair_len = tf.shape(self.pair_check_label_ph)[0]
+    #     f = tf.nn.l2_normalize(unormed_f)
+    #     f1 = f[:pair_len, :]
+    #     f2 = f[pair_len:2 * pair_len, :]
+    #     dist = tf.reduce_sum(tf.square(tf.subtract(f1, f2)), axis=1)
+    #     dist_p = tf.boolean_mask(dist, tf.equal(self.pair_check_label_ph, 1))
+    #     dist_n = tf.boolean_mask(dist, tf.equal(self.pair_check_label_ph, 0))
+    #     margin = self.hparams.dist_loss_margin
+    #     if self.dist_loss_flag_ph == 0:
+    #         pos_dist_max = 0
+    #     else:
+    #         pos_dist_max = tf.reduce_max(dist_p)
+    #     if self.dist_loss_flag_ph == 1:
+    #         neg_dist_min = 0
+    #     else:
+    #         neg_dist_min = tf.reduce_min(dist_n)
+    #     basic_loss = tf.add(tf.subtract(pos_dist_max, neg_dist_min), margin)
+    #     loss = tf.reduce_mean(tf.maximum(basic_loss, 0))
+    #     return loss
+
+    def get_center_loss(self, features, labels, alpha, num_classes):
+        """获取center loss及center的更新op
+
+        Arguments:
+            features: Tensor,表征样本特征,一般使用某个fc层的输出,shape应该为[batch_size, feature_length].
+            labels: Tensor,表征样本label,非one-hot编码,shape应为[batch_size].
+            alpha: 0-1之间的数字,控制样本类别中心的学习率,细节参考原文.
+            num_classes: 整数,表明总共有多少个类别,网络分类输出有多少个神经元这里就取多少.
+
+        Return：
+            loss: Tensor,可与softmax loss相加作为总的loss进行优化.
+            centers: Tensor,存储样本中心值的Tensor，仅查看样本中心存储的具体数值时有用.
+            centers_update_op: op,用于更新样本中心的op，在训练时需要同时运行该op，否则样本中心不会更新
+        """
+        # 获取特征的维数，例如256维
+        len_features = features.get_shape()[1]
+        if self.hparams.is_l2_features:
+            features = tf.nn.l2_normalize(features)
+        # 建立一个Variable,shape为[num_classes, len_features]，用于存储整个网络的样本中心，
+        # 设置trainable=False是因为样本中心不是由梯度进行更新的
+        centers = tf.get_variable('centers', [num_classes, len_features], dtype=tf.float32,
+                                  initializer=tf.constant_initializer(0), trainable=False)
+        # 将label展开为一维的，输入如果已经是一维的，则该动作其实无必要
+        labels = tf.reshape(labels, [-1])
+
+        # 根据样本label,获取mini-batch中每一个样本对应的中心值
+        centers_batch = tf.gather(centers, labels)
+        # 计算loss
+        loss = tf.nn.l2_loss(features - centers_batch)
+
+        # 当前mini-batch的特征值与它们对应的中心值之间的差
+        diff = centers_batch - features
+
+        # 获取mini-batch中同一类别样本出现的次数,了解原理请参考原文公式(4)
+        unique_label, unique_idx, unique_count = tf.unique_with_counts(labels)
+        appear_times = tf.gather(unique_count, unique_idx)
+        appear_times = tf.reshape(appear_times, [-1, 1])
+
+        diff = diff / tf.cast((1 + appear_times), tf.float32)
+        diff = alpha * diff
+
+        centers_update_op = tf.scatter_sub(centers, labels, diff)
+        self.centers = centers
+        self.centers_update_op = centers_update_op
+
         return loss
 
     def cnn(self, inputs, seq_lens):
@@ -132,12 +182,17 @@ class CRModel(object):
                                                             weights=weights,
                                                             reduction=reduction)
             # loss = tf.reduce_mean(losses)
-            dist_loss = self.calc_dist_loss(self.output_d['h_rnn'])
+            # dist_loss = self.calc_dist_loss(self.output_d['h_rnn'])
+            dist_loss = self.get_center_loss(self.output_d['h_rnn'],
+                                             labels=self.label_ph,
+                                             alpha=self.hparams.center_update_alpha,
+                                             num_classes=len(
+                                                 self.hparams.emos))
         loss_d = defaultdict(lambda: None)
         loss_d['emo_loss'] = e_loss
         loss_d['dist_loss'] = dist_loss
         a = self.hparams.dist_loss_alpha
-        loss_d['loss'] = (1 - a) * e_loss + a * dist_loss
+        loss_d['loss'] = e_loss + a * dist_loss
         return loss_d
 
     def get_train_op(self):
@@ -150,6 +205,7 @@ class CRModel(object):
             optimizer = tf.train.GradientDescentOptimizer(self.lr_ph)
         with tf.name_scope('optimizer'):
             emo_train_op = optimizer.minimize(self.loss_d['emo_loss'])
+            # with tf.control_dependencies([self.centers_update_op]):
             dist_train_op = optimizer.minimize(self.loss_d['dist_loss'])
             co_train_op = optimizer.minimize(self.loss_d['loss'])
         train_op_d = defaultdict(lambda: None)

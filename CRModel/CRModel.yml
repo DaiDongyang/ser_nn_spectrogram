@@ -63,7 +63,7 @@ default: &DEFAULT
 
   best_params_type: bestacc # bestloss, bestacc
   restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_output/bestacc_ckpt/07172216_e1vMtF'
-  restart_train_epoch: 5
+  restart_train_epoch: 0
   persist_interval: 20
   saver_max_to_keep: 30
 
@@ -74,6 +74,8 @@ default: &DEFAULT
   dist_loss_margin: 0.3
   dist_loss_alpha: 0.5
   train_op_k: 'emo_train_op'
+  center_update_alpha: 0.5
+  is_l2_features: True
 
 debug:
   <<: *DEFAULT
@@ -122,7 +124,7 @@ mix_data_no_shuffle:
   out_dir: ./cr_output2/mix_data_no_shuffle
   is_shuffle_train: False
 
-pre_shuffle_no_weight_shuffle:
+pre_shuffle_no_weight_shuffle: &PRE_SHUFFLE_NO_WEIGHT_SHUFFLE
   <<: *DEFAULT
   is_weighted_loss: False
   is_shuffle_train: True
@@ -154,16 +156,54 @@ restore:
 
 not_seq_len_weight_shuffle_co_train:
   <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
-  out_dir: ./cr_output2/not_seq_len_weight_shuffle_co_train
-  train_epochs: [100]
-  lrs: [0.0003]
+  out_dir: ./cr_output2/not_seq_len_weight_shuffle_co_train_center_loss
+  train_epochs: [20, 20, 20]
+  lrs: [0.0003, 0.0002, 0.0001]
   dist_loss_margin: 0.3
-  dist_loss_alpha: 0.5
-  fc_keep_prob: 0.1
+  dist_loss_alpha: 0.1
+  center_update_alpha: 0.5
+  fc_keep_prob: 0.5
   train_op_k: 'co_train_op'
   vali_type: 'M'
   test_type: 'F'
   vali_test_ses: 4
+
+not_seq_len_weight_shuffle_co_train_restore:
+  <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
+  is_train: True
+  is_restore: True
+  restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_output2/not_seq_len_weight_shuffle2/bestacc_ckpt/08151231_e2vFtM'
+  out_dir: ./cr_output2/not_seq_len_weight_shuffle_co_train_center_loss_restore
+  train_epochs: [4]
+  lrs: [0.0003]
+  dist_loss_margin: 0.3
+  dist_loss_alpha: 0.1
+  center_update_alpha: 0.5
+  fc_keep_prob: 0.5
+  train_op_k: 'co_train_op'
+  vali_test_ses: 2
+  vali_type: 'F'
+  test_type: 'M'
+  CUDA_VISIBLE_DEVICES: '1'
+  stdout_level: 0
+
+pre_shuffle_no_repeatemo_no_weight_shuffle_co_train_restore:
+  <<: *PRE_SHUFFLE_NO_REPEATEMO_NO_WEIGHT_SHUFFLE
+  is_train: True
+  is_restore: True
+  restore_file: ''
+  out_dir: ./cr_output2/pre_shuffle_no_repeatemo_no_weight_shuffle_co_train_restore_center_loss_restore
+  train_epochs: [4]
+  lrs: [0.0003]
+  dist_loss_margin: 0.3
+  dist_loss_alpha: 0.1
+  center_update_alpha: 0.5
+  fc_keep_prob: 0.5
+  train_op_k: 'co_train_op'
+  vali_test_ses: 2
+  vali_type: 'F'
+  test_type: 'M'
+  CUDA_VISIBLE_DEVICES: '1'
 
 only_dist_loss:
   <<: *DEFAULT

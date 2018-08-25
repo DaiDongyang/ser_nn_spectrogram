@@ -26,7 +26,10 @@ def cal_spectrogram(WINDOW_LEN):
     # `stfts` is a complex64 Tensor representing the Short-time Fourier Transform of
     # each signal in `signals`. Its shape is [batch_size, ?, fft_unique_bins]
     # where fft_unique_bins = fft_length / 2 + 1
-    stfts = tf.contrib.signal.stft(signals, frame_length=WINDOW_LEN, frame_step=int(WINDOW_LEN / 4),
+    # stfts = tf.contrib.signal.stft(signals, frame_length=WINDOW_LEN, frame_step=int(WINDOW_LEN / 4),
+    #                                fft_length=1600, window_fn=tf.contrib.signal.hamming_window,
+    #                                pad_end=True)
+    stfts = tf.contrib.signal.stft(signals, frame_length=WINDOW_LEN, frame_step=int(WINDOW_LEN / 2),
                                    fft_length=1600, window_fn=tf.contrib.signal.hamming_window,
                                    pad_end=True)
 
