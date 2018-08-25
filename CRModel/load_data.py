@@ -214,6 +214,8 @@ def load_data(hparams):
         if not is_load:
             continue
         y = judge_label(filename)
+        if y == -1:
+            continue
         sample_num_vec[y] += 1
         filepath = os.path.join(data_dir, filename)
         x = np.load(filepath)
