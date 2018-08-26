@@ -211,3 +211,11 @@ only_dist_loss:
   train_epochs: [60]
   lrs: [0.003]
 
+not_seq_len_weight_shuffle_small_input:
+  <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
+  feature_size: 200
+  data_dir: '/home/ddy/projects/emotions/data/iemocap_npy_t20fft800'
+  out_dir: './cr_output2/not_seq_len_weight_shuffle_small_input'
+  train_epochs: [15, 15, 15]
+  lrs: [0.0003, 0.0002, 0.0001]
+  stdout_level: 1
