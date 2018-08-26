@@ -76,6 +76,7 @@ default: &DEFAULT
   train_op_k: 'emo_train_op'
   center_update_alpha: 0.5
   is_l2_features: True
+  is_merge_hap_exc: False
 
 debug:
   <<: *DEFAULT
@@ -192,7 +193,7 @@ pre_shuffle_no_repeatemo_no_weight_shuffle_co_train_restore:
   is_train: True
   is_restore: True
   restore_file: ''
-  out_dir: ./cr_output2/pre_shuffle_no_repeatemo_no_weight_shuffle_co_train_restore_center_loss_restore
+  out_dir: ./cr_output2/pre_shuffle_no_repeatemo_no_weight_shuffle_co_train_restore_center_loss_restore2
   train_epochs: [4]
   lrs: [0.0003]
   dist_loss_margin: 0.3
@@ -214,8 +215,10 @@ only_dist_loss:
 not_seq_len_weight_shuffle_small_input:
   <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
   feature_size: 200
+#  cnn_kernels: [[3, 3, 1, 8], [3, 3, 8, 16], [3, 3, 16, 32], [3, 3, 32, 32]]
   data_dir: '/home/ddy/projects/emotions/data/iemocap_npy_t20fft800'
-  out_dir: './cr_output2/not_seq_len_weight_shuffle_small_input'
+  out_dir: './cr_output2/not_seq_len_weight_shuffle_small_input_hap_exc'
   train_epochs: [15, 15, 15]
   lrs: [0.0003, 0.0002, 0.0001]
   stdout_level: 1
+  is_merge_hap_exc: True
