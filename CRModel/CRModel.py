@@ -5,6 +5,26 @@ import tensorflow as tf
 from utils import var_cnn_util
 
 
+def var_conv2d_relu(inputs, w_conv, b_conv, seq_length):
+    cnn_outputs, new_seq_len = var_cnn_util.var_conv2d(inputs, w_conv, strides=[1, 1, 1, 1],
+                                                       padding='SAME', bias=b_conv,
+                                                       seq_length=seq_length)
+    return tf.nn.relu(cnn_outputs), new_seq_len
+
+
+def var_conv2d_relu_valid_padding(inputs, w_conv, b_conv, seq_length):
+    cnn_outputs, new_seq_len = var_cnn_util.var_conv2d(inputs, w_conv, strides=[1, 1, 1, 1],
+                                                       padding='VALID', bias=b_conv,
+                                                       seq_length=seq_length)
+    return tf.nn.relu(cnn_outputs), new_seq_len
+
+
+def var_max_pool2x2(inputs, seq_length):
+    return var_cnn_util.var_max_pool(inputs, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1],
+                                     padding='SAME',
+                                     seq_length=seq_length)
+
+
 class CRModel(object):
 
     def __init__(self, hparams):
@@ -17,6 +37,7 @@ class CRModel(object):
         self.seq_lens_ph = tf.placeholder(tf.int32, shape=[None], name='seq_lens_ph')
         self.label_ph = tf.placeholder(tf.int32, [None], name='label_ph')
         self.loss_weight_ph = tf.placeholder(tf.float32, [None], name='loss_weight_ph')
+        self.is_training_ph = tf.placeholder(tf.bool, shape=[], name='is_training_ph')
         # self.pair_check_label_ph = tf.placeholder(tf.int32, [None], name='pair_check_label_ph')
         # self.dist_loss_flag_ph = tf.placeholder(tf.int32, [], name='dist_loss_flag_ph')
 
@@ -221,32 +242,25 @@ class CRModel(object):
         self.train_op_d = self.get_train_op()
         # self.graph = tf.get_default_graph()
 
-    # def get_feed_dict(self, x, seq_lens, ws, label, lr, fc_kprob=1.0):
-    #     return {
-    #         self.x_ph: x,
-    #         self.seq_lens_ph: seq_lens,
-    #         self.loss_weight_ph: ws,
-    #         self.label_ph: label,
-    #         self.lr_ph: lr,
-    #         self.fc_kprob: fc_kprob
-    #     }
 
-    # def get_feed_dict(self, batchedInput):
-    #     # assert isinstance(batchedInput, )
-    #     return {
-    #         self.x_ph: batchedInput.x,
-    #         self.seq_lens_ph
-    #     }
+class CRModel2(CRModel):
 
+    def cnn(self, inputs, seq_lens):
+        h_conv = tf.expand_dims(inputs, 3)
+        i = 0
+        with tf.name_scope('conv'):
+            for cnn_kernel in self.hparams.cnn_kernels:
+                i += 1
+                w_conv = self.weight_variable(cnn_kernel)
+                b_conv = self.bias_variable(cnn_kernel[-1:])
+                h_conv, seq_lens = var_cnn_util.var_conv2d(h_conv, w_conv, strides=[1, 1, 1, 1],
+                                                           padding='SAME', bias=b_conv,
+                                                           seq_length=seq_lens)
+                # h_conv, seq_lens = var_conv2d_relu(h_conv, w_conv, b_conv, seq_lens)
 
-def var_conv2d_relu(inputs, w_conv, b_conv, seq_length):
-    cnn_outputs, new_seq_len = var_cnn_util.var_conv2d(inputs, w_conv, strides=[1, 1, 1, 1],
-                                                       padding='SAME', bias=b_conv,
-                                                       seq_length=seq_length)
-    return tf.nn.relu(cnn_outputs), new_seq_len
-
-
-def var_max_pool2x2(inputs, seq_length):
-    return var_cnn_util.var_max_pool(inputs, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1],
-                                     padding='SAME',
-                                     seq_length=seq_length)
+                h_conv = var_cnn_util.var_bn(h_conv, seq_lens, is_training=self.is_training_ph,
+                                             activation_fn=tf.nn.relu, scope='bn' + str(i))
+                h_conv, seq_lens = var_max_pool2x2(h_conv, seq_lens)
+            h_cnn = tf.reshape(h_conv,
+                               [tf.shape(h_conv)[0], -1, h_conv.shape[2] * h_conv.shape[3]])
+        return h_cnn, seq_lens

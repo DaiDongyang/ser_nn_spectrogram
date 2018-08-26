@@ -4,6 +4,7 @@ import numpy as np
 import random
 from sklearn.preprocessing import StandardScaler
 
+
 # import sys;
 #
 # sys.path.append("..")  # Adds higher directory to python modules path.
@@ -42,9 +43,9 @@ class LoadedData(object):
         train_ws_np = np.vstack(self.train_ws)
         ws_mu = np.mean(train_ws_np)
         print('ws mu is', ws_mu)
-        self.train_ws = [x/ws_mu for x in self.train_ws]
-        self.vali_ws = [x/ws_mu for x in self.vali_ws]
-        self.test_ws = [x/ws_mu for x in self.test_ws]
+        self.train_ws = [x / ws_mu for x in self.train_ws]
+        self.vali_ws = [x / ws_mu for x in self.vali_ws]
+        self.test_ws = [x / ws_mu for x in self.test_ws]
 
     def pre_shuffle_trains(self):
         train_list = [(x, y, t, w, s, g) for x, y, t, w, s, g in
@@ -65,8 +66,10 @@ class LoadedData(object):
         ws = []
         sids = []
         genders = []
-        for x_ele, y_ele, t_ele, w_ele, s_ele, g_ele in zip(self.train_x, self.train_y, self.train_ts, self.train_ws, self.train_sids,
-                self.train_genders):
+        for x_ele, y_ele, t_ele, w_ele, s_ele, g_ele in zip(self.train_x, self.train_y,
+                                                            self.train_ts, self.train_ws,
+                                                            self.train_sids,
+                                                            self.train_genders):
             if y_ele == emo_idx:
                 x.append(x_ele)
                 y.append(y_ele)
@@ -253,7 +256,7 @@ def load_data(hparams):
     vali_ws = []
     test_ws = []
 
-    class_weight_vec = max(sample_num_vec)/(sample_num_vec + 0.5)
+    class_weight_vec = max(sample_num_vec) / (sample_num_vec + 0.5)
     #
     max_len = max(train_x, key=lambda ele: ele.shape[0]).shape[0]
     # assert len(train_x) == len(train_y)
@@ -308,7 +311,6 @@ def load_data(hparams):
     if hparams.is_norm_weight:
         l_data.norm_w()
     return l_data
-
 
 # if __name__ == '__main__':
 #     ld = load_data()

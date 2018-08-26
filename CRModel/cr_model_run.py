@@ -100,7 +100,7 @@ class CRModelRun(object):
                     model.loss_weight_ph: batched_input.ws,
                     model.label_ph: batched_input.y_,
                     model.fc_kprob: 1.0,
-
+                    model.is_training_ph: False
                 })
                 self._dict_list_append(metrics_d, metric_d)
                 self._dict_list_append(losses_d, loss_d)
@@ -137,6 +137,7 @@ class CRModelRun(object):
                     model.loss_weight_ph: batched_input.ws,
                     model.label_ph: batched_input.y_,
                     model.fc_kprob: 1.0,
+                    model.is_training_ph: False
                 }, session=session)
                 batched_h_rnn = h_rnn.eval(feed_dict={
                     model.x_ph: batched_input.x,
@@ -144,6 +145,7 @@ class CRModelRun(object):
                     model.loss_weight_ph: batched_input.ws,
                     model.label_ph: batched_input.y_,
                     model.fc_kprob: 1.0,
+                    model.is_training_ph: False
                 }, session=session)
                 batched_pr = np.argmax(batched_logits, 1)
                 h_rnn_list.append(batched_h_rnn)
@@ -216,14 +218,16 @@ class CRModelRun(object):
                         self.model.label_ph: batch_input.y_,
                         self.model.fc_kprob: self.hparams.fc_keep_prob,
                         self.model.lr_ph: lr,
+                        self.model.is_training_ph: True,
                     })
-                _, batch_loss_d = session.run((train_op, self.model.loss_d), feed_dict={
+                batch_loss_d, _ = session.run((self.model.loss_d, train_op), feed_dict={
                     self.model.x_ph: batch_input.x,
                     self.model.seq_lens_ph: batch_input.ts,
                     self.model.loss_weight_ph: batch_input.ws,
                     self.model.label_ph: batch_input.y_,
                     self.model.fc_kprob: self.hparams.fc_keep_prob,
                     self.model.lr_ph: lr,
+                    self.model.is_training_ph: True
 
                 })
 
