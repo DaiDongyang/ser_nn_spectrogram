@@ -180,7 +180,12 @@ class LoadedData(object):
         print(len(self.test_x))
 
 
-def judge_label(file_name):
+def judge_label(file_name, is_merge_exc_hap=False):
+    if 'exc' in file_name:
+        if is_merge_exc_hap:
+            return 2
+        else:
+            return -1
     if "neu" in file_name:
         return 0
     elif "ang" in file_name:
@@ -216,7 +221,7 @@ def load_data(hparams):
                 is_load = True
         if not is_load:
             continue
-        y = judge_label(filename)
+        y = judge_label(filename, hparams.is_merge_hap_exc)
         if y == -1:
             continue
         sample_num_vec[y] += 1
