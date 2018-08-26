@@ -30,7 +30,7 @@ def cal_spectrogram(WINDOW_LEN):
     #                                fft_length=1600, window_fn=tf.contrib.signal.hamming_window,
     #                                pad_end=True)
     stfts = tf.contrib.signal.stft(signals, frame_length=WINDOW_LEN, frame_step=int(WINDOW_LEN / 2),
-                                   fft_length=1600, window_fn=tf.contrib.signal.hamming_window,
+                                   fft_length=800, window_fn=tf.contrib.signal.hamming_window,
                                    pad_end=True)
 
     # # A power spectrogram is the squared magnitude of the complex-valued STFT.
