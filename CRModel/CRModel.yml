@@ -77,6 +77,7 @@ default: &DEFAULT
   center_update_alpha: 0.5
   is_l2_features: True
   is_merge_hap_exc: False
+  is_crmodel2: False
 
 debug:
   <<: *DEFAULT
@@ -222,3 +223,19 @@ not_seq_len_weight_shuffle_small_input:
   lrs: [0.0003, 0.0002, 0.0001]
   stdout_level: 1
   is_merge_hap_exc: True
+
+nslws_crmodel2_small_input:
+  <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
+  is_crmodel2: True
+  cnn_kernels: [[7, 7, 1, 16], [3, 3, 16, 16], [3, 3, 16, 32], [3, 3, 32, 32], [3, 3, 32, 32]]
+  out_dir: './cr_output2/nslws_crmodel2_small_input'
+  data_dir: '/home/ddy/projects/emotions/data/iemocap_npy_t20fft800'
+  feature_size: 200
+  train_epochs: [15, 15, 15]
+  lrs: [0.0003, 0.0002, 0.0001]
+  stdout_level: 1
+  vali_test_ses: 4
+  vali_type: 'F'
+  test_type: 'M'
+  CUDA_VISIBLE_DEVICES: '3'
+  batch_size: 32

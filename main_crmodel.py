@@ -46,7 +46,10 @@ def main2(unused_argv):
     yparams = cr_model_run.CRHParamsPreprocessor(yparams, flags_dict).preprocess()
     print('id str:', yparams.id_str)
     yparams.save()
-    model = CRModel.CRModel(yparams)
+    if yparams.is_crmodel2:
+        model = CRModel.CRModel2(yparams)
+    else:
+        model = CRModel.CRModel(yparams)
     l_data = load_data.load_data(yparams)
     d_set = data_set.DataSet(l_data, yparams)
     crmodel_run = cr_model_run.CRModelRun(model)
