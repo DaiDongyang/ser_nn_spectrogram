@@ -34,6 +34,32 @@ def var_conv2d(inputs, w, strides, padding, bias, seq_length, is_clip_output_siz
     return outputs, new_seq_len
 
 
+# todo: test
+def var_conv2d_bn(inputs, w, strides, padding, bias, seq_length, is_training=True,
+                  activation_fn=None, scope="bn", reuse=None):
+    h = tf.nn.conv2d(input=inputs, filter=w, strides=strides, padding=padding) + bias
+    s = strides[1]
+    seq_len1 = seq_length
+    if padding == 'VALID':
+        k = tf.shape(w)[0]
+        seq_len1 = seq_length - k + 1
+    new_seq_len = 1 + tf.floordiv((seq_len1 - 1), s)
+    h = tf.contrib.layers.batch_norm(inputs=h,
+                                     center=True,
+                                     scale=True,
+                                     updates_collections=None,
+                                     is_training=is_training,
+                                     scope=scope,
+                                     fused=True,
+                                     reuse=reuse)
+    mask = get_mask(new_seq_len, tf.shape(h)[1], h.dtype)
+    outputs = h * mask
+    # outputs = h
+    if activation_fn is not None:
+        outputs = activation_fn(outputs)
+    return outputs, new_seq_len
+
+
 def var_max_pool(inputs, ksize, strides, padding, seq_length, is_clip_output_size=False):
     """
     max pool for variable length sequence input,

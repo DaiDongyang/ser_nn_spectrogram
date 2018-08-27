@@ -129,6 +129,25 @@ class CRModel(object):
 
         return loss
 
+    def cos_loss(self, features, labels):
+        f = tf.nn.l2_normalize(features, axis=1)
+        f0 = tf.expand_dims(f, axis=0)
+        f1 = tf.expand_dims(f, axis=1)
+        # 求内积
+        d = tf.reduce_sum(f0 * f1, axis=-1)
+
+        label0 = tf.expand_dims(labels, 0)
+        label1 = tf.expand_dims(labels, 1)
+        eq_mask = tf.cast(tf.equal(label0, label1), dtype=tf.float32)
+        # print(eq_mask.shape)
+        ne_mask = 1 - eq_mask
+        eqs = tf.maximum(tf.reduce_sum(eq_mask), 1)
+        nes = tf.maximum(tf.reduce_sum(ne_mask), 1)
+        l1 = (eqs - tf.reduce_sum(eq_mask * d)) / (2.0 * eqs)
+        l2 = (nes + tf.reduce_sum(ne_mask * d)) / (2.0 * nes)
+        loss = (l1 + l2) / 2.0
+        return loss
+
     def cnn(self, inputs, seq_lens):
         h_conv = tf.expand_dims(inputs, 3)
         with tf.name_scope('conv'):
@@ -159,8 +178,11 @@ class CRModel(object):
         input_d = self.hparams.rnn_hidden_size * 2
         h_fc = inputs
         h_fc_drop = h_fc
+        fc_hiddens = self.hparams.fc_hiddens
+        if not isinstance(fc_hiddens, (list,)):
+            fc_hiddens = []
         with tf.name_scope('fc'):
-            fc_sizes = [input_d] + self.hparams.fc_hiddens + [output_d]
+            fc_sizes = [input_d] + fc_hiddens + [output_d]
             for d1, d2 in zip(fc_sizes[:-1], fc_sizes[1:]):
                 w_fc = self.weight_variable([d1, d2])
                 b_fc = self.bias_variable([d2])
@@ -209,9 +231,11 @@ class CRModel(object):
                                              alpha=self.hparams.center_update_alpha,
                                              num_classes=len(
                                                  self.hparams.emos))
+            cos_loss = self.cos_loss(self.output_d['h_rnn'], self.label_ph)
         loss_d = defaultdict(lambda: None)
         loss_d['emo_loss'] = e_loss
         loss_d['dist_loss'] = dist_loss
+        loss_d['cos_loss'] = cos_loss
         a = self.hparams.dist_loss_alpha
         loss_d['loss'] = e_loss + a * dist_loss
         return loss_d
@@ -229,10 +253,12 @@ class CRModel(object):
             # with tf.control_dependencies([self.centers_update_op]):
             dist_train_op = optimizer.minimize(self.loss_d['dist_loss'])
             co_train_op = optimizer.minimize(self.loss_d['loss'])
+            cos_train_op = optimizer.minimize(self.loss_d['cos_loss'])
         train_op_d = defaultdict(lambda: None)
         train_op_d['emo_train_op'] = emo_train_op
         train_op_d['dist_train_op'] = dist_train_op
         train_op_d['co_train_op'] = co_train_op
+        train_op_d['cos_train_op'] = cos_train_op
         return train_op_d
 
     def build_graph(self):
@@ -253,13 +279,20 @@ class CRModel2(CRModel):
                 i += 1
                 w_conv = self.weight_variable(cnn_kernel)
                 b_conv = self.bias_variable(cnn_kernel[-1:])
-                h_conv, seq_lens = var_cnn_util.var_conv2d(h_conv, w_conv, strides=[1, 1, 1, 1],
-                                                           padding='SAME', bias=b_conv,
-                                                           seq_length=seq_lens)
-                # h_conv, seq_lens = var_conv2d_relu(h_conv, w_conv, b_conv, seq_lens)
-
-                h_conv = var_cnn_util.var_bn(h_conv, seq_lens, is_training=self.is_training_ph,
-                                             activation_fn=tf.nn.relu, scope='bn' + str(i))
+                h_conv, seq_lens = var_cnn_util.var_conv2d_bn(inputs=h_conv, w=w_conv,
+                                                              strides=[1, 1, 1, 1], padding='SAME',
+                                                              bias=b_conv, seq_length=seq_lens,
+                                                              is_training=self.is_training_ph,
+                                                              activation_fn=tf.nn.relu,
+                                                              scope="conv_bn" + str(i),
+                                                              reuse=None)
+                # h_conv, seq_lens = var_cnn_util.var_conv2d(h_conv, w_conv, strides=[1, 1, 1, 1],
+                #                                            padding='SAME', bias=b_conv,
+                #                                            seq_length=seq_lens)
+                # # h_conv, seq_lens = var_conv2d_relu(h_conv, w_conv, b_conv, seq_lens)
+                #
+                # h_conv = var_cnn_util.var_bn(h_conv, seq_lens, is_training=self.is_training_ph,
+                #                              activation_fn=tf.nn.relu, scope='bn' + str(i))
                 h_conv, seq_lens = var_max_pool2x2(h_conv, seq_lens)
             h_cnn = tf.reshape(h_conv,
                                [tf.shape(h_conv)[0], -1, h_conv.shape[2] * h_conv.shape[3]])
