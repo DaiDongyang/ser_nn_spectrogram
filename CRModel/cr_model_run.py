@@ -210,6 +210,9 @@ class CRModelRun(object):
                 #     self.model.lr_ph: lr,
                 #
                 # })
+                self.logger.log('  train step %d, global step %d,' % (count, self.global_step),
+                                'input shape ', batch_input.x.shape,
+                                level=1)
                 if self.hparams.train_op_k == 'co_train_op' or self.hparams.train_op_k == 'dist_train_op':
                     session.run(self.model.centers_update_op, feed_dict={
                         self.model.x_ph: batch_input.x,
@@ -233,10 +236,10 @@ class CRModelRun(object):
 
                 count += 1
                 self.global_step += 1
-                self.logger.log('  train step %d, global step %d,' % (count, self.global_step),
-                                'input shape ', batch_input.x.shape, 'batch loss_d ',
+                self.logger.log('  batch loss_d ',
                                 dict(batch_loss_d),
                                 level=1)
+
                 if vali_iter:
                     vali_metric_d, vali_loss_d = self.eval(vali_iter, session)
                     self.logger.log('  dev set: metric_d', vali_metric_d, "loss_d", vali_loss_d,

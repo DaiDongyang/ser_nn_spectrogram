@@ -165,7 +165,8 @@ class CRModel(object):
             rnn_cell = tf.nn.rnn_cell.GRUCell(self.hparams.rnn_hidden_size)
             outputs, state = tf.nn.bidirectional_dynamic_rnn(rnn_cell, rnn_cell, inputs,
                                                              sequence_length=seq_lens,
-                                                             dtype=tf.float32)
+                                                             dtype=tf.float32,
+                                                             swap_memory=True)
             rng = tf.range(0, tf.shape(seq_lens)[0])
             indexes = tf.stack([rng, seq_lens - 1], axis=1, name="indexes")
             fw_outputs = tf.gather_nd(outputs[0], indexes)
@@ -277,23 +278,35 @@ class CRModel2(CRModel):
         with tf.name_scope('conv'):
             for cnn_kernel in self.hparams.cnn_kernels:
                 i += 1
-                w_conv = self.weight_variable(cnn_kernel)
-                b_conv = self.bias_variable(cnn_kernel[-1:])
-                h_conv, seq_lens = var_cnn_util.var_conv2d_bn(inputs=h_conv, w=w_conv,
-                                                              strides=[1, 1, 1, 1], padding='SAME',
-                                                              bias=b_conv, seq_length=seq_lens,
-                                                              is_training=self.is_training_ph,
-                                                              activation_fn=tf.nn.relu,
-                                                              scope="conv_bn" + str(i),
-                                                              reuse=None)
-                # h_conv, seq_lens = var_cnn_util.var_conv2d(h_conv, w_conv, strides=[1, 1, 1, 1],
-                #                                            padding='SAME', bias=b_conv,
-                #                                            seq_length=seq_lens)
-                # # h_conv, seq_lens = var_conv2d_relu(h_conv, w_conv, b_conv, seq_lens)
-                #
-                # h_conv = var_cnn_util.var_bn(h_conv, seq_lens, is_training=self.is_training_ph,
-                #                              activation_fn=tf.nn.relu, scope='bn' + str(i))
-                h_conv, seq_lens = var_max_pool2x2(h_conv, seq_lens)
+                if cnn_kernel[0] == 7:
+                    h_conv = tf.layers.conv2d(h_conv, filters=cnn_kernel[-1],
+                                              kernel_size=cnn_kernel[:2],
+                                              strides=2, padding='same', activation=tf.nn.relu)
+                    seq_lens = tf.floor_div(seq_lens, 2)
+                else:
+                    h_conv = tf.layers.conv2d(h_conv, filters=cnn_kernel[-1],
+                                              kernel_size=cnn_kernel[:2],
+                                              padding='same', activation=tf.nn.relu)
+                h_conv = tf.layers.max_pooling2d(h_conv, pool_size=(2, 2), strides=(2, 2),
+                                                 padding='same')
+                seq_lens = tf.floor_div(seq_lens, 2)
+                # w_conv = self.weight_variable(cnn_kernel)
+                # b_conv = self.bias_variable(cnn_kernel[-1:])
+                # h_conv, seq_lens = var_cnn_util.var_conv2d_bn(inputs=h_conv, w=w_conv,
+                #                                               strides=[1, 1, 1, 1], padding='SAME',
+                #                                               bias=b_conv, seq_length=seq_lens,
+                #                                               is_training=self.is_training_ph,
+                #                                               activation_fn=tf.nn.relu,
+                #                                               scope="conv_bn" + str(i),
+                #                                               reuse=None)
+                # # h_conv, seq_lens = var_cnn_util.var_conv2d(h_conv, w_conv, strides=[1, 1, 1, 1],
+                # #                                            padding='SAME', bias=b_conv,
+                # #                                            seq_length=seq_lens)
+                # # # h_conv, seq_lens = var_conv2d_relu(h_conv, w_conv, b_conv, seq_lens)
+                # #
+                # # h_conv = var_cnn_util.var_bn(h_conv, seq_lens, is_training=self.is_training_ph,
+                # #                              activation_fn=tf.nn.relu, scope='bn' + str(i))
+                # h_conv, seq_lens = var_max_pool2x2(h_conv, seq_lens)
             h_cnn = tf.reshape(h_conv,
                                [tf.shape(h_conv)[0], -1, h_conv.shape[2] * h_conv.shape[3]])
         return h_cnn, seq_lens

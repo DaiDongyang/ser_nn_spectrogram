@@ -244,11 +244,11 @@ nslws_crmodel2_small_input:
 nslws_crmodel2_small_input_test:
   <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
   is_crmodel2: True
-  #cnn_kernels: [[7, 7, 1, 16], [3, 3, 16, 16], [3, 3, 16, 32], [3, 3, 32, 32], [3, 3, 32, 32]]
+  cnn_kernels: [[7, 7, 1, 32], [3, 3, 32, 32], [3, 3, 32, 64], [3, 3, 64, 64]]
   #fc_hiddens: [256]
   out_dir: './cr_output2/nslws_crmodel2_small_input_test'
-  data_dir: '/home/ddy/projects/emotions/data/iemocap_npy_t20fft800'
-  feature_size: 200
+#  data_dir: '/home/ddy/projects/emotions/data/iemocap_npy_t20fft800'
+  feature_size: 400
   train_epochs: [20, 20, 20, 15, 15]
   lrs: [0.003, 0.001, 0.0003, 0.0002, 0.0001]
   stdout_level: 2
@@ -256,7 +256,7 @@ nslws_crmodel2_small_input_test:
   vali_type: 'F'
   test_type: 'M'
   CUDA_VISIBLE_DEVICES: '1'
-  batch_size: 32
+  batch_size: 48
   train_op_k: 'cos_train_op'
 
 nslws_crmodel2_small_input_co_train:
