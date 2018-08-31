@@ -33,10 +33,12 @@ class BaseCRModel(object):
         # build graph
         self.output_d = None
         self.metric_d = None
+        self.loss_d = None
         self.update_op_d = None
         self.train_op_d = None
-
-        # self.build_graph()
+        self.grad_d = None
+        # todo: add merge for tensorboard
+        self.build_graph()
 
     @staticmethod
     def weight_variable(shape):
@@ -97,7 +99,7 @@ class BaseCRModel(object):
         centers1 = tf.expand_dims(centers, 1)
         c_diffs = centers0 - centers1
         c_diffs_norm = c_diffs / (
-                    tf.sqrt(tf.reduce_sum(tf.square(c_diffs), axis=-1, keepdims=True)) + epsilon)
+                tf.sqrt(tf.reduce_sum(tf.square(c_diffs), axis=-1, keepdims=True)) + epsilon)
         c_l2s = tf.reduce_sum(tf.square(c_diffs), axis=-1)
         c_l2s_mask = tf.eye(num_classes, dtype=self.float_type) * dist_ceiling + c_l2s
         # c_diff_norm = c_diff / tf.expand_dims(c_dist_mask)
@@ -110,7 +112,7 @@ class BaseCRModel(object):
         inter_update_c_op = centers.assign(centers - delta)
         return inter_update_c_op
 
-    def cos_loss(self, features, labels):
+    def calc_cos_loss(self, features, labels):
         f = tf.nn.l2_normalize(features, axis=1)
         f0 = tf.expand_dims(f, axis=0)
         f1 = tf.expand_dims(f, axis=1)
@@ -133,8 +135,96 @@ class BaseCRModel(object):
         # output_d['logits']
         # output_d['h_rnn']
         # output_d['hidden_fc']
+        # output_d['h_cnn']
         raise NotImplementedError("Please Implement this method")
 
-    def get_metric(self):
+    def get_metric_d(self):
         with tf.name_scope('emo_accuracy'):
-            correct_prediction = tf.equal()
+            correct_prediction = tf.equal(
+                tf.argmax(self.output_d['logits'], axis=1, output_type=tf.int32), self.e_ph)
+            correct_prediction = tf.cast(correct_prediction, self.float_type)
+            accuracy = tf.reduce_mean(correct_prediction)
+        metric_d = defaultdict(lambda: None)
+        metric_d['e_acc'] = accuracy
+        return metric_d
+
+    def get_loss_d(self):
+        if self.hps.is_weighted_cross_entropy_loss:
+            weights = self.e_w_ph
+        else:
+            weights = 1.0
+        with tf.name_scope('loss'):
+            ce_loss = tf.losses.sparse_softmax_cross_entropy(
+                labels=self.e_ph,
+                logits=self.output_d['logits'],
+                weights=weights,
+                reduction=tf.losses.Reduction.MEAN)
+            # center_loss = self.calc_center_loss()
+            features = self.output_d[self.hps.features_key]
+            center_loss = self.calc_center_loss(features=features, labels=self.e_ph,
+                                                num_classes=len(self.hps.emos))
+            cos_loss = self.calc_cos_loss(features=features, labels=self.e_ph)
+            ce_center_loss = ce_loss + self.hps.center_loss_lambda * center_loss
+            ce_cos_loss = ce_loss + self.hps.cos_loss_lambda * cos_loss
+        loss_d = defaultdict(lambda: None)
+        loss_d['ce_loss'] = ce_loss
+        loss_d['center_loss'] = center_loss
+        loss_d['cos_loss'] = cos_loss
+        loss_d['ce_center_loss'] = ce_center_loss
+        loss_d['ce_cos_loss'] = ce_cos_loss
+        return loss_d
+
+    def get_update_op_d(self):
+        features = self.output_d[self.hps.features_key]
+        intra_update_c_op = self.intra_update_center_op(features=features, labels=self.e_ph,
+                                                        alpha=self.hps.center_loss_alpha,
+                                                        num_classes=len(self.hps.emos))
+        inter_update_c_op = self.inter_update_center_op(features=features,
+                                                        beta=self.hps.center_loss_beta,
+                                                        gamma=self.hps.center_loss_gamma,
+                                                        num_classes=len(self.hps.emos))
+        update_op_d = defaultdict(lambda: None)
+        update_op_d['intra_update_c_op'] = intra_update_c_op
+        update_op_d['inter_update_c_op'] = inter_update_c_op
+        return update_op_d
+
+    def get_train_op_d(self):
+        optimizer_type = self.hps.optimizer_type
+        if optimizer_type.lower() == 'adam':
+            optimizer = tf.train.AdamOptimizer(self.lr_ph)
+        elif optimizer_type.lower() == 'adadelta':
+            optimizer = tf.train.AdadeltaOptimizer(self.lr_ph)
+        else:
+            optimizer = tf.train.GradientDescentOptimizer(self.lr_ph)
+        with tf.name_scope('optimizer'):
+            # tp: train op
+            ce_tp = optimizer.minimize(self.loss_d['ce_loss'])
+            center_tp = optimizer.minimize(self.loss_d['center_loss'])
+            cos_tp = optimizer.minimize(self.loss_d['cos_loss'])
+            ce_center_tp = optimizer.minimize(self.loss_d['ce_center_loss'])
+            ce_cos_tp = optimizer.minimize(self.loss_d['ce_cos_loss'])
+        train_op_d = defaultdict(lambda: None)
+        train_op_d['ce_tp'] = ce_tp
+        train_op_d['center_tp'] = center_tp
+        train_op_d['cos_tp'] = cos_tp
+        train_op_d['ce_center_tp'] = ce_center_tp
+        train_op_d['ce_cos_tp'] = ce_cos_tp
+        return train_op_d
+
+    def get_grad_d(self):
+        grad_d = defaultdict(lambda: None)
+        grad_d['ce2hrnn'] = tf.gradients(self.loss_d['ce_loss'], self.output_d['h_rnn'])
+        grad_d['ce2hcnn'] = tf.gradients(self.loss_d['ce_loss'], self.output_d['h_cnn'])
+        grad_d['center2hrnn'] = tf.gradients(self.loss_d['center_loss'], self.output_d['h_rnn'])
+        grad_d['center2hcnn'] = tf.gradients(self.loss_d['center_loss'], self.output_d['h_cnn'])
+        grad_d['cos2hrnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_rnn'])
+        grad_d['cos2hcnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_cnn'])
+        return grad_d
+
+    def build_graph(self):
+        self.output_d = self.model(self.x_ph, self.t_ph)
+        self.metric_d = self.get_metric_d()
+        self.loss_d = self.get_loss_d()
+        self.update_op_d = self.get_update_op_d()
+        self.train_op_d = self.get_train_op_d()
+        self.grad_d = self.get_grad_d()

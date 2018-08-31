@@ -2,4 +2,15 @@ default: &DEFAULT
   # cr_model.py
   feature_size: 400
   float_type: '16' # '32'
+
+  is_weighted_cross_entropy_loss: True
+  features_key: 'h_rnn'
+  emos: ['neu', 'ang', 'hap', 'sad']
+
+  cos_loss_lambda: 0.2
   is_center_loss_f_norm: True
+  center_loss_lambda: 0.2
+  center_loss_alpha: 0.5
+  center_loss_beta: 0.02
+  center_loss_gamma: 0.05
+  optimizer_type: 'adam'
