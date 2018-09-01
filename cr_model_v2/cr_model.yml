@@ -55,5 +55,5 @@ default: &DEFAULT
   bestloss_ckpt_fold: 'bestloss_ckpt'
   bestmetric_ckpt_fold: 'bestmetric_ckpt'
   log_fold: 'log'
-
+  ckpt_metric_k: 'wa' # or 'ua' 'wua'
 

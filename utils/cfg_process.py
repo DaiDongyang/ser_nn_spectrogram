@@ -4,7 +4,7 @@ import os
 import argparse
 import time
 
-__all__ = ["YParams", "HParamsPreprocessor"]
+__all__ = ["YParams", "BaseHpsPreprocessor", "HParamsPreprocessor"]
 
 
 class YParams(HParams):

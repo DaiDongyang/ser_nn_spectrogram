@@ -143,7 +143,7 @@ class BaseCRModel(object):
         l2 = (ne_num + tf.reduce_sum(ne_mask * d)) / (2.0 * ne_num)
         return (l1 + l2) / 2.0
 
-    def model(self, x, t):
+    def model_fn(self, x, t):
         # return output_d
         # output_d['logits']
         # output_d['h_rnn']
@@ -263,7 +263,7 @@ class BaseCRModel(object):
         return tf.summary.merge(summary_list)
 
     def build_graph(self):
-        self.output_d = self.model(self.x_ph, self.t_ph)
+        self.output_d = self.model_fn(self.x_ph, self.t_ph)
         self.metric_d = self.get_metric_d()
         self.loss_d = self.get_loss_d()
         self.update_op_d = self.get_update_op_d()
