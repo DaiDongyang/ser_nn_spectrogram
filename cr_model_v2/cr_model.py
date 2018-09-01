@@ -5,6 +5,18 @@ import tensorflow as tf
 from utils import var_cnn_util
 
 
+def variable_summaries(x):
+    with tf.name_scope('summaries'):
+        mean = tf.reduce_mean(x)
+        with tf.name_scope('stddev'):
+            stddev = tf.sqrt(tf.reduce_mean(tf.square(x - mean)))
+        std_summary = tf.summary.scalar('stddev', stddev)
+        max_summary = tf.summary.scalar('max', tf.reduce_max(x))
+        min_summary = tf.summary.scalar('min', tf.reduce_min(x))
+        his_summary = tf.summary.histogram('histogram', x)
+    return [std_summary, max_summary, min_summary, his_summary]
+
+
 class BaseCRModel(object):
 
     def __init__(self, hps):
@@ -23,7 +35,7 @@ class BaseCRModel(object):
         self.lr_ph = tf.placeholder(float_type, shape=[], name='lr_ph')
         # lambda_ph is the balance hyperparameter for auxiliary loss function
         self.lambda_ph = tf.placeholder(float_type, shape=[], name='lambda_ph')
-        self.x_ph = tf.placeholder(float_type, [None, None, hps.featrue_size])
+        self.x_ph = tf.placeholder(float_type, [None, None, hps.freq_size], name='x_ph')
         self.t_ph = tf.placeholder(tf.int32, shape=[None], name='t_ph')  # seq lens
         self.e_ph = tf.placeholder(tf.int32, shape=[None], name='e_ph')  # emo labels
         # loss weight of emo classifier for cross entropy
@@ -37,7 +49,8 @@ class BaseCRModel(object):
         self.update_op_d = None
         self.train_op_d = None
         self.grad_d = None
-        # todo: add merge for tensorboard
+        # merged for training
+        self.train_merged = None
         self.build_graph()
 
     @staticmethod
@@ -206,8 +219,13 @@ class BaseCRModel(object):
         train_op_d = defaultdict(lambda: None)
         train_op_d['ce_tp'] = ce_tp
         train_op_d['center_tp'] = center_tp
+        train_op_d['center_utp'] = (
+            self.update_op_d['inter_update_c_op'], self.update_op_d['intra_update_c_op'], center_tp)
         train_op_d['cos_tp'] = cos_tp
         train_op_d['ce_center_tp'] = ce_center_tp
+        train_op_d['ce_center_utp'] = (
+            self.update_op_d['inter_update_c_op'], self.update_op_d['intra_update_c_op'],
+            ce_center_tp)
         train_op_d['ce_cos_tp'] = ce_cos_tp
         return train_op_d
 
@@ -221,6 +239,29 @@ class BaseCRModel(object):
         grad_d['cos2hcnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_cnn'])
         return grad_d
 
+    def get_train_merged(self):
+        summary_list = list()
+        if isinstance(self.hps.train_output_summ_keys, list):
+            for k in self.hps.train_output_summ_keys:
+                with tf.name_scope(k):
+                    v_summ_list = variable_summaries(self.output_d[k])
+                summary_list += v_summ_list
+        if isinstance(self.hps.train_grad_summ_keys, list):
+            for k in self.hps.train_grad_summ_keys:
+                with tf.name_scope(k):
+                    v_summ_list = variable_summaries(self.grad_d[k])
+                summary_list += v_summ_list
+        if isinstance(self.hps.train_metric_summ_keys, list):
+            for k in self.hps.train_metric_summ_keys:
+                # with tf.name_scope(k):
+                summ = tf.summary.scalar(k, self.metric_d[k])
+                summary_list.append(summ)
+        if isinstance(self.hps.train_loss_summ_keys, list):
+            for k in self.hps.train_loss_summ_keys:
+                summ = tf.summary.scalar(k, self.loss_d[k])
+                summary_list.append(summ)
+        return tf.summary.merge(summary_list)
+
     def build_graph(self):
         self.output_d = self.model(self.x_ph, self.t_ph)
         self.metric_d = self.get_metric_d()
@@ -228,3 +269,4 @@ class BaseCRModel(object):
         self.update_op_d = self.get_update_op_d()
         self.train_op_d = self.get_train_op_d()
         self.grad_d = self.get_grad_d()
+        self.train_merged = self.get_train_merged()

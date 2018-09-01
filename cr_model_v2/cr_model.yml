@@ -1,11 +1,11 @@
 default: &DEFAULT
-  # cr_model.py
-  feature_size: 400
+  ## cr_model.py
+  freq_size: 400
   float_type: '16' # '32'
 
   is_weighted_cross_entropy_loss: True
   features_key: 'h_rnn'
-  emos: ['neu', 'ang', 'hap', 'sad']
+  emos: ['neu', 'ang', 'hap', 'sad'] # 这个配置不要改，对应于某些代码里写死的部分。
 
   cos_loss_lambda: 0.2
   is_center_loss_f_norm: True
@@ -14,3 +14,46 @@ default: &DEFAULT
   center_loss_beta: 0.02
   center_loss_gamma: 0.05
   optimizer_type: 'adam'
+
+  train_output_summ_keys: [] # or ''
+  train_grad_summ_keys: []
+  train_metric_summ_keys: []
+  train_loss_summ_keys: []
+
+  ## load_data.py
+  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
+  consider_sent_types: ['impro']
+  is_merge_hap_exe: False
+  sess: ['Ses01', 'Ses02', 'Ses03', 'Ses04', 'Ses05']
+  vali_test_ses: 4
+  vali_type: 'M'
+  test_type: 'F'
+  repeat_emos: '' # or [2]
+  is_pre_shuffle_train: False
+
+  ## data_set.py
+#  reshuffle_each_iteration: False
+  batch_size: 32
+  is_shuffle_vali: False
+  is_shuffle_test: False
+
+  ## cr_model_run.py
+
+  # hpsPreprocessor
+  CUDA_VISIBLE_DEVICES: '3'
+  restore_file: ''
+  id: '' # 最好将id设置成‘’，根据时间生成id
+  id_prefix: '' # 可以在id_str前面加一些自定义的东西
+  is_train: True
+  is_restore: False
+  out_dir: './cr2_out'
+  tf_log_fold_prefix: 'tflog_'
+  result_npy_fold: 'result_npy'
+  result_matrix_fold: 'result_matrix'
+  cfg_out_fold: 'cfg'
+  ckpt_fold: 'ckpt'
+  bestloss_ckpt_fold: 'bestloss_ckpt'
+  bestmetric_ckpt_fold: 'bestmetric_ckpt'
+  log_fold: 'log'
+
+

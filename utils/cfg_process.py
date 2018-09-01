@@ -29,6 +29,43 @@ class YParams(HParams):
             out_f.write(self.to_json())
 
 
+class BaseHpsPreprocessor(object):
+    def __init__(self, hparams, flags):
+        self.hparams = hparams
+        if flags is None:
+            return
+        for k, v in flags.items():
+            if k in hparams:
+                try:
+                    hparams.set_hparam(k, v)
+                except ValueError:
+                    hparams.set_hparam(k, str(v))
+            else:
+                hparams.add_hparam(k, v)
+
+    def _update_id_related(self):
+        raise NotImplementedError('not implement yet!')
+
+    def _check_dir(self):
+        raise NotImplementedError('not implement yet!')
+
+    def _cuda_visiable_devices(self):
+        if 'gpu' in self.hparams and self.hparams.gpu != '':
+            if 'CUDA_VISIBLE_DEVICES' not in self.hparams:
+                self.hparams.add_hparam('CUDA_VISIBLE_DEVICES', self.hparams.gpu)
+            else:
+                self.hparams.CUDA_VISIBLE_DEVICES = self.hparams.gpu
+        if 'CUDA_VISIBLE_DEVICES' in self.hparams:
+            os.environ['CUDA_VISIBLE_DEVICES'] = self.hparams.CUDA_VISIBLE_DEVICES
+
+    def preprocess(self):
+        self._update_id_related()
+        self._check_dir()
+        self._cuda_visiable_devices()
+        return self.hparams
+
+
+@DeprecationWarning
 class HParamsPreprocessor(object):
     def __init__(self, hparams, flags):
         self.hparams = hparams
