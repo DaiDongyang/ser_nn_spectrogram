@@ -13,6 +13,9 @@ from spectrum import readwav
 
 import tensorflow as tf
 
+FRAME_LEN = 0.05
+FFT_LENGTH = 800
+
 
 def get_sample_rate(wav_file):
     data, sample_rate = readwav(wav_file)
@@ -29,8 +32,9 @@ def cal_spectrogram(WINDOW_LEN):
     # stfts = tf.contrib.signal.stft(signals, frame_length=WINDOW_LEN, frame_step=int(WINDOW_LEN / 4),
     #                                fft_length=1600, window_fn=tf.contrib.signal.hamming_window,
     #                                pad_end=True)
-    stfts = tf.contrib.signal.stft(signals, frame_length=WINDOW_LEN, frame_step=int(WINDOW_LEN / 2),
-                                   fft_length=1600, window_fn=tf.contrib.signal.hamming_window,
+
+    stfts = tf.contrib.signal.stft(signals, frame_length=WINDOW_LEN, frame_step=int(WINDOW_LEN / 4),
+                                   fft_length=FFT_LENGTH, window_fn=tf.contrib.signal.hamming_window,
                                    pad_end=True)
 
     # # A power spectrogram is the squared magnitude of the complex-valued STFT.
@@ -52,7 +56,7 @@ def get_spectrogram(wav_file, seg_sec):
     data = data.astype(np.float32)
 
     sample_num = len(data)  # the number of sample points in the whole speech sentence
-    WINDOW_LEN = int(sample_rate * 0.04)  # window length
+    WINDOW_LEN = int(sample_rate * FRAME_LEN)  # window length
 
     print("Sample Rate = {}, Window Length = {}".format(sample_rate, WINDOW_LEN))
 

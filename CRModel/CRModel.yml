@@ -75,9 +75,15 @@ default: &DEFAULT
   dist_loss_alpha: 0.5
   train_op_k: 'emo_train_op'
   center_update_alpha: 0.5
+  center_update_beta: 0.5
+  center_update_gamma: 0.1
   is_l2_features: True
   is_merge_hap_exc: False
   is_crmodel2: False
+
+  is_bn: True
+  is_var_cnn_mask: True
+
 
 debug:
   <<: *DEFAULT
@@ -171,6 +177,27 @@ not_seq_len_weight_shuffle_co_train:
   test_type: 'F'
   vali_test_ses: 4
 
+nslws_co_train2:
+  <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
+  out_dir: ./cr_output2/nslws_co_train2
+  train_epochs: [20, 20, 20]
+  lrs: [0.0003, 0.0002, 0.0001]
+  dist_loss_margin: 0.3
+  dist_loss_alpha: 0.1
+  center_update_alpha: 0.5
+  is_l2_features: True
+  center_update_beta: 0.02
+  center_update_gamma: 0.1
+#  is_l2_features: False
+#  center_update_beta: 0.5
+#  center_update_gamma: 10
+  fc_keep_prob: 1
+  train_op_k: 'co_train_op'
+  vali_type: 'M'
+  test_type: 'F'
+  vali_test_ses: 4
+  stdout_level: 1
+
 not_seq_len_weight_shuffle_co_train_restore:
   <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
   is_train: True
@@ -244,11 +271,11 @@ nslws_crmodel2_small_input:
 nslws_crmodel2_small_input_test:
   <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
   is_crmodel2: True
-  #cnn_kernels: [[7, 7, 1, 16], [3, 3, 16, 16], [3, 3, 16, 32], [3, 3, 32, 32], [3, 3, 32, 32]]
+  cnn_kernels: [[7, 7, 1, 32], [3, 3, 32, 32], [3, 3, 32, 64], [3, 3, 64, 64]]
   #fc_hiddens: [256]
   out_dir: './cr_output2/nslws_crmodel2_small_input_test'
-  data_dir: '/home/ddy/projects/emotions/data/iemocap_npy_t20fft800'
-  feature_size: 200
+#  data_dir: '/home/ddy/projects/emotions/data/iemocap_npy_t20fft800'
+  feature_size: 400
   train_epochs: [20, 20, 20, 15, 15]
   lrs: [0.003, 0.001, 0.0003, 0.0002, 0.0001]
   stdout_level: 2
@@ -256,7 +283,7 @@ nslws_crmodel2_small_input_test:
   vali_type: 'F'
   test_type: 'M'
   CUDA_VISIBLE_DEVICES: '1'
-  batch_size: 32
+  batch_size: 48
   train_op_k: 'cos_train_op'
 
 nslws_crmodel2_small_input_co_train:
@@ -281,11 +308,11 @@ psnrnws_co_train:
   is_train: True
   is_restore: False
   restore_file: ''
-  out_dir: ./cr_output2/psnrnws_co_train
+  out_dir: ./cr_output2/psnrnws_co_train_lamba05
   train_epochs: [20, 20, 20]
   lrs: [0.0003, 0.0002, 0.0001]
   dist_loss_margin: 0.3
-  dist_loss_alpha: 0.1
+  dist_loss_alpha: 0.5
   center_update_alpha: 0.5
   fc_keep_prob: 0.5
   train_op_k: 'co_train_op'
@@ -294,20 +321,79 @@ psnrnws_co_train:
   test_type: 'M'
   CUDA_VISIBLE_DEVICES: '1'
 
-psnrnws:
-  <<: *PRE_SHUFFLE_NO_REPEATEMO_NO_WEIGHT_SHUFFLE
-  is_train: True
-  is_restore: False
-  restore_file: ''
-  out_dir: ./cr_output2/psnrnws
-  train_epochs: [20, 20, 20]
-  lrs: [0.0003, 0.0002, 0.0001]
+
+nslws_test:
+  <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
+  is_crmodel2: True
+  cnn_kernels: [[7, 7, 1, 16], [3, 3, 16, 16], [3, 3, 16, 32], [3, 3, 32, 32]]
+  out_dir: './cr_output2/nslws_test_1_no_bn'
+#  data_dir: '/home/ddy/projects/emotions/data/iemocap_npy_t20fft800'
+  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
+  feature_size: 400
+  train_epochs: [30]
+  lrs: [0.0003]
+  stdout_level: 2
+  vali_test_ses: 4
+  vali_type: 'F'
+  test_type: 'M'
+  CUDA_VISIBLE_DEVICES: '2'
+  batch_size: 32
+  train_op_k: 'emo_train_op'
+
+  is_bn: False
+  is_var_cnn_mask: True
+
+
+nslws2_co_train:
+  <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
+  is_crmodel2: True
+  cnn_kernels: [[7, 7, 1, 16], [3, 3, 16, 16], [3, 3, 16, 32], [3, 3, 32, 32]]
+  out_dir: './cr_output2/nslws2_co_train'
+#  data_dir: '/home/ddy/projects/emotions/data/iemocap_npy_t20fft800'
+  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
+  feature_size: 400
+  train_epochs: [40]
+  lrs: [0.0003]
   dist_loss_margin: 0.3
   dist_loss_alpha: 0.1
   center_update_alpha: 0.5
-  fc_keep_prob: 0.5
-  train_op_k: 'emo_train_op'
-  vali_test_ses: 2
+  stdout_level: 2
+  vali_test_ses: 4
   vali_type: 'F'
   test_type: 'M'
-  CUDA_VISIBLE_DEVICES: '1'
+  CUDA_VISIBLE_DEVICES: '2'
+  batch_size: 32
+  train_op_k: 'co_train_op'
+
+  is_bn: True
+  is_var_cnn_mask: True
+
+nslws2_co_train2:
+  <<: *NOT_SEQ_LEN_WEIGHT_SHUFFLE
+  is_crmodel2: True
+  cnn_kernels: [[7, 7, 1, 16], [3, 3, 16, 16], [3, 3, 16, 32], [3, 3, 32, 32]]
+  out_dir: './cr_output2/nslws2_co_train2'
+#  data_dir: '/home/ddy/projects/emotions/data/iemocap_npy_t20fft800'
+  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
+  feature_size: 400
+  train_epochs: [40]
+  lrs: [0.0003]
+  dist_loss_margin: 0.3
+  dist_loss_alpha: 0.3
+  center_update_alpha: 0.5
+  stdout_level: 2
+  vali_test_ses: 4
+  vali_type: 'F'
+  test_type: 'M'
+  CUDA_VISIBLE_DEVICES: '2'
+  batch_size: 32
+  train_op_k: 'co_train_op'
+
+  is_bn: False
+  is_var_cnn_mask: True
+#  center_update_alpha: 0.5
+  center_update_beta: 0.02
+  center_update_gamma: 0.05
+  is_l2_features: True
+  is_merge_hap_exc: False
+

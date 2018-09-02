@@ -35,8 +35,9 @@ def var_conv2d(inputs, w, strides, padding, bias, seq_length, is_clip_output_siz
 
 
 # todo: test
-def var_conv2d_bn(inputs, w, strides, padding, bias, seq_length, is_training=True,
-                  activation_fn=None, scope="bn", reuse=None):
+def var_conv2d_v2(inputs, w, bias, seq_length, strides=(1, 2, 2, 1), padding='SAME',
+                  is_training=True,
+                  activation_fn=tf.nn.relu, is_bn=False, is_mask=True, reuse=None):
     h = tf.nn.conv2d(input=inputs, filter=w, strides=strides, padding=padding) + bias
     s = strides[1]
     seq_len1 = seq_length
@@ -44,17 +45,19 @@ def var_conv2d_bn(inputs, w, strides, padding, bias, seq_length, is_training=Tru
         k = tf.shape(w)[0]
         seq_len1 = seq_length - k + 1
     new_seq_len = 1 + tf.floordiv((seq_len1 - 1), s)
-    h = tf.contrib.layers.batch_norm(inputs=h,
-                                     center=True,
-                                     scale=True,
-                                     updates_collections=None,
-                                     is_training=is_training,
-                                     scope=scope,
-                                     fused=True,
-                                     reuse=reuse)
-    mask = get_mask(new_seq_len, tf.shape(h)[1], h.dtype)
-    outputs = h * mask
-    # outputs = h
+    if is_bn:
+        h = tf.contrib.layers.batch_norm(inputs=h,
+                                         center=True,
+                                         scale=True,
+                                         updates_collections=None,
+                                         is_training=is_training,
+                                         fused=True,
+                                         reuse=reuse)
+    if is_mask:
+        mask = get_mask(new_seq_len, tf.shape(h)[1], h.dtype)
+        outputs = h * mask
+    else:
+        outputs = h
     if activation_fn is not None:
         outputs = activation_fn(outputs)
     return outputs, new_seq_len

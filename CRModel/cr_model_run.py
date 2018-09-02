@@ -210,6 +210,9 @@ class CRModelRun(object):
                 #     self.model.lr_ph: lr,
                 #
                 # })
+                self.logger.log('  train step %d, global step %d,' % (count, self.global_step),
+                                'input shape ', batch_input.x.shape,
+                                level=1)
                 if self.hparams.train_op_k == 'co_train_op' or self.hparams.train_op_k == 'dist_train_op':
                     session.run(self.model.centers_update_op, feed_dict={
                         self.model.x_ph: batch_input.x,
@@ -218,7 +221,16 @@ class CRModelRun(object):
                         self.model.label_ph: batch_input.y_,
                         self.model.fc_kprob: self.hparams.fc_keep_prob,
                         self.model.lr_ph: lr,
-                        self.model.is_training_ph: True,
+                        self.model.is_training_ph: False,
+                    })
+                    session.run(self.model.inter_update_c_op, feed_dict={
+                        self.model.x_ph: batch_input.x,
+                        self.model.seq_lens_ph: batch_input.ts,
+                        self.model.loss_weight_ph: batch_input.ws,
+                        self.model.label_ph: batch_input.y_,
+                        self.model.fc_kprob: self.hparams.fc_keep_prob,
+                        self.model.lr_ph: lr,
+                        self.model.is_training_ph: False,
                     })
                 batch_loss_d, _ = session.run((self.model.loss_d, train_op), feed_dict={
                     self.model.x_ph: batch_input.x,
@@ -233,10 +245,10 @@ class CRModelRun(object):
 
                 count += 1
                 self.global_step += 1
-                self.logger.log('  train step %d, global step %d,' % (count, self.global_step),
-                                'input shape ', batch_input.x.shape, 'batch loss_d ',
+                self.logger.log('  batch loss_d ',
                                 dict(batch_loss_d),
                                 level=1)
+
                 if vali_iter:
                     vali_metric_d, vali_loss_d = self.eval(vali_iter, session)
                     self.logger.log('  dev set: metric_d', vali_metric_d, "loss_d", vali_loss_d,

@@ -48,6 +48,7 @@ class CRModel(object):
         self.train_op_d = None
         self.centers = None
         self.centers_update_op = None
+        self.inter_update_c_op = None
         # self.graph = None
         self.build_graph()
 
@@ -129,6 +130,31 @@ class CRModel(object):
 
         return loss
 
+    def inter_update_center_op(self, features, beta=1, gamma=0.3, num_classes=4):
+        dist_ceiling = 1000
+        epsilon = 1e-6
+        len_features = features.get_shape()[1]
+        centers = tf.get_variable('center_loss_centers', [num_classes, len_features],
+                                  dtype=tf.float32, initializer=tf.constant_initializer(0),
+                                  trainable=False)
+        centers0 = tf.expand_dims(centers, 0)
+        centers1 = tf.expand_dims(centers, 1)
+        c_diffs = centers0 - centers1
+        c_diffs_norm = c_diffs / (
+                tf.sqrt(tf.reduce_sum(tf.square(c_diffs), axis=-1, keep_dims=True)) + epsilon)
+        c_l2s = tf.reduce_sum(tf.square(c_diffs), axis=-1)
+        c_l2s_mask = tf.eye(num_classes, dtype=tf.float32) * dist_ceiling + c_l2s
+        # c_diff_norm = c_diff / tf.expand_dims(c_dist_mask)
+        column_idx = tf.argmin(c_l2s_mask, axis=1, output_type=tf.int32)
+        rng = tf.range(0, num_classes, dtype=tf.int32)
+        idx = tf.stack([rng, column_idx], axis=1)
+        c_diff_norm = tf.gather_nd(c_diffs_norm, idx)
+        c_l2 = tf.expand_dims(tf.gather_nd(c_l2s_mask, idx), -1)
+        delta = beta * c_diff_norm * gamma / (gamma + c_l2)
+        inter_update_c_op = centers.assign(centers - delta)
+        # self.inter_update_c_op = inter_update_c_op
+        return inter_update_c_op
+
     def cos_loss(self, features, labels):
         f = tf.nn.l2_normalize(features, axis=1)
         f0 = tf.expand_dims(f, axis=0)
@@ -165,7 +191,8 @@ class CRModel(object):
             rnn_cell = tf.nn.rnn_cell.GRUCell(self.hparams.rnn_hidden_size)
             outputs, state = tf.nn.bidirectional_dynamic_rnn(rnn_cell, rnn_cell, inputs,
                                                              sequence_length=seq_lens,
-                                                             dtype=tf.float32)
+                                                             dtype=tf.float32,
+                                                             swap_memory=True)
             rng = tf.range(0, tf.shape(seq_lens)[0])
             indexes = tf.stack([rng, seq_lens - 1], axis=1, name="indexes")
             fw_outputs = tf.gather_nd(outputs[0], indexes)
@@ -266,34 +293,71 @@ class CRModel(object):
         self.metric_d = self.get_metric()
         self.loss_d = self.get_loss()
         self.train_op_d = self.get_train_op()
+        self.inter_update_c_op = self.inter_update_center_op(self.output_d['h_rnn'],
+                                                             beta=self.hparams.center_update_beta,
+                                                             gamma=self.hparams.center_update_gamma,
+                                                             num_classes=len(self.hparams.emos))
         # self.graph = tf.get_default_graph()
+
+
+# class CRModel2(CRModel):
+#
+#     def cnn(self, inputs, seq_lens):
+#         h_conv = tf.expand_dims(inputs, 3)
+#         i = 0
+#         with tf.name_scope('conv'):
+#             for cnn_kernel in self.hparams.cnn_kernels:
+#                 i += 1
+#                 if cnn_kernel[0] == 7:
+#                     h_conv = tf.layers.conv2d(h_conv, filters=cnn_kernel[-1],
+#                                               kernel_size=cnn_kernel[:2],
+#                                               strides=2, padding='same', activation=tf.nn.relu)
+#                     seq_lens = tf.floor_div(seq_lens, 2)
+#                 else:
+#                     h_conv = tf.layers.conv2d(h_conv, filters=cnn_kernel[-1],
+#                                               kernel_size=cnn_kernel[:2],
+#                                               padding='same', activation=tf.nn.relu)
+#                 h_conv = tf.layers.max_pooling2d(h_conv, pool_size=(2, 2), strides=(2, 2),
+#                                                  padding='same')
+#                 seq_lens = tf.floor_div(seq_lens, 2)
+#                 # w_conv = self.weight_variable(cnn_kernel)
+#                 # b_conv = self.bias_variable(cnn_kernel[-1:])
+#                 # h_conv, seq_lens = var_cnn_util.var_conv2d_bn(inputs=h_conv, w=w_conv,
+#                 #                                               strides=[1, 1, 1, 1], padding='SAME',
+#                 #                                               bias=b_conv, seq_length=seq_lens,
+#                 #                                               is_training=self.is_training_ph,
+#                 #                                               activation_fn=tf.nn.relu,
+#                 #                                               scope="conv_bn" + str(i),
+#                 #                                               reuse=None)
+#                 # # h_conv, seq_lens = var_cnn_util.var_conv2d(h_conv, w_conv, strides=[1, 1, 1, 1],
+#                 # #                                            padding='SAME', bias=b_conv,
+#                 # #                                            seq_length=seq_lens)
+#                 # # # h_conv, seq_lens = var_conv2d_relu(h_conv, w_conv, b_conv, seq_lens)
+#                 # #
+#                 # # h_conv = var_cnn_util.var_bn(h_conv, seq_lens, is_training=self.is_training_ph,
+#                 # #                              activation_fn=tf.nn.relu, scope='bn' + str(i))
+#                 # h_conv, seq_lens = var_max_pool2x2(h_conv, seq_lens)
+#             h_cnn = tf.reshape(h_conv,
+#                                [tf.shape(h_conv)[0], -1, h_conv.shape[2] * h_conv.shape[3]])
+#         return h_cnn, seq_lens
 
 
 class CRModel2(CRModel):
 
     def cnn(self, inputs, seq_lens):
-        h_conv = tf.expand_dims(inputs, 3)
+        h = tf.expand_dims(inputs, 3)
         i = 0
-        with tf.name_scope('conv'):
-            for cnn_kernel in self.hparams.cnn_kernels:
-                i += 1
-                w_conv = self.weight_variable(cnn_kernel)
-                b_conv = self.bias_variable(cnn_kernel[-1:])
-                h_conv, seq_lens = var_cnn_util.var_conv2d_bn(inputs=h_conv, w=w_conv,
-                                                              strides=[1, 1, 1, 1], padding='SAME',
-                                                              bias=b_conv, seq_length=seq_lens,
-                                                              is_training=self.is_training_ph,
-                                                              activation_fn=tf.nn.relu,
-                                                              scope="conv_bn" + str(i),
-                                                              reuse=None)
-                # h_conv, seq_lens = var_cnn_util.var_conv2d(h_conv, w_conv, strides=[1, 1, 1, 1],
-                #                                            padding='SAME', bias=b_conv,
-                #                                            seq_length=seq_lens)
-                # # h_conv, seq_lens = var_conv2d_relu(h_conv, w_conv, b_conv, seq_lens)
-                #
-                # h_conv = var_cnn_util.var_bn(h_conv, seq_lens, is_training=self.is_training_ph,
-                #                              activation_fn=tf.nn.relu, scope='bn' + str(i))
-                h_conv, seq_lens = var_max_pool2x2(h_conv, seq_lens)
-            h_cnn = tf.reshape(h_conv,
-                               [tf.shape(h_conv)[0], -1, h_conv.shape[2] * h_conv.shape[3]])
+        for cnn_kernel in self.hparams.cnn_kernels:
+            i += 1
+            with tf.name_scope('conv' + str(i)):
+                # 7 * 7, kernel size, 32 kernels
+                w = self.weight_variable(cnn_kernel)
+                b = self.bias_variable(cnn_kernel[-1:])
+                h, seq_lens = var_cnn_util.var_conv2d_v2(h, w=w, bias=b, seq_length=seq_lens,
+                                                         strides=[1, 2, 2, 1], padding='SAME',
+                                                         is_training=self.is_training_ph,
+                                                         activation_fn=tf.nn.relu,
+                                                         is_bn=self.hparams.is_bn,
+                                                         is_mask=self.hparams.is_var_cnn_mask)
+        h_cnn = tf.reshape(h, [tf.shape(h)[0], -1, h.shape[2] * h.shape[3]])
         return h_cnn, seq_lens
