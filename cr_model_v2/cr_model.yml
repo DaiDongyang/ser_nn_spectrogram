@@ -7,12 +7,12 @@ default: &DEFAULT
   features_key: 'h_rnn'
   emos: ['neu', 'ang', 'hap', 'sad'] # 这个配置不要改，对应于某些代码里写死的部分。
 
-  cos_loss_lambda: 0.2
+#  cos_loss_lambda: 0.2
   is_center_loss_f_norm: True
-  center_loss_lambda: 0.2
-  center_loss_alpha: 0.5
-  center_loss_beta: 0.02
-  center_loss_gamma: 0.05
+#  center_loss_lambda: 0.2
+#  center_loss_alpha: 0.5
+#  center_loss_beta: 0.02
+#  center_loss_gamma: 0.05
   optimizer_type: 'adam'
 
   train_output_summ_keys: [] # or ''
@@ -56,4 +56,27 @@ default: &DEFAULT
   bestmetric_ckpt_fold: 'bestmetric_ckpt'
   log_fold: 'log'
   ckpt_metric_k: 'wa' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_loss'
+
+  # merged and log
+  eval_loss_ks: ['ce_loss']
+  eval_metric_ks: ['wa', 'ua']
+
+
+  saver_max_to_keep: 20
+
+  lr_steps: []
+  lrs: []
+  cos_loss_lambda_steps: []
+  cos_loss_lambdas: []
+  center_loss_lambda_steps: []
+  center_loss_lambdas: []
+  center_loss_alpha_steps: []
+  center_loss_alhpas: []
+  center_loss_beta_steps: []
+  center_loss_betas: []
+  center_loss_gamma_steps: []
+  center_loss_gammas: []
+
+#  output_save_ks: [] # or ''
 

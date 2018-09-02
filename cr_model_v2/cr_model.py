@@ -31,16 +31,26 @@ class BaseCRModel(object):
         self.float_type = float_type
 
         # ==== placeholder ====
-        self.fc_prob = tf.placeholder(float_type, shape=[], name='fc_kprob')
+        self.fc_kprob_ph = tf.placeholder(float_type, shape=[], name='fc_kprob_ph')
         self.lr_ph = tf.placeholder(float_type, shape=[], name='lr_ph')
-        # lambda_ph is the balance hyperparameter for auxiliary loss function
-        self.lambda_ph = tf.placeholder(float_type, shape=[], name='lambda_ph')
+        # # lambda_ph is the balance hyperparameter for auxiliary loss function
+        # self.lambda_ph = tf.placeholder(float_type, shape=[], name='lambda_ph')
         self.x_ph = tf.placeholder(float_type, [None, None, hps.freq_size], name='x_ph')
         self.t_ph = tf.placeholder(tf.int32, shape=[None], name='t_ph')  # seq lens
         self.e_ph = tf.placeholder(tf.int32, shape=[None], name='e_ph')  # emo labels
         # loss weight of emo classifier for cross entropy
         self.e_w_ph = tf.placeholder(float_type, shape=[None], name='e_w_ph')
         self.is_training_ph = tf.placeholder(tf.bool, shape=[], name='is_training_ph')
+
+        self.cos_loss_lambda_ph = tf.placeholder(float_type, shape=[], name='cos_loss_lambda_ph')
+        self.center_loss_lambda_ph = tf.placeholder(float_type, shape=[],
+                                                    name='center_loss_lambda_ph')
+        self.center_loss_alpha_ph = tf.placeholder(float_type, shape=[],
+                                                   name='center_loss_alpha_ph')
+        self.center_loss_beta_ph = tf.placeholder(float_type, shape=[],
+                                                  name='center_loss_beta_ph')
+        self.center_loss_gamma_ph = tf.placeholder(float_type, shape=[],
+                                                   name='center_loss_gamma_ph')
 
         # build graph
         self.output_d = None
@@ -177,8 +187,8 @@ class BaseCRModel(object):
             center_loss = self.calc_center_loss(features=features, labels=self.e_ph,
                                                 num_classes=len(self.hps.emos))
             cos_loss = self.calc_cos_loss(features=features, labels=self.e_ph)
-            ce_center_loss = ce_loss + self.hps.center_loss_lambda * center_loss
-            ce_cos_loss = ce_loss + self.hps.cos_loss_lambda * cos_loss
+            ce_center_loss = ce_loss + self.center_loss_lambda_ph * center_loss
+            ce_cos_loss = ce_loss + self.cos_loss_lambda_ph * cos_loss
         loss_d = defaultdict(lambda: None)
         loss_d['ce_loss'] = ce_loss
         loss_d['center_loss'] = center_loss
@@ -190,11 +200,11 @@ class BaseCRModel(object):
     def get_update_op_d(self):
         features = self.output_d[self.hps.features_key]
         intra_update_c_op = self.intra_update_center_op(features=features, labels=self.e_ph,
-                                                        alpha=self.hps.center_loss_alpha,
+                                                        alpha=self.center_loss_alpha_ph,
                                                         num_classes=len(self.hps.emos))
         inter_update_c_op = self.inter_update_center_op(features=features,
-                                                        beta=self.hps.center_loss_beta,
-                                                        gamma=self.hps.center_loss_gamma,
+                                                        beta=self.center_loss_beta_ph,
+                                                        gamma=self.center_loss_gamma_ph,
                                                         num_classes=len(self.hps.emos))
         update_op_d = defaultdict(lambda: None)
         update_op_d['intra_update_c_op'] = intra_update_c_op
@@ -242,24 +252,28 @@ class BaseCRModel(object):
     def get_train_merged(self):
         summary_list = list()
         if isinstance(self.hps.train_output_summ_keys, list):
-            for k in self.hps.train_output_summ_keys:
-                with tf.name_scope(k):
-                    v_summ_list = variable_summaries(self.output_d[k])
-                summary_list += v_summ_list
+            with tf.name_scope('output'):
+                for k in self.hps.train_output_summ_keys:
+                    with tf.name_scope(k):
+                        v_summ_list = variable_summaries(self.output_d[k])
+                    summary_list += v_summ_list
         if isinstance(self.hps.train_grad_summ_keys, list):
-            for k in self.hps.train_grad_summ_keys:
-                with tf.name_scope(k):
-                    v_summ_list = variable_summaries(self.grad_d[k])
-                summary_list += v_summ_list
+            with tf.name_scope('grad'):
+                for k in self.hps.train_grad_summ_keys:
+                    with tf.name_scope(k):
+                        v_summ_list = variable_summaries(self.grad_d[k])
+                    summary_list += v_summ_list
         if isinstance(self.hps.train_metric_summ_keys, list):
-            for k in self.hps.train_metric_summ_keys:
-                # with tf.name_scope(k):
-                summ = tf.summary.scalar(k, self.metric_d[k])
-                summary_list.append(summ)
+            with tf.name_scope('metric'):
+                for k in self.hps.train_metric_summ_keys:
+                    # with tf.name_scope(k):
+                    summ = tf.summary.scalar(k, self.metric_d[k])
+                    summary_list.append(summ)
         if isinstance(self.hps.train_loss_summ_keys, list):
-            for k in self.hps.train_loss_summ_keys:
-                summ = tf.summary.scalar(k, self.loss_d[k])
-                summary_list.append(summ)
+            with tf.name_scope('loss'):
+                for k in self.hps.train_loss_summ_keys:
+                    summ = tf.summary.scalar(k, self.loss_d[k])
+                    summary_list.append(summ)
         return tf.summary.merge(summary_list)
 
     def build_graph(self):
