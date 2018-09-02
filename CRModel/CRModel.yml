@@ -293,3 +293,21 @@ psnrnws_co_train:
   vali_type: 'F'
   test_type: 'M'
   CUDA_VISIBLE_DEVICES: '1'
+
+psnrnws:
+  <<: *PRE_SHUFFLE_NO_REPEATEMO_NO_WEIGHT_SHUFFLE
+  is_train: True
+  is_restore: False
+  restore_file: ''
+  out_dir: ./cr_output2/psnrnws
+  train_epochs: [20, 20, 20]
+  lrs: [0.0003, 0.0002, 0.0001]
+  dist_loss_margin: 0.3
+  dist_loss_alpha: 0.1
+  center_update_alpha: 0.5
+  fc_keep_prob: 0.5
+  train_op_k: 'emo_train_op'
+  vali_test_ses: 2
+  vali_type: 'F'
+  test_type: 'M'
+  CUDA_VISIBLE_DEVICES: '1'
