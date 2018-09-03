@@ -2,6 +2,8 @@ from collections import defaultdict
 
 import tensorflow as tf
 
+from utils import var_cnn_util as vcu
+
 
 def variable_summaries(x):
     with tf.name_scope('summaries'):
@@ -282,3 +284,93 @@ class BaseCRModel(object):
         self.train_op_d = self.get_train_op_d()
         self.grad_d = self.get_grad_d()
         self.train_merged = self.get_train_merged()
+
+
+# CNN: [3, 3, 1, 8], [3, 3, 8, 8], [3, 3, 8, 16], [3, 3, 16, 16]; max_pool 2 * 2
+# RNN: BiGRU 128
+# FC: 128 -> 64 ->4
+class CRModel1(BaseCRModel):
+
+    def cnn(self, inputs, seq_lens):
+        print('CRModel1')
+        h_conv = tf.expand_dims(inputs, 3)
+        cnn_kernels = [[3, 3, 1, 8], [3, 3, 8, 8], [3, 3, 8, 16], [3, 3, 16, 16]]
+        with tf.name_scope('conv'):
+            for cnn_kernel in cnn_kernels:
+                w_conv = self.weight_variable(cnn_kernel)
+                b_conv = self.bias_variable(cnn_kernel[-1:])
+                h_conv, seq_lens = vcu.var_conv2d_v2(h_conv, w=w_conv, bias=b_conv,
+                                                     seq_length=seq_lens, strides=[1, 1, 1, 1],
+                                                     padding='SAME',
+                                                     is_training=self.is_training_ph,
+                                                     activation_fn=tf.nn.relu,
+                                                     is_bn=self.hps.is_bn,
+                                                     is_mask=self.hps.is_var_cnn_mask)
+            h_cnn = tf.reshape(h_conv,
+                               [tf.shape(h_conv)[0], -1, h_conv.shape[2] * h_conv.shape[3]])
+        return h_cnn, seq_lens
+
+    def rnn(self, inputs, seq_lens):
+        rnn_hidden_size = 128
+        with tf.name_scope('rnn'):
+            rnn_cell = tf.nn.rnn_cell.GRUCell(rnn_hidden_size)
+            outputs, state = tf.nn.bidirectional_dynamic_rnn(rnn_cell, rnn_cell, inputs,
+                                                             sequence_length=seq_lens,
+                                                             dtype=tf.float32,
+                                                             swap_memory=True)
+            rng = tf.range(0, tf.shape(seq_lens)[0])
+            indexes = tf.stack([rng, seq_lens - 1], axis=1, name="indexes")
+            fw_outputs = tf.gather_nd(outputs[0], indexes)
+            bw_outputs = outputs[1][:, 0]
+            outputs_concat = tf.concat([fw_outputs, bw_outputs], axis=1)
+        return outputs_concat
+
+    def fc(self, inputs):
+        out_dim = len(self.hps.emos)
+        in_dim = 256
+        fc_hidden = 64
+        with tf.name_scope('fc1'):
+            w_fc1 = self.weight_variable([in_dim, fc_hidden])
+            b_fc1 = self.bias_variable([fc_hidden])
+            h_fc1 = tf.matmul(inputs, w_fc1) + b_fc1
+            h_fc1_drop = tf.nn.dropout(tf.nn.relu(h_fc1), self.fc_kprob_ph)
+        with tf.name_scope('fc2'):
+            w_fc2 = self.weight_variable([fc_hidden, out_dim])
+            b_fc2 = self.bias_variable([out_dim])
+            h_fc2 = tf.matmul(h_fc1_drop, w_fc2) + b_fc2
+        h_fc = h_fc2
+        hid_fc = h_fc1
+        return h_fc, hid_fc
+
+
+    # def fc(self, inputs):
+    #     output_d = len(self.hps.emos)
+    #     input_d = 256
+    #     fc_hiddens = [64]
+    #     h_fc = inputs
+    #     h_fc_drop = h_fc
+    #     with tf.name_scope('fc'):
+    #         fc_sizes = [input_d] + fc_hiddens + [output_d]
+    #         for d1, d2 in zip(fc_sizes[:-1], fc_sizes[1:]):
+    #             w_fc = self.weight_variable([d1, d2])
+    #             b_fc = self.bias_variable([d2])
+    #             h_fc = tf.matmul(h_fc_drop, w_fc) + b_fc
+    #             h_fc_drop = tf.nn.dropout(tf.nn.relu(h_fc), self.fc_kprob_ph)
+    #     return h_fc
+
+    def model_fn(self, x, t):
+        # return output_d
+        # output_d['logits']
+        # output_d['h_rnn']
+        # output_d['hid_fc']
+        # output_d['h_cnn']
+        # raise NotImplementedError("Please Implement this method")
+        h_cnn, seq_lens = self.cnn(x, t)
+        h_rnn = self.rnn(h_cnn, seq_lens)
+        logits, hid_fc = self.fc(h_rnn)
+        output_d = defaultdict(lambda: None)
+        output_d['h_cnn'] = h_cnn
+        output_d['h_rnn'] = h_rnn
+        output_d['logits'] = logits
+        output_d['hid_fc'] = hid_fc
+        return output_d

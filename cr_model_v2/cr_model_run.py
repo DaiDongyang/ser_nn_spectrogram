@@ -38,8 +38,15 @@ class CRModelRun(object):
             np_float_type = np.float32
         self.np_float_type = np_float_type
         self.start_time = time.time()
+        self.ckpt_path = os.path.join(self.hps.ckpt_dir, self.hps.id_str)
         self.best_metric = 0.0
+        self.best_metric_step = -1
+        self.best_metric_ckpt_path = os.path.join(self.hps.bestmetric_ckpt_dir,
+                                                  self.hps.id_str)
         self.best_loss = np.float('inf')
+        self.best_loss_step = -1
+        self.best_loss_ckpt_path = os.path.join(self.hps.bestloss_ckpt_dir,
+                                                self.hps.id_str)
         self.ckpt_metric_k = self.hps.ckpt_metric_k
         self.ckpt_loss_k = self.hps.ckpt_loss_k
         self.saver = None
@@ -99,9 +106,8 @@ class CRModelRun(object):
             max_to_keep = self.hps.saver_max_to_keep
         self.saver = tf.train.Saver(max_to_keep=max_to_keep)
 
-    def init_summ_writer(self, session):
-        self.train_writer = tf.summary.FileWriter(os.path.join(self.hps.tf_log_dir, 'train'),
-                                                  session.graph)
+    def init_summ_writer(self):
+        self.train_writer = tf.summary.FileWriter(os.path.join(self.hps.tf_log_dir, 'train'))
         self.dev_writer = tf.summary.FileWriter(os.path.join(self.hps.tf_log_dir, 'dev'))
         self.test_writer = tf.summary.FileWriter(os.path.join(self.hps.tf_log_dir, 'test'))
 
@@ -229,7 +235,7 @@ class CRModelRun(object):
                     model.e_w_ph: batched_input.w.astype(self.np_float_type),
                     model.is_training_ph: False,
                     model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
-                    model.center_loss_lambda_ph: var_hps.center_loss_lambda
+                    model.center_loss_lambda_ph: var_hps.center_loss_lambda,
                 })
             batched_pr = np.argmax(batched_logits, 1)
             gts += list(batched_input.e)
@@ -260,11 +266,133 @@ class CRModelRun(object):
         result_txt_path = os.path.join(self.hps.log_dir, 'result_' + self.hps.id_str + '.txt')
         with open(result_txt_path, 'w') as outf:
             post_process.print_csv_confustion_matrix(gt_np, pr_np, self.hps.emos, file=outf)
-        self.logger.log('id str', self.hparams.id_str, level=2)
+        self.logger.log('id str', self.hps.id_str, level=2)
         self.logger.log('')
 
     def train(self, start_i, session, d_set):
-        pass
+        assert isinstance(d_set, data_set.DataSet)
+        train_iter = d_set.get_train_iter()
+        dev_iter = d_set.get_dev_iter()
+        test_iter = d_set.get_test_iter()
+        session.run(train_iter.initializer)
+        model = self.model
+        if isinstance(self.hps.eval_loss_ks, list):
+            model_loss_d = dict()
+            for k in self.hps.eval_loss_ks:
+                model_loss_d[k] = model.loss_d[k]
+        else:
+            model_loss_d = model.loss_d
+
+        for i in range(start_i, self.hps.max_steps):
+            train_op_k = self.get_cur_hp(i, self.hps.train_op_steps, self.hps.train_op_ks)
+            train_op = model.train_op_d[train_op_k]
+            var_hps = self.get_cur_var_hps(i)
+            batch_input = session.run(train_iter.BatchedInput)
+
+            if i % self.hps.train_eval_iterval == 0:
+                summ, batch_e_acc, batch_loss_d, _ = session.run(
+                    (model.train_merged, model.metric_d['e_acc'], model_loss_d, train_op),
+                    feed_dict={
+                        model.fc_kprob_ph: self.hps.fc_kprob,
+                        model.lr_ph: var_hps.lr,
+                        model.x_ph: batch_input.x.astype(self.np_float_type),
+                        model.t_ph: batch_input.t,
+                        model.e_ph: batch_input.e,
+                        model.e_w_ph: batch_input.w.astype(self.np_float_type),
+                        model.is_training_ph: True,
+                        model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
+                        model.center_loss_lambda_ph: var_hps.center_loss_lambda,
+                        model.center_loss_alpha_ph: var_hps.center_loss_alpha,
+                        model.center_loss_beta_ph: var_hps.center_loss_beta,
+                        model.center_loss_gamma_ph: var_hps.center_loss_gamma
+                    })
+                self.logger.log('step %d,' % i, 'input shape', batch_input.x.shape, 'e_acc',
+                                batch_e_acc, 'batch_loss_d', batch_loss_d, level=2)
+            else:
+                summ, _ = session.run((model.train_merged, train_op), feed_dict={
+                    model.fc_kprob_ph: self.hps.fc_kprob,
+                    model.lr_ph: var_hps.lr,
+                    model.x_ph: batch_input.x.astype(self.np_float_type),
+                    model.t_ph: batch_input.t,
+                    model.e_ph: batch_input.e,
+                    model.e_w_ph: batch_input.w.astype(self.np_float_type),
+                    model.is_training_ph: True,
+                    model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
+                    model.center_loss_lambda_ph: var_hps.center_loss_lambda,
+                    model.center_loss_alpha_ph: var_hps.center_loss_alpha,
+                    model.center_loss_beta_ph: var_hps.center_loss_beta,
+                    model.center_loss_gamma_ph: var_hps.center_loss_gamma
+                })
+            self.train_writer.add_summary(summ, i)
+            if i % self.hps.eval_interval == 0:
+                l_level = 1
+                dev_metric_d, dev_loss_d = self.eval(dev_iter, var_hps, session)
+
+                fd = self.get_eval_merged_feed_dict(dev_metric_d, dev_loss_d,
+                                                    self.hps.eval_metric_ks,
+                                                    self.hps.eval_loss_ks)
+                dev_summ = session.run(self.eval_merged, feed_dict=fd)
+                self.dev_writer.add_summary(dev_summ, i)
+                dev_metric = dev_metric_d[self.ckpt_metric_k]
+                dev_loss = dev_loss_d[self.ckpt_loss_k]
+                if dev_metric > self.best_metric:
+                    self.best_metric = dev_metric
+                    self.best_metric_step = i
+                    self.saver.save(session, self.best_metric_ckpt_path)
+                    l_level = 2
+                if dev_loss < self.best_loss:
+                    self.best_loss = dev_loss
+                    self.best_loss_step = i
+                    self.saver.save(session, self.best_loss_ckpt_path)
+                self.logger.log(' dev set: metric_d', dev_metric_d, 'loss_d', dev_loss_d,
+                                level=l_level)
+                self.logger.log('   best_metric', self.best_metric, 'best_metric_step',
+                                self.best_metric_step,
+                                level=l_level)
+                self.logger.log('   best_loss', self.best_loss, 'best_loss_step',
+                                self.best_loss_step,
+                                level=l_level)
+                if self.hps.is_eval_test:
+                    test_metric_d, test_loss_d = self.eval(test_iter, var_hps, session)
+                    fd = self.get_eval_merged_feed_dict(test_metric_d, test_loss_d,
+                                                        self.hps.eval_metric_ks,
+                                                        self.hps.eval_loss_ks)
+                    test_summ = session.run(self.eval_merged, feed_dict=fd)
+                    self.test_writer.add_summary(test_summ, i)
+                    self.logger.log(' test set: metric_d', test_metric_d, 'loss_d', test_loss_d,
+                                    level=1)
+                self.logger.log(' Duration %f' % (time.time() - self.start_time), level=1)
+            if i % self.hps.persist_interval == 0 and i > 0:
+                self.saver.save(session, self.ckpt_path, global_step=i)
 
     def run(self, d_set):
-        pass
+        tf_config = tf.ConfigProto()
+        if 'gpu_allow_growth' in self.hps:
+            tf_config.gpu_options.allow_growth = self.hps.gpu_allow_growth
+        with tf.Session(config=tf_config) as sess:
+            self.init_saver()
+            self.init_summ_writer()
+            self.train_writer.add_graph(tf.get_default_graph())
+            sess.run(tf.global_variables_initializer())
+            param_i = self.hps.max_steps - 1
+            # eval_ckpt_file = self.hps.restore_file
+            if self.hps.is_train:
+                start_i = 0
+                if self.hps.is_restore:
+                    start_i = self.hps.restart_train_steps
+                    self.saver.restore(sess, self.hps.restore_file)
+                self.train(start_i, sess, d_set)
+                if self.hps.best_params_type == 'best_metric':
+                    self.saver.restore(sess, self.best_metric_ckpt_path)
+                    param_i = self.best_metric_step
+                elif self.hps.best_params_type == 'best_loss':
+                    self.saver.restore(sess, self.best_loss_ckpt_path)
+                    param_i = self.best_loss_step
+            else:
+                self.saver.restore(sess, self.hps.restore_file)
+            test_iter = d_set.get_test_iter()
+            var_hps = self.get_cur_var_hps(param_i)
+            metric_d, loss_d = self.eval(test_iter, var_hps, sess)
+            self.logger.log('test set: metric_d', metric_d, 'loss_d', loss_d)
+            self.process_result(test_iter, var_hps, sess)
+        self.exit()

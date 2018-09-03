@@ -1,4 +1,4 @@
-simport operator
+import operator
 import time
 from collections import defaultdict
 from functools import reduce
