@@ -69,7 +69,7 @@ default: &DEFAULT
   saver_max_to_keep: 20
 
   lr_steps: [2000]
-  lrs: [0.3]
+  lrs: [0.0003]
   cos_loss_lambda_steps: [2000]
   cos_loss_lambdas: [0.1]
   center_loss_lambda_steps: [2000]
@@ -105,6 +105,40 @@ default: &DEFAULT
 
 debug:
   <<: *DEFAULT
-  max_steps: 20
+  max_steps: 2000
   out_dir: './cr_model_v2/cr2_out/debug'
-  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_simple'
+#  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_simple'
+  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var'
+  model_key: 'CRModel2'
+
+ce: &CE
+  <<: *DEFAULT
+  out_dir: './cr_model_v2/cr2_out/ce'
+
+  train_output_summ_keys: ['h_rnn', 'h_cnn']
+  train_grad_summ_keys: ['ce2hrnn', 'ce2hcnn']
+  train_metric_summ_keys: ['e_acc']
+  train_loss_summ_keys: ['ce_loss']
+  is_merge_center_loss_centers: False
+
+  eval_loss_ks: ['ce_loss']
+  eval_metric_ks: ['wa', 'ua']
+
+  ckpt_metric_k: 'wa' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_loss'
+
+  max_steps: 2000
+
+  lr_steps: [2000]
+  lrs: [0.0003]
+
+  train_op_steps: [2000]
+  train_op_ks: ['ce_tp']
+
+# m1 means CRModel1
+ce_m1:
+  <<: *CE
+  out_dir: './cr_model_v2/cr2_out/ce_m1'
+  model_key: 'CRModel1'
+
+

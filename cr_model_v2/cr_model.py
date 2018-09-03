@@ -8,13 +8,14 @@ from utils import var_cnn_util as vcu
 def variable_summaries(x):
     with tf.name_scope('summaries'):
         mean = tf.reduce_mean(x)
-        with tf.name_scope('stddev'):
-            stddev = tf.sqrt(tf.reduce_mean(tf.square(x - mean)))
+        # with tf.name_scope('stddev'):
+        mean_summary = tf.summary.scalar('mean', mean)
+        stddev = tf.sqrt(tf.reduce_mean(tf.square(x - mean)))
         std_summary = tf.summary.scalar('stddev', stddev)
         max_summary = tf.summary.scalar('max', tf.reduce_max(x))
         min_summary = tf.summary.scalar('min', tf.reduce_min(x))
         his_summary = tf.summary.histogram('histogram', x)
-    return [std_summary, max_summary, min_summary, his_summary]
+    return [mean_summary, std_summary, max_summary, min_summary, his_summary]
 
 
 class BaseCRModel(object):
@@ -300,32 +301,9 @@ class BaseCRModel(object):
         self.train_merged = self.get_train_merged()
 
 
-# CNN: [3, 3, 1, 8], [3, 3, 8, 8], [3, 3, 8, 16], [3, 3, 16, 16]; max_pool 2 * 2
-# RNN: BiGRU 128
-# FC: 128 -> 64 ->4
-class CRModel1(BaseCRModel):
-
-    def cnn(self, inputs, seq_lens):
-        print('CRModel1')
-        h_conv = tf.expand_dims(inputs, 3)
-        cnn_kernels = [[3, 3, 1, 8], [3, 3, 8, 8], [3, 3, 8, 16], [3, 3, 16, 16]]
-        with tf.name_scope('conv'):
-            for cnn_kernel in cnn_kernels:
-                w_conv = self.weight_variable(cnn_kernel)
-                b_conv = self.bias_variable(cnn_kernel[-1:])
-                h_conv, seq_lens = vcu.var_conv2d_v2(h_conv, w=w_conv, bias=b_conv,
-                                                     seq_length=seq_lens, strides=[1, 1, 1, 1],
-                                                     padding='SAME',
-                                                     is_training=self.is_training_ph,
-                                                     activation_fn=tf.nn.relu,
-                                                     is_bn=self.hps.is_bn,
-                                                     is_mask=self.hps.is_var_cnn_mask)
-                h_conv, seq_lens = vcu.var_max_pool(h_conv, ksize=[1, 2, 2, 1],
-                                                    strides=[1, 2, 2, 1],
-                                                    padding='SAME', seq_length=seq_lens)
-            h_cnn = tf.reshape(h_conv,
-                               [tf.shape(h_conv)[0], -1, h_conv.shape[2] * h_conv.shape[3]])
-        return h_cnn, seq_lens
+class CGRUFCModel(BaseCRModel):
+    def cnn(self, input, seq_lens):
+        raise NotImplementedError('cnn function not implements yet')
 
     def rnn(self, inputs, seq_lens):
         rnn_hidden_size = 128
@@ -359,21 +337,6 @@ class CRModel1(BaseCRModel):
         hid_fc = h_fc1
         return h_fc, hid_fc
 
-    # def fc(self, inputs):
-    #     output_d = len(self.hps.emos)
-    #     input_d = 256
-    #     fc_hiddens = [64]
-    #     h_fc = inputs
-    #     h_fc_drop = h_fc
-    #     with tf.name_scope('fc'):
-    #         fc_sizes = [input_d] + fc_hiddens + [output_d]
-    #         for d1, d2 in zip(fc_sizes[:-1], fc_sizes[1:]):
-    #             w_fc = self.weight_variable([d1, d2])
-    #             b_fc = self.bias_variable([d2])
-    #             h_fc = tf.matmul(h_fc_drop, w_fc) + b_fc
-    #             h_fc_drop = tf.nn.dropout(tf.nn.relu(h_fc), self.fc_kprob_ph)
-    #     return h_fc
-
     def model_fn(self, x, t):
         # return output_d
         # output_d['logits']
@@ -390,3 +353,102 @@ class CRModel1(BaseCRModel):
         output_d['logits'] = logits
         output_d['hid_fc'] = hid_fc
         return output_d
+
+
+# CNN: [3, 3, 1, 8], [3, 3, 8, 8], [3, 3, 8, 16], [3, 3, 16, 16]; max_pool 2 * 2
+# RNN: BiGRU 128
+# FC: 128 -> 64 ->4
+class CRModel1(CGRUFCModel):
+
+    def cnn(self, inputs, seq_lens):
+        print('CRModel1')
+        h_conv = tf.expand_dims(inputs, 3)
+        cnn_kernels = [[3, 3, 1, 8], [3, 3, 8, 8], [3, 3, 8, 16], [3, 3, 16, 16]]
+        with tf.name_scope('conv'):
+            for cnn_kernel in cnn_kernels:
+                w_conv = self.weight_variable(cnn_kernel)
+                b_conv = self.bias_variable(cnn_kernel[-1:])
+                h_conv, seq_lens = vcu.var_conv2d_v2(h_conv, w=w_conv, bias=b_conv,
+                                                     seq_length=seq_lens, strides=[1, 1, 1, 1],
+                                                     padding='SAME',
+                                                     is_training=self.is_training_ph,
+                                                     activation_fn=tf.nn.relu,
+                                                     is_bn=self.hps.is_bn,
+                                                     is_mask=self.hps.is_var_cnn_mask)
+                h_conv, seq_lens = vcu.var_max_pool(h_conv, ksize=[1, 2, 2, 1],
+                                                    strides=[1, 2, 2, 1],
+                                                    padding='SAME', seq_length=seq_lens)
+            h_cnn = tf.reshape(h_conv,
+                               [tf.shape(h_conv)[0], -1, h_conv.shape[2] * h_conv.shape[3]])
+        return h_cnn, seq_lens
+
+    # def model_fn(self, x, t):
+    #     # return output_d
+    #     # output_d['logits']
+    #     # output_d['h_rnn']
+    #     # output_d['hid_fc']
+    #     # output_d['h_cnn']
+    #     # raise NotImplementedError("Please Implement this method")
+    #     h_cnn, seq_lens = self.cnn(x, t)
+    #     h_rnn = self.rnn(h_cnn, seq_lens)
+    #     logits, hid_fc = self.fc(h_rnn)
+    #     output_d = defaultdict(lambda: None)
+    #     output_d['h_cnn'] = h_cnn
+    #     output_d['h_rnn'] = h_rnn
+    #     output_d['logits'] = logits
+    #     output_d['hid_fc'] = hid_fc
+    #     return output_d
+
+
+# CNN: [[7, 7, 1, 16], [3, 3, 16, 16], [3, 3, 16, 32], [3, 3, 32, 32]], strides: [1, 2, 2, 1]
+class CRModel2(CGRUFCModel):
+
+    def cnn(self, inputs, seq_lens):
+        print('CRModel2')
+        h = tf.expand_dims(inputs, 3)
+        i = 0
+        cnn_kernels = [[7, 7, 1, 16], [3, 3, 16, 16], [3, 3, 16, 32], [3, 3, 32, 32]]
+        for cnn_kernel in cnn_kernels:
+            i += 1
+            with tf.name_scope('conv' + str(i)):
+                w = self.weight_variable(cnn_kernel)
+                b = self.bias_variable(cnn_kernel[-1:])
+                h, seq_lens = vcu.var_conv2d_v2(h, w=w, bias=b, seq_length=seq_lens,
+                                                strides=[1, 2, 2, 1], padding='SAME',
+                                                is_training=self.is_training_ph,
+                                                activation_fn=tf.nn.relu,
+                                                is_bn=self.hps.is_bn,
+                                                is_mask=self.hps.is_var_cnn_mask)
+        h_cnn = tf.reshape(h, [tf.shape(h)[0], -1, h.shape[2] * h.shape[3]])
+        return h_cnn, seq_lens
+
+
+# CNN
+# kernels: [[7, 7, 1, 16], [3, 3, 16, 16], [3, 3, 16, 32], [3, 3, 32, 32]]
+# strides: [[1, 2, 2, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]]
+# is_poolings: [False, True, True, True]
+class CRModel3(CGRUFCModel):
+
+    def cnn(self, inputs, seq_lens):
+        print('CRModel3')
+        h = tf.expand_dims(inputs, 3)
+        i = 0
+        kernels = [[7, 7, 1, 16], [3, 3, 16, 16], [3, 3, 16, 32], [3, 3, 32, 32]]
+        strides = [[1, 2, 2, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]]
+        is_poolings = [False, True, True, True]
+        for kernel, s, is_pool in zip(kernels, strides, is_poolings):
+            i += 1
+            with tf.name_scope('conv' + str(i)):
+                w = self.weight_variable(kernel)
+                b = self.bias_variable(kernel[-1:])
+                h, seq_lens = vcu.var_conv2d_v2(h, w=w, bias=b, seq_length=seq_lens,
+                                                strides=s, padding='SAME',
+                                                is_training=self.is_training_ph,
+                                                activation_fn=tf.nn.relu,
+                                                is_bn=self.hps.is_bn,
+                                                is_mask=self.hps.is_var_cnn_mask)
+                if is_pool:
+                    h, seq_lens = vcu.var_max_pool(h, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1],
+                                                   padding='SAME', seq_length=seq_lens)
+        h_cnn = tf.reshape(h, [tf.shape(h)[0], -1, h.shape[2] * h.shape[3]])
+        return h_cnn, seq_lens

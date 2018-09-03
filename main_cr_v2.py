@@ -27,8 +27,12 @@ def main(unused_argv):
     yparams = cr_cfg_process.CRHpsPreprocessor(yparams, flags_dict).preprocess()
     print('id str:', yparams.id_str)
     yparams.save()
-    model_dict = {'CRModel1': cr_model.CRModel1(yparams)}
-    model = model_dict[yparams.model_key]
+    CRM_dict = {'CRModel1': cr_model.CRModel1,
+                'CRModel2': cr_model.CRModel2,
+                'CRModel3': cr_model.CRModel3}
+    # print('model_key', yparams.model_key)
+    CRM = CRM_dict[yparams.model_key]
+    model = CRM(yparams)
     l_data = load_data.load_data(yparams)
     d_set = data_set.DataSet(l_data, yparams)
     cr_model_run_v2 = cr_model_run.CRModelRun(model)
