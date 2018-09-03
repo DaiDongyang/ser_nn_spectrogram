@@ -1,7 +1,7 @@
 default: &DEFAULT
   ## cr_model.py
   freq_size: 400
-  float_type: '16' # '32'
+  float_type: '32' # '32'
 
   is_weighted_cross_entropy_loss: True
   features_key: 'h_rnn'
@@ -15,10 +15,11 @@ default: &DEFAULT
 #  center_loss_gamma: 0.05
   optimizer_type: 'adam'
 
-  train_output_summ_keys: [] # or ''
-  train_grad_summ_keys: []
-  train_metric_summ_keys: []
-  train_loss_summ_keys: []
+  train_output_summ_keys: ['h_rnn'] # or ''
+  train_grad_summ_keys: ['ce2hrnn', 'ce2hcnn']
+  train_metric_summ_keys: ['e_acc']
+  train_loss_summ_keys: ['ce_loss']
+  is_merge_center_loss_centers: False
 
   is_bn: False
   is_var_cnn_mask: True
@@ -47,7 +48,7 @@ default: &DEFAULT
   id_prefix: '' # 可以在id_str前面加一些自定义的东西
   is_train: True
   is_restore: False
-  out_dir: './cr2_out'
+  out_dir: './cr_model_v2/cr2_out'
   tf_log_fold_prefix: 'tflog_'
   result_npy_fold: 'result_npy'
   result_matrix_fold: 'result_matrix'
@@ -67,23 +68,22 @@ default: &DEFAULT
 
   saver_max_to_keep: 20
 
-  lr_steps: []
-  lrs: []
-  cos_loss_lambda_steps: []
-  cos_loss_lambdas: []
-  center_loss_lambda_steps: []
-  center_loss_lambdas: []
-  center_loss_alpha_steps: []
-  center_loss_alhpas: []
-  center_loss_beta_steps: []
-  center_loss_betas: []
-  center_loss_gamma_steps: []
-  center_loss_gammas: []
+  lr_steps: [2000]
+  lrs: [0.3]
+  cos_loss_lambda_steps: [2000]
+  cos_loss_lambdas: [0.1]
+  center_loss_lambda_steps: [2000]
+  center_loss_lambdas: [0.1]
+  center_loss_alpha_steps: [100, 1900]
+  center_loss_alhpas: [1, 0.5]
+  center_loss_beta_steps: [2000]
+  center_loss_betas: [0.2]
+  center_loss_gamma_steps: [2000]
+  center_loss_gammas: [0.1]
 
-  train_op_steps: []
-  train_op_ks: []
+  train_op_steps: [2000]
+  train_op_ks: ['ce_tp']
 
-#  output_save_ks: [] # or ''
   is_save_emo_result: False
   max_steps: 20
   fc_kprob: 0.5
@@ -97,3 +97,14 @@ default: &DEFAULT
 
   # main_cr_v2.py
   model_key: 'CRModel1'
+
+  # utils, other file
+  is_log_beside: True
+  stdout_level: 1
+  log_level: 0
+
+debug:
+  <<: *DEFAULT
+  max_steps: 20
+  out_dir: './cr_model_v2/cr2_out/debug'
+  data_dir: '/home/ddy/projects/emotions/data/Spectrogram_EN_Var_simple'

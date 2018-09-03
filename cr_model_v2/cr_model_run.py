@@ -32,11 +32,15 @@ class CRModelRun(object):
         # hps = self.hps
         if self.hps.float_type == '16':
             np_float_type = np.float16
+            tf_float_type = tf.float16
         elif self.hps.float_type == '64':
             np_float_type = np.float64
+            tf_float_type = tf.float64
         else:
             np_float_type = np.float32
+            tf_float_type = tf.float32
         self.np_float_type = np_float_type
+        self.tf_float_type = tf_float_type
         self.start_time = time.time()
         self.ckpt_path = os.path.join(self.hps.ckpt_dir, self.hps.id_str)
         self.best_metric = 0.0
@@ -58,23 +62,23 @@ class CRModelRun(object):
         # placeholder
         # used for merge dev set and test set
         self.metric_ph_d = defaultdict(lambda: None)
-        self.metric_ph_d['wa'] = tf.placeholder(self.hps.float_type, shape=[], name='wa_ph')
-        self.metric_ph_d['ua'] = tf.placeholder(self.hps.float_type, shape=[], name='ua_ph')
-        self.metric_ph_d['wua'] = tf.placeholder(self.hps.float_type, shape=[], name='wua_ph')
+        self.metric_ph_d['wa'] = tf.placeholder(self.tf_float_type, shape=[], name='wa_ph')
+        self.metric_ph_d['ua'] = tf.placeholder(self.tf_float_type, shape=[], name='ua_ph')
+        self.metric_ph_d['wua'] = tf.placeholder(self.tf_float_type, shape=[], name='wua_ph')
 
         self.loss_ph_d = defaultdict(lambda: None)
-        self.loss_ph_d['ce_loss'] = tf.placeholder(self.hps.float_type, shape=[],
+        self.loss_ph_d['ce_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                    name='ce_loss_ph')
-        self.loss_ph_d['center_loss'] = tf.placeholder(self.hps.float_type, shape=[],
+        self.loss_ph_d['center_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                        name='center_loss_ph')
-        self.loss_ph_d['cos_loss'] = tf.placeholder(self.hps.float_type, shape=[],
+        self.loss_ph_d['cos_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                     name='cos_loss_ph')
-        self.loss_ph_d['ce_center_loss'] = tf.placeholder(self.hps.float_type, shape=[],
+        self.loss_ph_d['ce_center_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                           name='ce_center_loss_ph')
-        self.loss_ph_d['ce_cos_loss'] = tf.placeholder(self.hps.float_type, shape=[],
+        self.loss_ph_d['ce_cos_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                        name='ce_cos_loss_ph')
-        self.eval_merged = self.get_eval_merged(self.hps.eval_merged_metric_ks,
-                                                self.hps.eval_merged_loss_ks)
+        self.eval_merged = self.get_eval_merged(self.hps.eval_metric_ks,
+                                                self.hps.eval_loss_ks)
 
     def get_eval_merged(self, merged_metric_ks, merged_loss_ks):
         summary_list = list()
@@ -186,18 +190,39 @@ class CRModelRun(object):
                         model.fc_kprob_ph: 1.0,
                         model.x_ph: batched_input.x.astype(self.np_float_type),
                         model.t_ph: batched_input.t,
+                        model.e_ph: batched_input.e,
                         model.e_w_ph: batched_input.w.astype(self.np_float_type),
                         model.is_training_ph: False,
                         model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
                         model.center_loss_lambda_ph: var_hps.center_loss_lambda
                     })
+                # todo: debug
+                # print(batched_input.e)
+                # print(batched_input.x.astype(self.np_float_type))
+                # batched_h_cnn = session.run(
+                #     (model.output_d['h_cnn']), feed_dict={
+                #         model.fc_kprob_ph: 1.0,
+                #         model.x_ph: batched_input.x.astype(self.np_float_type),
+                #         model.t_ph: batched_input.t,
+                #         model.e_ph: batched_input.e,
+                #         model.e_w_ph: batched_input.w.astype(self.np_float_type),
+                #         model.is_training_ph: False,
+                #         model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
+                #         model.center_loss_lambda_ph: var_hps.center_loss_lambda
+                #     })
+                # print(batched_h_cnn)
+                # print(np.max(batched_h_cnn))
+                # print(np.min(batched_h_cnn))
                 batched_pr = np.argmax(batched_logits, 1)
                 gts += list(batched_input.e)
                 prs += list(batched_pr)
                 self._dict_list_append(losses_d, batched_loss_d)
                 weights.append(batch_len)
             except tf.errors.OutOfRangeError:
+
+                # raise ValueError('End eval')
                 break
+
         loss_d = self._dict_list_weighted_avg(losses_d, weights)
         wa = accuracy_score(y_true=gts, y_pred=prs)
         ua = recall_score(y_true=gts, y_pred=prs, average='macro')
@@ -226,22 +251,26 @@ class CRModelRun(object):
 
         MAX_LOOP = 999
         for _ in range(MAX_LOOP):
-            batched_input = session.run(test_iter.BatchedInput)
-            batched_logits, batched_h_rnn, batched_hid_fc = session.run(
-                (model_logits, model_h_rnn, model_hid_fc), feed_dict={
-                    model.fc_kprob_ph: 1.0,
-                    model.x_ph: batched_input.x.astype(self.np_float_type),
-                    model.t_ph: batched_input.t,
-                    model.e_w_ph: batched_input.w.astype(self.np_float_type),
-                    model.is_training_ph: False,
-                    model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
-                    model.center_loss_lambda_ph: var_hps.center_loss_lambda,
-                })
-            batched_pr = np.argmax(batched_logits, 1)
-            gts += list(batched_input.e)
-            prs += list(batched_pr)
-            h_rnn_list.append(batched_h_rnn)
-            hid_fc_list.append(batched_hid_fc)
+            try:
+                batched_input = session.run(test_iter.BatchedInput)
+                batched_logits, batched_h_rnn, batched_hid_fc = session.run(
+                    (model_logits, model_h_rnn, model_hid_fc), feed_dict={
+                        model.fc_kprob_ph: 1.0,
+                        model.x_ph: batched_input.x.astype(self.np_float_type),
+                        model.t_ph: batched_input.t,
+                        model.e_ph: batched_input.e,
+                        model.e_w_ph: batched_input.w.astype(self.np_float_type),
+                        model.is_training_ph: False,
+                        model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
+                        model.center_loss_lambda_ph: var_hps.center_loss_lambda,
+                    })
+                batched_pr = np.argmax(batched_logits, 1)
+                gts += list(batched_input.e)
+                prs += list(batched_pr)
+                h_rnn_list.append(batched_h_rnn)
+                hid_fc_list.append(batched_hid_fc)
+            except tf.errors.OutOfRangeError:
+                break
         gt_np = np.array(gts)
         pr_np = np.array(prs)
         h_rnn_np = np.vstack(h_rnn_list)
@@ -289,7 +318,7 @@ class CRModelRun(object):
             var_hps = self.get_cur_var_hps(i)
             batch_input = session.run(train_iter.BatchedInput)
 
-            if i % self.hps.train_eval_iterval == 0:
+            if i % self.hps.train_eval_interval == 0:
                 summ, batch_e_acc, batch_loss_d, _ = session.run(
                     (model.train_merged, model.metric_d['e_acc'], model_loss_d, train_op),
                     feed_dict={

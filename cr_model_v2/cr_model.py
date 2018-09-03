@@ -53,6 +53,7 @@ class BaseCRModel(object):
                                                    name='center_loss_gamma_ph')
 
         # build graph
+        # self.vars_d = None
         self.output_d = None
         self.metric_d = None
         self.loss_d = None
@@ -63,24 +64,31 @@ class BaseCRModel(object):
         self.train_merged = None
         self.build_graph()
 
-    @staticmethod
-    def weight_variable(shape):
-        initial = tf.truncated_normal(shape, stddev=0.1)
+    def weight_variable(self, shape):
+        initial = tf.truncated_normal(shape, stddev=0.1, dtype=self.float_type)
         return tf.Variable(initial)
 
-    @staticmethod
-    def bias_variable(shape):
-        initial = tf.constant(0.1, shape=shape)
+    def bias_variable(self, shape):
+        initial = tf.constant(0.1, shape=shape, dtype=self.float_type)
         return tf.Variable(initial)
+
+    def get_center_loss_centers_variable(self, shape=None):
+        with tf.variable_scope('center_loss_variables') as scope:
+            try:
+                v = tf.get_variable('center_loss_centers', shape, dtype=self.float_type,
+                                    initializer=tf.constant_initializer(0),
+                                    trainable=False)
+            except ValueError:
+                scope.reuse_variables()
+                v = tf.get_variable('center_loss_centers', dtype=self.float_type)
+        return v
 
     def calc_center_loss(self, features, labels, num_classes):
         len_features = features.get_shape()[1]
         if self.hps.is_center_loss_f_norm:
             features = tf.nn.l2_normalize(features)
 
-        centers = tf.get_variable('center_loss_centers', [num_classes, len_features],
-                                  dtype=self.float_type, initializer=tf.constant_initializer(0),
-                                  trainable=False)
+        centers = self.get_center_loss_centers_variable(shape=[num_classes, len_features])
         labels = tf.reshape(labels, [-1])
         centers_batch = tf.gather(centers, labels)
         loss = tf.nn.l2_loss(features - centers_batch)
@@ -91,10 +99,7 @@ class BaseCRModel(object):
         len_features = features.get_shape()[1]
         if self.hps.is_center_loss_f_norm:
             features = tf.nn.l2_normalize(features)
-
-        centers = tf.get_variable('center_loss_centers', [num_classes, len_features],
-                                  dtype=self.float_type, initializer=tf.constant_initializer(0),
-                                  trainable=False)
+        centers = self.get_center_loss_centers_variable(shape=[num_classes, len_features])
         labels = tf.reshape(labels, [-1])
         centers_batch = tf.gather(centers, labels)
 
@@ -241,12 +246,12 @@ class BaseCRModel(object):
 
     def get_grad_d(self):
         grad_d = defaultdict(lambda: None)
-        grad_d['ce2hrnn'] = tf.gradients(self.loss_d['ce_loss'], self.output_d['h_rnn'])
-        grad_d['ce2hcnn'] = tf.gradients(self.loss_d['ce_loss'], self.output_d['h_cnn'])
-        grad_d['center2hrnn'] = tf.gradients(self.loss_d['center_loss'], self.output_d['h_rnn'])
-        grad_d['center2hcnn'] = tf.gradients(self.loss_d['center_loss'], self.output_d['h_cnn'])
-        grad_d['cos2hrnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_rnn'])
-        grad_d['cos2hcnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_cnn'])
+        grad_d['ce2hrnn'] = tf.gradients(self.loss_d['ce_loss'], self.output_d['h_rnn'])[0]
+        grad_d['ce2hcnn'] = tf.gradients(self.loss_d['ce_loss'], self.output_d['h_cnn'])[0]
+        grad_d['center2hrnn'] = tf.gradients(self.loss_d['center_loss'], self.output_d['h_rnn'])[0]
+        grad_d['center2hcnn'] = tf.gradients(self.loss_d['center_loss'], self.output_d['h_cnn'])[0]
+        grad_d['cos2hrnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_rnn'])[0]
+        grad_d['cos2hcnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_cnn'])[0]
         return grad_d
 
     def get_train_merged(self):
@@ -261,6 +266,7 @@ class BaseCRModel(object):
             with tf.name_scope('grad'):
                 for k in self.hps.train_grad_summ_keys:
                     with tf.name_scope(k):
+                        # for i, ele in zip(range(self.grad_d))
                         v_summ_list = variable_summaries(self.grad_d[k])
                     summary_list += v_summ_list
         if isinstance(self.hps.train_metric_summ_keys, list):
@@ -274,6 +280,14 @@ class BaseCRModel(object):
                 for k in self.hps.train_loss_summ_keys:
                     summ = tf.summary.scalar(k, self.loss_d[k])
                     summary_list.append(summ)
+        if self.hps.is_merge_center_loss_centers:
+            with tf.name_scope('center_loss_vars'):
+                features = self.output_d[self.hps.features_key]
+                len_features = features.get_shape()[1]
+                shape = [len(self.hps.emos), len_features]
+                v_summ_list = variable_summaries(self.get_center_loss_centers_variable(shape=shape))
+                summary_list += v_summ_list
+
         return tf.summary.merge(summary_list)
 
     def build_graph(self):
@@ -306,6 +320,9 @@ class CRModel1(BaseCRModel):
                                                      activation_fn=tf.nn.relu,
                                                      is_bn=self.hps.is_bn,
                                                      is_mask=self.hps.is_var_cnn_mask)
+                h_conv, seq_lens = vcu.var_max_pool(h_conv, ksize=[1, 2, 2, 1],
+                                                    strides=[1, 2, 2, 1],
+                                                    padding='SAME', seq_length=seq_lens)
             h_cnn = tf.reshape(h_conv,
                                [tf.shape(h_conv)[0], -1, h_conv.shape[2] * h_conv.shape[3]])
         return h_cnn, seq_lens
@@ -316,7 +333,7 @@ class CRModel1(BaseCRModel):
             rnn_cell = tf.nn.rnn_cell.GRUCell(rnn_hidden_size)
             outputs, state = tf.nn.bidirectional_dynamic_rnn(rnn_cell, rnn_cell, inputs,
                                                              sequence_length=seq_lens,
-                                                             dtype=tf.float32,
+                                                             dtype=self.float_type,
                                                              swap_memory=True)
             rng = tf.range(0, tf.shape(seq_lens)[0])
             indexes = tf.stack([rng, seq_lens - 1], axis=1, name="indexes")
@@ -341,7 +358,6 @@ class CRModel1(BaseCRModel):
         h_fc = h_fc2
         hid_fc = h_fc1
         return h_fc, hid_fc
-
 
     # def fc(self, inputs):
     #     output_d = len(self.hps.emos)

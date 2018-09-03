@@ -79,3 +79,5 @@ class CRHpsPreprocessor(cfg_process.BaseHpsPreprocessor):
                                 os.path.join(self.hparams.out_dir, self.hparams.log_fold))
         if not os.path.exists(self.hparams.log_dir):
             os.makedirs(self.hparams.log_dir)
+        self.hparams.add_hparam('log_path',
+                                os.path.join(self.hparams.log_dir, self.hparams.id_str + '.log'))
