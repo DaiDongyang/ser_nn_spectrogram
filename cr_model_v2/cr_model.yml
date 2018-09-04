@@ -68,10 +68,14 @@ default: &DEFAULT
 
   saver_max_to_keep: 20
 
+  dist_loss_margin: 0.1
+
   lr_steps: [3000]
   lrs: [0.0003]
   cos_loss_lambda_steps: [3000]
   cos_loss_lambdas: [0.1]
+  dist_loss_lambda_steps: [3000]
+  dist_loss_lambdas: [0.1]
   center_loss_lambda_steps: [3000]
   center_loss_lambdas: [0.1]
   center_loss_alpha_steps: [100, 2900]
@@ -81,8 +85,12 @@ default: &DEFAULT
   center_loss_gamma_steps: [3000]
   center_loss_gammas: [0.1]
 
+
+
   train_op_steps: [3000]
   train_op_ks: ['ce_tp']
+
+
 
   is_save_emo_result: False
   max_steps: 20

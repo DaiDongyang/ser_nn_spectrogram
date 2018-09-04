@@ -18,7 +18,7 @@ from utils import post_process
 
 class VarHps(collections.namedtuple('VarHps',
                                     ('lr', 'cos_loss_lambda', 'center_loss_lambda',
-                                     'center_loss_alpha', 'center_loss_beta',
+                                     'dist_loss_lambda', 'center_loss_alpha', 'center_loss_beta',
                                      'center_loss_gamma'))):
     pass
 
@@ -135,6 +135,8 @@ class CRModelRun(object):
                                           self.hps.cos_loss_lambdas)
         center_loss_lambda = self.get_cur_hp(cur_i, self.hps.center_loss_lambda_steps,
                                              self.hps.center_loss_lambdas)
+        dist_loss_lambda = self.get_cur_hp(cur_i, self.hps.dist_loss_lambda_steps,
+                                           self.hps.dist_loss_lambdas)
         center_loss_alpha = self.get_cur_hp(cur_i, self.hps.center_loss_alpha_steps,
                                             self.hps.center_loss_alhpas)
         center_loss_beta = self.get_cur_hp(cur_i, self.hps.center_loss_beta_steps,
@@ -145,6 +147,7 @@ class CRModelRun(object):
             lr=lr,
             cos_loss_lambda=cos_loss_lambda,
             center_loss_lambda=center_loss_lambda,
+            dist_loss_lambda=dist_loss_lambda,
             center_loss_alpha=center_loss_alpha,
             center_loss_beta=center_loss_beta,
             center_loss_gamma=center_loss_gamma,
@@ -194,7 +197,8 @@ class CRModelRun(object):
                         model.e_w_ph: batched_input.w.astype(self.np_float_type),
                         model.is_training_ph: False,
                         model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
-                        model.center_loss_lambda_ph: var_hps.center_loss_lambda
+                        model.center_loss_lambda_ph: var_hps.center_loss_lambda,
+                        model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
                     })
                 # todo: debug
                 # print(batched_input.e)
@@ -263,6 +267,7 @@ class CRModelRun(object):
                         model.is_training_ph: False,
                         model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
                         model.center_loss_lambda_ph: var_hps.center_loss_lambda,
+                        model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
                     })
                 batched_pr = np.argmax(batched_logits, 1)
                 gts += list(batched_input.e)
@@ -330,6 +335,7 @@ class CRModelRun(object):
                         model.e_w_ph: batch_input.w.astype(self.np_float_type),
                         model.is_training_ph: True,
                         model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
+                        model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
                         model.center_loss_lambda_ph: var_hps.center_loss_lambda,
                         model.center_loss_alpha_ph: var_hps.center_loss_alpha,
                         model.center_loss_beta_ph: var_hps.center_loss_beta,
@@ -347,6 +353,7 @@ class CRModelRun(object):
                     model.e_w_ph: batch_input.w.astype(self.np_float_type),
                     model.is_training_ph: True,
                     model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
+                    model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
                     model.center_loss_lambda_ph: var_hps.center_loss_lambda,
                     model.center_loss_alpha_ph: var_hps.center_loss_alpha,
                     model.center_loss_beta_ph: var_hps.center_loss_beta,

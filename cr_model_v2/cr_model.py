@@ -42,7 +42,7 @@ class BaseCRModel(object):
         # loss weight of emo classifier for cross entropy
         self.e_w_ph = tf.placeholder(float_type, shape=[None], name='e_w_ph')
         self.is_training_ph = tf.placeholder(tf.bool, shape=[], name='is_training_ph')
-
+        self.dist_loss_lambda_ph = tf.placeholder(float_type, shape=[], name='dist_loss_lambda_ph')
         self.cos_loss_lambda_ph = tf.placeholder(float_type, shape=[], name='cos_loss_lambda_ph')
         self.center_loss_lambda_ph = tf.placeholder(float_type, shape=[],
                                                     name='center_loss_lambda_ph')
@@ -162,6 +162,28 @@ class BaseCRModel(object):
         l2 = (ne_num + tf.reduce_sum(ne_mask * d)) / (2.0 * ne_num)
         return (l1 + l2) / 2.0
 
+    def calc_dist_loss(self, features, labels):
+        f0 = tf.expand_dims(features, axis=0)
+        f1 = tf.expand_dims(features, axis=1)
+        f_diffs = f0 - f1
+        f_l2s = tf.reduce_sum(tf.square(f_diffs), axis=-1)
+
+        label0 = tf.expand_dims(labels, 0)
+        label1 = tf.expand_dims(labels, 1)
+        eq_mask = tf.cast(tf.equal(label0, label1), dtype=self.float_type)
+        ne_mask = 1. - eq_mask
+        eq_mask = eq_mask - tf.eye(tf.shape(eq_mask)[0], tf.shape(eq_mask)[1],
+                                   dtype=self.float_type)
+
+        eq_num = tf.maximum(tf.reduce_sum(eq_mask), 1.)
+        ne_num = tf.maximum(tf.reduce_sum(ne_mask), 1.)
+
+        l_intra = tf.reduce_sum(eq_mask * f_l2s) / eq_num
+        l_inter = tf.reduce_sum(ne_mask * f_l2s) / ne_num
+
+        dist_loss = tf.maximum(self.hps.dist_loss_margin + l_intra - l_inter, 0)
+        return dist_loss
+
     def model_fn(self, x, t):
         # return output_d
         # output_d['logits']
@@ -196,14 +218,18 @@ class BaseCRModel(object):
             center_loss = self.calc_center_loss(features=features, labels=self.e_ph,
                                                 num_classes=len(self.hps.emos))
             cos_loss = self.calc_cos_loss(features=features, labels=self.e_ph)
+            dist_loss = self.calc_dist_loss(features=features, labels=self.e_ph)
             ce_center_loss = ce_loss + self.center_loss_lambda_ph * center_loss
             ce_cos_loss = (1 - self.cos_loss_lambda_ph) * ce_loss + self.cos_loss_lambda_ph * cos_loss
+            ce_dist_loss = (1 - self.dist_loss_lambda_ph) * ce_loss + self.dist_loss_lambda_ph * dist_loss
         loss_d = defaultdict(lambda: None)
         loss_d['ce_loss'] = ce_loss
         loss_d['center_loss'] = center_loss
         loss_d['cos_loss'] = cos_loss
+        loss_d['dist_loss'] = dist_loss
         loss_d['ce_center_loss'] = ce_center_loss
         loss_d['ce_cos_loss'] = ce_cos_loss
+        loss_d['ce_dist_loss'] = ce_dist_loss
         return loss_d
 
     def get_update_op_d(self):
@@ -233,19 +259,23 @@ class BaseCRModel(object):
             ce_tp = optimizer.minimize(self.loss_d['ce_loss'])
             center_tp = optimizer.minimize(self.loss_d['center_loss'])
             cos_tp = optimizer.minimize(self.loss_d['cos_loss'])
+            dist_tp = optimizer.minimize(self.loss_d['dist_loss'])
             ce_center_tp = optimizer.minimize(self.loss_d['ce_center_loss'])
             ce_cos_tp = optimizer.minimize(self.loss_d['ce_cos_loss'])
+            ce_dist_tp = optimizer.minimize(self.loss_d['ce_dist_loss'])
         train_op_d = defaultdict(tuple)
         train_op_d['ce_tp'] = ce_tp
         train_op_d['center_tp'] = center_tp
         train_op_d['center_utp'] = (
             self.update_op_d['inter_update_c_op'], self.update_op_d['intra_update_c_op'], center_tp)
         train_op_d['cos_tp'] = cos_tp
+        train_op_d['dist_tp'] = dist_tp
         train_op_d['ce_center_tp'] = ce_center_tp
         train_op_d['ce_center_utp'] = (
             self.update_op_d['inter_update_c_op'], self.update_op_d['intra_update_c_op'],
             ce_center_tp)
         train_op_d['ce_cos_tp'] = ce_cos_tp
+        train_op_d['ce_dist_tp'] = ce_dist_tp
         return train_op_d
 
     def get_grad_d(self):
