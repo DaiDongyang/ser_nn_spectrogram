@@ -68,20 +68,20 @@ default: &DEFAULT
 
   saver_max_to_keep: 20
 
-  lr_steps: [2000]
+  lr_steps: [3000]
   lrs: [0.0003]
-  cos_loss_lambda_steps: [2000]
+  cos_loss_lambda_steps: [3000]
   cos_loss_lambdas: [0.1]
-  center_loss_lambda_steps: [2000]
+  center_loss_lambda_steps: [3000]
   center_loss_lambdas: [0.1]
-  center_loss_alpha_steps: [100, 1900]
+  center_loss_alpha_steps: [100, 2900]
   center_loss_alhpas: [1, 0.5]
-  center_loss_beta_steps: [2000]
+  center_loss_beta_steps: [3000]
   center_loss_betas: [0.2]
-  center_loss_gamma_steps: [2000]
+  center_loss_gamma_steps: [3000]
   center_loss_gammas: [0.1]
 
-  train_op_steps: [2000]
+  train_op_steps: [3000]
   train_op_ks: ['ce_tp']
 
   is_save_emo_result: False
@@ -127,9 +127,9 @@ ce: &CE
   ckpt_metric_k: 'wa' # or 'ua' 'wua'
   ckpt_loss_k: 'ce_loss'
 
-  max_steps: 2000
+  max_steps: 3000
 
-  lr_steps: [2000]
+  lr_steps: [3000]
   lrs: [0.0003]
 
   train_op_steps: [2000]
@@ -140,5 +140,48 @@ ce_m1:
   <<: *CE
   out_dir: './cr_model_v2/cr2_out/ce_m1'
   model_key: 'CRModel1'
+  max_steps: 3000
 
+ce_m2:
+  <<: *CE
+  out_dir: './cr_model_v2/cr2_out/ce_m2'
+  model_key: 'CRModel2'
+  max_steps: 3000
+
+ce_m3:
+  <<: *CE
+  out_dir: './cr_model_v2/cr2_out/ce_m3'
+  model_key: 'CRModel3'
+  max_steps: 3000
+
+# nmc: not mask cnn
+ce_m1_nmc:
+  <<: *CE
+  out_dir: './cr_model_v2/cr2_out/ce_m1_nmc'
+  model_key: 'CRModel1'
+  max_steps: 3000
+
+  is_var_cnn_mask: False
+
+# bn means batch norm
+ce_m1_bn:
+  <<: *CE
+  out_dir: './cr_model_v2/cr2_out/ce_m1_bn'
+  model_key: 'CRModel1'
+  max_steps: 3000
+  is_bn: True
+
+ce_m2_bn:
+  <<: *CE
+  out_dir: './cr_model_v2/cr2_out/ce_m2_bn'
+  model_key: 'CRModel2'
+  max_steps: 3000
+  is_bn: True
+
+ce_m3_bn:
+  <<: *CE
+  out_dir: './cr_model_v2/cr2_out/ce_m3_bn'
+  model_key: 'CRModel3'
+  max_steps: 3000
+  is_bn: True
 
