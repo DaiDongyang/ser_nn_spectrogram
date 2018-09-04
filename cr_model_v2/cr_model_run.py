@@ -364,12 +364,12 @@ class CRModelRun(object):
                 self.dev_writer.add_summary(dev_summ, i)
                 dev_metric = dev_metric_d[self.ckpt_metric_k]
                 dev_loss = dev_loss_d[self.ckpt_loss_k]
-                if dev_metric > self.best_metric:
+                if i > self.hps.best_params_start_steps and dev_metric > self.best_metric:
                     self.best_metric = dev_metric
                     self.best_metric_step = i
                     self.saver.save(session, self.best_metric_ckpt_path)
                     l_level = 2
-                if dev_loss < self.best_loss:
+                if i > self.hps.best_params_start_steps and dev_loss < self.best_loss:
                     self.best_loss = dev_loss
                     self.best_loss_step = i
                     self.saver.save(session, self.best_loss_ckpt_path)

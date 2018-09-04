@@ -98,6 +98,7 @@ class BaseCRModel(object):
     # update center only consider intra-distance
     def intra_update_center_op(self, features, labels, alpha, num_classes):
         len_features = features.get_shape()[1]
+        # todo: 这里的标准化并不好，自己实现一种标准化。保持一个变量，代表所有的特征的模的平均值。
         if self.hps.is_center_loss_f_norm:
             features = tf.nn.l2_normalize(features)
         centers = self.get_center_loss_centers_variable(shape=[num_classes, len_features])
@@ -151,6 +152,8 @@ class BaseCRModel(object):
         label1 = tf.expand_dims(labels, 1)
         eq_mask = tf.cast(tf.equal(label0, label1), dtype=self.float_type)
         ne_mask = 1. - eq_mask
+        eq_mask = eq_mask - tf.eye(tf.shape(eq_mask)[0], tf.shape(eq_mask)[1],
+                                   dtype=self.float_type)
 
         eq_num = tf.maximum(tf.reduce_sum(eq_mask), 1)
         ne_num = tf.maximum(tf.reduce_sum(ne_mask), 1)
@@ -194,7 +197,7 @@ class BaseCRModel(object):
                                                 num_classes=len(self.hps.emos))
             cos_loss = self.calc_cos_loss(features=features, labels=self.e_ph)
             ce_center_loss = ce_loss + self.center_loss_lambda_ph * center_loss
-            ce_cos_loss = ce_loss + self.cos_loss_lambda_ph * cos_loss
+            ce_cos_loss = (1 - self.cos_loss_lambda_ph) * ce_loss + self.cos_loss_lambda_ph * cos_loss
         loss_d = defaultdict(lambda: None)
         loss_d['ce_loss'] = ce_loss
         loss_d['center_loss'] = center_loss
