@@ -328,7 +328,7 @@ class CRModelRun(object):
             batch_input = session.run(train_iter.BatchedInput)
 
             # #todo: debug
-            # l_intra, l_inter = session.run((model.l_intra, model.l_inter), feed_dict={
+            # l_intra, l_inter, h_rnn = session.run((model.l_intra, model.l_inter, model.output_d['h_rnn']), feed_dict={
             #             model.fc_kprob_ph: self.hps.fc_kprob,
             #             model.lr_ph: var_hps.lr,
             #             model.x_ph: batch_input.x.astype(self.np_float_type),
@@ -344,6 +344,9 @@ class CRModelRun(object):
             #             model.center_loss_gamma_ph: var_hps.center_loss_gamma})
             # print('l_intra', l_intra)
             # print('l_inter', l_inter)
+            # np.save('/tmp/dai/h_rnn.npy', h_rnn)
+            # np.save('/tmp/dai/label.npy', batch_input.e)
+            # raise ValueError("End")
 
             if i % self.hps.train_eval_interval == 0:
                 summ, batch_e_acc, batch_loss_d, _ = session.run(

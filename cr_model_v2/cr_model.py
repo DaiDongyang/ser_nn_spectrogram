@@ -52,6 +52,8 @@ class BaseCRModel(object):
                                                   name='center_loss_beta_ph')
         self.center_loss_gamma_ph = tf.placeholder(float_type, shape=[],
                                                    name='center_loss_gamma_ph')
+        self.feature_norm_alpha_ph = tf.placeholder(float_type, shape=[],
+                                                    name='feature_norm_alpha_ph')
 
         # todo: debug
         self.l_intra = None
@@ -88,6 +90,17 @@ class BaseCRModel(object):
                 v = tf.get_variable('center_loss_centers', dtype=self.float_type)
         return v
 
+    def get_feature_norm_variable(self, shape=()):
+        with tf.variable_scope('norm_variables') as scope:
+            try:
+                v = tf.get_variable('feature_norm', shape, dtype=self.float_type,
+                                    initializer=tf.constant_initializer(1),
+                                    trainable=False)
+            except ValueError:
+                scope.reuse_variables()
+                v = tf.get_variable('feature_norm', dtype=self.float_type)
+        return v
+
     def calc_center_loss(self, features, labels, num_classes):
         len_features = features.get_shape()[1]
         if self.hps.is_center_loss_f_norm:
@@ -99,12 +112,22 @@ class BaseCRModel(object):
         loss = tf.nn.l2_loss(features - centers_batch)
         return loss
 
+    def update_f_norm_op(self, features, labels, alpha):
+        f_norm = self.get_feature_norm_variable(shape=[])
+        cur_f_n = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features)), axis=1))
+        n_f_n = (1 - self.feature_norm_alpha_ph) * f_norm + self.feature_norm_alpha_ph * cur_f_n
+        return f_norm.assign(n_f_n)
+
     # update center only consider intra-distance
     def intra_update_center_op(self, features, labels, alpha, num_classes):
         len_features = features.get_shape()[1]
         # todo: 这里的标准化并不好，自己实现一种标准化。保持一个变量，代表所有的特征的模的平均值。
         if self.hps.is_center_loss_f_norm:
-            features = tf.nn.l2_normalize(features)
+            f_norm = self.get_feature_norm_variable(shape=[])
+            # cur_f_n = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features)), axis=1))
+            # n_f_n = (1 - self.feature_norm_alpha_ph) * f_norm + self.feature_norm_alpha_ph * cur_f_n
+            features = features / f_norm
+            # features = tf.nn.l2_normalize(features)
         centers = self.get_center_loss_centers_variable(shape=[num_classes, len_features])
         labels = tf.reshape(labels, [-1])
         centers_batch = tf.gather(centers, labels)
@@ -167,6 +190,7 @@ class BaseCRModel(object):
         return (l1 + l2) / 2.0
 
     def calc_dist_loss(self, features, labels):
+        features = tf.nn.l2_normalize(features)
         f0 = tf.expand_dims(features, axis=0)
         f1 = tf.expand_dims(features, axis=1)
         f_diffs = f0 - f1
@@ -271,6 +295,7 @@ class BaseCRModel(object):
             ce_center_tp = optimizer.minimize(self.loss_d['ce_center_loss'])
             ce_cos_tp = optimizer.minimize(self.loss_d['ce_cos_loss'])
             ce_dist_tp = optimizer.minimize(self.loss_d['ce_dist_loss'])
+
         train_op_d = defaultdict(tuple)
         train_op_d['ce_tp'] = ce_tp
         train_op_d['center_tp'] = center_tp

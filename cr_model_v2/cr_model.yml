@@ -168,7 +168,7 @@ ce_cos: &CE_COS
 ce_dist: &CE_DIST
   <<: *DEFAULT
   out_dir: './cr_model_v2/cr2_out/ce_dist'
-  dist_loss_margin: 0.1
+  dist_loss_margin: 20
   train_output_summ_keys: ['h_rnn']
   train_grad_summ_keys: ['ce2hrnn', 'ce2hcnn', 'dist2hrnn', 'dist2hcnn']
   train_metric_summ_keys: ['e_acc']
@@ -351,6 +351,8 @@ ce_dist_debug:
   max_steps: 2000
   train_op_steps: [2000]
   train_op_ks: ['dist_tp']
+  eval_loss_ks: ['dist_loss']
+  ckpt_loss_k: 'dist_loss'
 
 pzd_debug:
   <<: *CE_DIST
