@@ -73,10 +73,14 @@ class CRModelRun(object):
                                                        name='center_loss_ph')
         self.loss_ph_d['cos_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                     name='cos_loss_ph')
+        self.loss_ph_d['dist_loss'] = tf.placeholder(self.tf_float_type, shape=[],
+                                                     name='dist_loss_ph')
         self.loss_ph_d['ce_center_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                           name='ce_center_loss_ph')
         self.loss_ph_d['ce_cos_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                        name='ce_cos_loss_ph')
+        self.loss_ph_d['ce_dist_loss'] = tf.placeholder(self.tf_float_type, shape=[],
+                                                        name='ce_dist_loss_ph')
         self.eval_merged = self.get_eval_merged(self.hps.eval_metric_ks,
                                                 self.hps.eval_loss_ks)
 

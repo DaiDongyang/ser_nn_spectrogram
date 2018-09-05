@@ -286,6 +286,8 @@ class BaseCRModel(object):
         grad_d['center2hcnn'] = tf.gradients(self.loss_d['center_loss'], self.output_d['h_cnn'])[0]
         grad_d['cos2hrnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_rnn'])[0]
         grad_d['cos2hcnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_cnn'])[0]
+        grad_d['dist2hrnn'] = tf.gradients(self.loss_d['dist_loss'], self.output_d['h_rnn'])[0]
+        grad_d['dist2hcnn'] = tf.gradients(self.loss_d['dist_loss'], self.output_d['h_cnn'])[0]
         return grad_d
 
     def get_train_merged(self):
