@@ -53,6 +53,10 @@ class BaseCRModel(object):
         self.center_loss_gamma_ph = tf.placeholder(float_type, shape=[],
                                                    name='center_loss_gamma_ph')
 
+        # todo: debug
+        self.l_intra = None
+        self.l_inter = None
+
         # build graph
         # self.vars_d = None
         self.output_d = None
@@ -180,6 +184,10 @@ class BaseCRModel(object):
 
         l_intra = tf.reduce_sum(eq_mask * f_l2s) / eq_num
         l_inter = tf.reduce_sum(ne_mask * f_l2s) / ne_num
+
+        # todo: debug
+        self.l_intra = l_intra
+        self.l_inter = l_inter
 
         dist_loss = tf.maximum(self.hps.dist_loss_margin + l_intra - l_inter, 0)
         return dist_loss

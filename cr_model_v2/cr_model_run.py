@@ -327,6 +327,24 @@ class CRModelRun(object):
             var_hps = self.get_cur_var_hps(i)
             batch_input = session.run(train_iter.BatchedInput)
 
+            #todo: debug
+            l_intra, l_inter = session.run((model.l_intra, model.l_inter), feed_dict={
+                        model.fc_kprob_ph: self.hps.fc_kprob,
+                        model.lr_ph: var_hps.lr,
+                        model.x_ph: batch_input.x.astype(self.np_float_type),
+                        model.t_ph: batch_input.t,
+                        model.e_ph: batch_input.e,
+                        model.e_w_ph: batch_input.w.astype(self.np_float_type),
+                        model.is_training_ph: True,
+                        model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
+                        model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
+                        model.center_loss_lambda_ph: var_hps.center_loss_lambda,
+                        model.center_loss_alpha_ph: var_hps.center_loss_alpha,
+                        model.center_loss_beta_ph: var_hps.center_loss_beta,
+                        model.center_loss_gamma_ph: var_hps.center_loss_gamma})
+            print('l_intra', l_intra)
+            print('l_inter', l_inter)
+
             if i % self.hps.train_eval_interval == 0:
                 summ, batch_e_acc, batch_loss_d, _ = session.run(
                     (model.train_merged, model.metric_d['e_acc'], model_loss_d, train_op),
