@@ -346,3 +346,24 @@ ce_cos_m3_bn:
   ckpt_metric_k: 'wa' # or 'ua' 'wua'
   ckpt_loss_k: 'ce_cos_loss'
   best_params_start_steps: 600
+
+ce_cos_m3:
+  <<: *CE_COS
+  out_dir: './cr_model_v2/cr2_out/ce_cos_m3'
+  max_steps: 3500
+  train_op_steps: [1000, 2500]
+  train_op_ks: ['cos_tp', 'ce_cos_tp']
+  cos_loss_lambda_steps: [600, 200, 200, 200, 2000]
+  cos_loss_lambdas: [1, 0.75, 0.5, 0.25, 0]
+  model_key: 'CRModel3'
+  vali_type: 'F'
+  test_type: 'M'
+  CUDA_VISIBLE_DEVICES: '3'
+  is_bn: False
+  lr_steps: [4000]
+  lrs: [0.0003]
+  eval_loss_ks: ['cos_loss', 'ce_loss', 'ce_cos_loss']
+  eval_metric_ks: ['wa']
+  ckpt_metric_k: 'wa' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_cos_loss'
+  best_params_start_steps: 600
