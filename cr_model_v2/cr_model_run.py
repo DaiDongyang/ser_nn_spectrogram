@@ -19,7 +19,7 @@ from utils import post_process
 class VarHps(collections.namedtuple('VarHps',
                                     ('lr', 'cos_loss_lambda', 'center_loss_lambda',
                                      'dist_loss_lambda', 'center_loss_alpha', 'center_loss_beta',
-                                     'center_loss_gamma'))):
+                                     'center_loss_gamma', 'feature_norm_alpha'))):
     pass
 
 
@@ -147,6 +147,8 @@ class CRModelRun(object):
                                            self.hps.center_loss_betas)
         center_loss_gamma = self.get_cur_hp(cur_i, self.hps.center_loss_gamma_steps,
                                             self.hps.center_loss_gammas)
+        feature_norm_alpha = self.get_cur_hp(cur_i, self.hps.feature_norm_alpha_steps,
+                                             self.hps.feature_norm_alphas)
         return VarHps(
             lr=lr,
             cos_loss_lambda=cos_loss_lambda,
@@ -155,6 +157,7 @@ class CRModelRun(object):
             center_loss_alpha=center_loss_alpha,
             center_loss_beta=center_loss_beta,
             center_loss_gamma=center_loss_gamma,
+            feature_norm_alpha=feature_norm_alpha
         )
 
     @staticmethod
@@ -364,7 +367,8 @@ class CRModelRun(object):
                         model.center_loss_lambda_ph: var_hps.center_loss_lambda,
                         model.center_loss_alpha_ph: var_hps.center_loss_alpha,
                         model.center_loss_beta_ph: var_hps.center_loss_beta,
-                        model.center_loss_gamma_ph: var_hps.center_loss_gamma
+                        model.center_loss_gamma_ph: var_hps.center_loss_gamma,
+                        model.feature_norm_alpha_ph: var_hps.feature_norm_alpha,
                     })
                 self.logger.log('step %d,' % i, 'input shape', batch_input.x.shape, 'e_acc',
                                 batch_e_acc, 'batch_loss_d', batch_loss_d, level=2)
@@ -382,7 +386,8 @@ class CRModelRun(object):
                     model.center_loss_lambda_ph: var_hps.center_loss_lambda,
                     model.center_loss_alpha_ph: var_hps.center_loss_alpha,
                     model.center_loss_beta_ph: var_hps.center_loss_beta,
-                    model.center_loss_gamma_ph: var_hps.center_loss_gamma
+                    model.center_loss_gamma_ph: var_hps.center_loss_gamma,
+                    model.feature_norm_alpha_ph: var_hps.feature_norm_alpha,
                 })
             self.train_writer.add_summary(summ, i)
             if i % self.hps.eval_interval == 0:

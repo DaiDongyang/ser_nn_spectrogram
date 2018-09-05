@@ -13,7 +13,8 @@ default: &DEFAULT
   train_metric_summ_keys: ['e_acc']
   train_loss_summ_keys: ['ce_loss']
   is_merge_center_loss_centers: False
-  is_center_loss_f_norm: True
+#  is_center_loss_f_norm: True
+  center_loss_f_norm: 'f_norm' # 'l2', 'l2_1', ''
 
   is_bn: False
   is_var_cnn_mask: True
@@ -60,6 +61,7 @@ default: &DEFAULT
   saver_max_to_keep: 20
   dist_loss_margin: 0.1
 
+
   lr_steps: [3000]
   lrs: [0.0003]
   cos_loss_lambda_steps: [3000]
@@ -74,6 +76,8 @@ default: &DEFAULT
   center_loss_betas: [0.2]
   center_loss_gamma_steps: [3000]
   center_loss_gammas: [0.1]
+  feature_norm_alpha_steps: [100, 2900]
+  feature_norm_alphas: [1, 0.5]
 
   train_op_steps: [3000]
   train_op_ks: ['ce_tp']
@@ -119,7 +123,7 @@ ce: &CE
 ce_center: &CE_CENTER
   <<: *DEFAULT
   out_dir: './cr_model_v2/cr2_out/ce_center'
-  is_center_loss_f_norm: False
+  center_loss_f_norm: 'f_norm' # 'l2', 'l2_1', ''
   train_output_summ_keys: ['h_rnn']
   train_grad_summ_keys: ['ce2hrnn', 'center2hrnn']
   train_metric_summ_keys: ['e_acc']
@@ -143,6 +147,8 @@ ce_center: &CE_CENTER
   center_loss_betas: [0.2]
   center_loss_gamma_steps: [3000]
   center_loss_gammas: [0.1]
+  feature_norm_alpha_steps: [100, 2900]
+  feature_norm_alphas: [1, 0.5]
 
 ce_cos: &CE_COS
   <<: *DEFAULT
@@ -242,7 +248,7 @@ ce_center_m3:
   center_loss_betas: [0.2]
   center_loss_gamma_steps: [3000]
   center_loss_gammas: [0.1]
-  is_center_loss_f_norm: True
+  center_loss_f_norm: 'f_norm' # 'l2', 'l2_1', ''
   model_key: 'CRModel3'
   best_params_start_steps: 300
 
@@ -342,7 +348,7 @@ ce_center_debug:
   vali_type: 'F'
   test_type: 'M'
   CUDA_VISIBLE_DEVICES: '3'
-  is_center_loss_f_norm: True
+  center_loss_f_norm: 'f_norm' # 'l2', 'l2_1', ''
 
 
 ce_cos_debug:

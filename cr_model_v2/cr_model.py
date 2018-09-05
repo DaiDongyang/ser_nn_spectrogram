@@ -112,22 +112,26 @@ class BaseCRModel(object):
         loss = tf.nn.l2_loss(features - centers_batch)
         return loss
 
-    def update_f_norm_op(self, features, labels, alpha):
+    def update_f_norm_op(self, features, alpha):
         f_norm = self.get_feature_norm_variable(shape=[])
         cur_f_n = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features)), axis=1))
-        n_f_n = (1 - self.feature_norm_alpha_ph) * f_norm + self.feature_norm_alpha_ph * cur_f_n
+        n_f_n = (1 - alpha) * f_norm + alpha * cur_f_n
         return f_norm.assign(n_f_n)
 
     # update center only consider intra-distance
     def intra_update_center_op(self, features, labels, alpha, num_classes):
         len_features = features.get_shape()[1]
         # todo: 这里的标准化并不好，自己实现一种标准化。保持一个变量，代表所有的特征的模的平均值。
-        if self.hps.is_center_loss_f_norm:
+        if self.hps.center_loss_f_norm == 'f_norm':
             f_norm = self.get_feature_norm_variable(shape=[])
             # cur_f_n = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features)), axis=1))
             # n_f_n = (1 - self.feature_norm_alpha_ph) * f_norm + self.feature_norm_alpha_ph * cur_f_n
             features = features / f_norm
             # features = tf.nn.l2_normalize(features)
+        elif self.hps.center_loss_f_norm == 'l2':
+            features = tf.nn.l2_normalize(features)
+        elif self.hps.center_loss_f_norm == 'l2_1':
+            features = tf.nn.l2_normalize(features, axis=1)
         centers = self.get_center_loss_centers_variable(shape=[num_classes, len_features])
         labels = tf.reshape(labels, [-1])
         centers_batch = tf.gather(centers, labels)
@@ -149,9 +153,7 @@ class BaseCRModel(object):
         dist_ceiling = 1000
         epsilon = 1e-6
         len_features = features.get_shape()[1]
-        centers = tf.get_variable('center_loss_centers', [num_classes, len_features],
-                                  dtype=self.float_type, initializer=tf.constant_initializer(0),
-                                  trainable=False)
+        centers = self.get_center_loss_centers_variable(shape=[num_classes, len_features])
         centers0 = tf.expand_dims(centers, 0)
         centers1 = tf.expand_dims(centers, 1)
         c_diffs = centers0 - centers1
@@ -273,9 +275,12 @@ class BaseCRModel(object):
                                                         beta=self.center_loss_beta_ph,
                                                         gamma=self.center_loss_gamma_ph,
                                                         num_classes=len(self.hps.emos))
+        f_norm_update_op = self.update_f_norm_op(features=features,
+                                                 alpha=self.feature_norm_alpha_ph)
         update_op_d = defaultdict(lambda: None)
         update_op_d['intra_update_c_op'] = intra_update_c_op
         update_op_d['inter_update_c_op'] = inter_update_c_op
+        update_op_d['f_norm_update_op'] = f_norm_update_op
         return update_op_d
 
     def get_train_op_d(self):
@@ -296,17 +301,28 @@ class BaseCRModel(object):
             ce_cos_tp = optimizer.minimize(self.loss_d['ce_cos_loss'])
             ce_dist_tp = optimizer.minimize(self.loss_d['ce_dist_loss'])
 
+        if self.hps.center_loss_f_norm == 'f_norm':
+            center_utp = (
+                self.update_op_d['f_norm_update_op'], self.update_op_d['inter_update_c_op'],
+                self.update_op_d['intra_update_c_op'], center_tp)
+            ce_center_utp = (
+                self.update_op_d['f_norm_update_op'], self.update_op_d['inter_update_c_op'],
+                self.update_op_d['intra_update_c_op'], ce_center_tp)
+        else:
+            center_utp = (
+                self.update_op_d['inter_update_c_op'], self.update_op_d['intra_update_c_op'],
+                center_tp)
+            ce_center_utp = (
+                self.update_op_d['f_norm_update_op'], self.update_op_d['inter_update_c_op'],
+                self.update_op_d['intra_update_c_op'], ce_center_tp)
         train_op_d = defaultdict(tuple)
         train_op_d['ce_tp'] = ce_tp
         train_op_d['center_tp'] = center_tp
-        train_op_d['center_utp'] = (
-            self.update_op_d['inter_update_c_op'], self.update_op_d['intra_update_c_op'], center_tp)
+        train_op_d['center_utp'] = center_utp
         train_op_d['cos_tp'] = cos_tp
         train_op_d['dist_tp'] = dist_tp
         train_op_d['ce_center_tp'] = ce_center_tp
-        train_op_d['ce_center_utp'] = (
-            self.update_op_d['inter_update_c_op'], self.update_op_d['intra_update_c_op'],
-            ce_center_tp)
+        train_op_d['ce_center_utp'] = ce_center_utp
         train_op_d['ce_cos_tp'] = ce_cos_tp
         train_op_d['ce_dist_tp'] = ce_dist_tp
         return train_op_d
@@ -350,11 +366,15 @@ class BaseCRModel(object):
                     summ = tf.summary.scalar(k, self.loss_d[k])
                     summary_list.append(summ)
         if self.hps.is_merge_center_loss_centers:
-            with tf.name_scope('center_loss_vars'):
+            with tf.name_scope('center_loss_dist'):
                 features = self.output_d[self.hps.features_key]
                 len_features = features.get_shape()[1]
                 shape = [len(self.hps.emos), len_features]
-                v_summ_list = variable_summaries(self.get_center_loss_centers_variable(shape=shape))
+                centers = self.get_center_loss_centers_variable(shape=shape)
+                centers0 = tf.expand_dims(centers, 0)
+                centers1 = tf.expand_dims(centers, 1)
+                c_diffs = centers0 - centers1
+                v_summ_list = variable_summaries(c_diffs)
                 summary_list += v_summ_list
 
         return tf.summary.merge(summary_list)
