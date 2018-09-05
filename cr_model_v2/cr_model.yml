@@ -64,10 +64,7 @@ default: &DEFAULT
   # merged and log
   eval_loss_ks: ['ce_loss']
   eval_metric_ks: ['wa', 'ua']
-
-
   saver_max_to_keep: 20
-
   dist_loss_margin: 0.1
 
   lr_steps: [3000]
@@ -99,7 +96,7 @@ default: &DEFAULT
   train_eval_interval: 5
   is_eval_test: True
   persist_interval: 1000
-  gpu_allow_growth: False
+  gpu_allow_growth: True
   restart_train_steps: 500
   best_params_type: 'best_metric' # 'best_loss',
   best_params_start_steps: 10
@@ -330,6 +327,7 @@ ce_center_m3:
   model_key: 'CRModel3'
   best_params_start_steps: 300
 
+
 ce_cos_debug:
   <<: *CE_COS
   out_dir: './cr_model_v2/cr2_out/ce_cos_debug'
@@ -374,9 +372,60 @@ ce_cos_m3_bn:
   best_params_start_steps: 600
 
 
+ce_cos_m3:
+  <<: *CE_COS
+  out_dir: './cr_model_v2/cr2_out/ce_cos_m3'
+  max_steps: 3500
+  train_op_steps: [1000, 2500]
+  train_op_ks: ['cos_tp', 'ce_cos_tp']
+  cos_loss_lambda_steps: [600, 200, 200, 200, 2000]
+  cos_loss_lambdas: [1, 0.75, 0.5, 0.25, 0]
+  model_key: 'CRModel3'
+  vali_type: 'F'
+  test_type: 'M'
+  CUDA_VISIBLE_DEVICES: '3'
+  is_bn: False
+  lr_steps: [4000]
+  lrs: [0.0003]
+  eval_loss_ks: ['cos_loss', 'ce_loss', 'ce_cos_loss']
+  eval_metric_ks: ['wa']
+  ckpt_metric_k: 'wa' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_cos_loss'
+  best_params_start_steps: 600
+
+ce_cos_m3_hid_fc:
+  <<: *CE_COS
+  out_dir: './cr_model_v2/cr2_out/ce_cos_m3'
+  max_steps: 3500
+  train_op_steps: [1000, 2500]
+  train_op_ks: ['cos_tp', 'ce_cos_tp']
+  cos_loss_lambda_steps: [600, 200, 200, 200, 2000]
+  cos_loss_lambdas: [1, 0.75, 0.5, 0.25, 0]
+  model_key: 'CRModel3'
+  vali_type: 'F'
+  test_type: 'M'
+  CUDA_VISIBLE_DEVICES: '3'
+  is_bn: False
+  lr_steps: [4000]
+  lrs: [0.0003]
+  eval_loss_ks: ['cos_loss', 'ce_loss', 'ce_cos_loss']
+  eval_metric_ks: ['wa']
+  ckpt_metric_k: 'wa' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_cos_loss'
+  best_params_start_steps: 600
+  features_key: 'hid_fc'
+
 ce_dist_debug:
   <<: *CE_DIST
   out_dir: './cr_model_v2/cr2_out/ce_dist_debug'
+  max_steps: 2000
+  train_op_steps: [2000]
+  train_op_ks: ['dist_tp']
+
+pzd_debug:
+  <<: *CE_DIST
+  data_dir: '/home/pengzhendong/ser/data/Spectrogram_EN_Var'
+  out_dir: './cr_model_v2/cr2_out/pzd_debug'
   max_steps: 2000
   train_op_steps: [2000]
   train_op_ks: ['dist_tp']
