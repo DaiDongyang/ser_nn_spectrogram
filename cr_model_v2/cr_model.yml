@@ -59,7 +59,7 @@ default: &DEFAULT
   eval_loss_ks: ['ce_loss']
   eval_metric_ks: ['wa', 'ua']
   saver_max_to_keep: 20
-  dist_loss_margin: 0.1
+  dist_loss_margin: 0.15
 
 
   lr_steps: [3000]
@@ -313,9 +313,10 @@ ce_dist_m3_hid_fc:
   eval_loss_ks: ['dist_loss', 'ce_loss', 'ce_dist_loss']
   eval_metric_ks: ['wa']
   ckpt_metric_k: 'wa' # or 'ua' 'wua'
-  ckpt_loss_k: 'ce_cos_loss'
+  ckpt_loss_k: 'ce_dist_loss'
   best_params_start_steps: 600
   features_key: 'hid_fc'
+  dist_loss_margin: 0.2
 
 
 ce_cos_m3_bn:
