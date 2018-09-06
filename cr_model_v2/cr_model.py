@@ -103,9 +103,16 @@ class BaseCRModel(object):
 
     def calc_center_loss(self, features, labels, num_classes):
         len_features = features.get_shape()[1]
-        if self.hps.is_center_loss_f_norm:
+        # if self.hps.is_center_loss_f_norm:
+        #     features = tf.nn.l2_normalize(features)
+        if self.hps.center_loss_f_norm == 'f_norm':
+            f_norm = self.get_feature_norm_variable(shape=[])
+            features = features / f_norm
+            # features = tf.nn.l2_normalize(features)
+        elif self.hps.center_loss_f_norm == 'l2':
             features = tf.nn.l2_normalize(features)
-
+        elif self.hps.center_loss_f_norm == 'l2_1':
+            features = tf.nn.l2_normalize(features, axis=1)
         centers = self.get_center_loss_centers_variable(shape=[num_classes, len_features])
         labels = tf.reshape(labels, [-1])
         centers_batch = tf.gather(centers, labels)
@@ -114,7 +121,7 @@ class BaseCRModel(object):
 
     def update_f_norm_op(self, features, alpha):
         f_norm = self.get_feature_norm_variable(shape=[])
-        cur_f_n = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features)), axis=1))
+        cur_f_n = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features), axis=1)))
         n_f_n = (1 - alpha) * f_norm + alpha * cur_f_n
         return f_norm.assign(n_f_n)
 
