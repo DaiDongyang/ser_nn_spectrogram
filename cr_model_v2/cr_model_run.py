@@ -4,6 +4,7 @@ import os
 import time
 from collections import defaultdict
 from itertools import accumulate
+from ruamel.yaml.comments import CommentedSeq
 
 import numpy as np
 import tensorflow as tf
@@ -85,13 +86,15 @@ class CRModelRun(object):
                                                 self.hps.eval_loss_ks)
 
     def get_eval_merged(self, merged_metric_ks, merged_loss_ks):
+
         summary_list = list()
-        if isinstance(merged_metric_ks, list):
+
+        if isinstance(merged_metric_ks, list) or isinstance(merged_metric_ks, CommentedSeq):
             with tf.name_scope('metric'):
                 for k in merged_metric_ks:
                     summ = tf.summary.scalar(k, self.metric_ph_d[k])
                     summary_list.append(summ)
-        if isinstance(merged_loss_ks, list):
+        if isinstance(merged_loss_ks, list) or isinstance(merged_loss_ks, CommentedSeq):
             with tf.name_scope('loss'):
                 for k in merged_loss_ks:
                     summ = tf.summary.scalar(k, self.loss_ph_d[k])
@@ -100,10 +103,10 @@ class CRModelRun(object):
 
     def get_eval_merged_feed_dict(self, metric_d, loss_d, merged_metric_ks, merged_loss_ks):
         feed_dict = {}
-        if isinstance(merged_metric_ks, list):
+        if isinstance(merged_metric_ks, list) or isinstance(merged_metric_ks, CommentedSeq):
             for k in merged_metric_ks:
                 feed_dict[self.metric_ph_d[k]] = metric_d[k]
-        if isinstance(merged_metric_ks, list):
+        if isinstance(merged_metric_ks, list) or isinstance(merged_loss_ks, CommentedSeq):
             for k in merged_loss_ks:
                 feed_dict[self.loss_ph_d[k]] = loss_d[k]
         return feed_dict
@@ -180,7 +183,8 @@ class CRModelRun(object):
         prs = list()
         gts = list()
 
-        if isinstance(self.hps.eval_loss_ks, list):
+        if isinstance(self.hps.eval_loss_ks, list) or isinstance(self.hps.eval_loss_ks,
+                                                                 CommentedSeq):
             model_loss_d = dict()
             for k in self.hps.eval_loss_ks:
                 model_loss_d[k] = self.model.loss_d[k]
@@ -317,7 +321,8 @@ class CRModelRun(object):
         test_iter = d_set.get_test_iter()
         session.run(train_iter.initializer)
         model = self.model
-        if isinstance(self.hps.eval_loss_ks, list):
+        if isinstance(self.hps.eval_loss_ks, list) or isinstance(self.hps.eval_loss_ks,
+                                                                 CommentedSeq):
             model_loss_d = dict()
             for k in self.hps.eval_loss_ks:
                 model_loss_d[k] = model.loss_d[k]
