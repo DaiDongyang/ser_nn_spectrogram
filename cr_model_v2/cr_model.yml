@@ -197,11 +197,13 @@ ce_dist: &CE_DIST
   dist_loss_lambdas: [0.1]
 
 # m1 means CRModel1
-ce_m3:
+ce_m3_wua:
   <<: *CE
-  out_dir: './cr_model_v2/cr2_out/ce_m3'
+  out_dir: './cr_model_v2/cr2_out/ce_m3_wua'
   model_key: 'CRModel3'
   max_steps: 3000
+  gpu_allow_growth: False
+  ckpt_metric_k: 'wua' # or 'ua' 'wua'
 
 # bn means batch norm
 ce_m1_bn:
