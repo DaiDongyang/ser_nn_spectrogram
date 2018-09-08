@@ -1,4 +1,5 @@
 from collections import defaultdict
+from ruamel.yaml.comments import CommentedSeq
 
 import tensorflow as tf
 
@@ -291,6 +292,7 @@ class BaseCRModel(object):
         return update_op_d
 
     def get_train_op_d(self):
+        train_op_d = defaultdict(tuple)
         optimizer_type = self.hps.optimizer_type
         if optimizer_type.lower() == 'adam':
             optimizer = tf.train.AdamOptimizer(self.lr_ph)
@@ -322,8 +324,13 @@ class BaseCRModel(object):
             ce_center_utp = (
                 self.update_op_d['f_norm_update_op'], self.update_op_d['inter_update_c_op'],
                 self.update_op_d['intra_update_c_op'], ce_center_tp)
-        train_op_d = defaultdict(tuple)
-        train_op_d['ce_tp'] = ce_tp
+
+        if self.hps.is_merge_center_loss_centers and self.hps.center_loss_f_norm == 'f_norm':
+            # ce_tp2 = ()
+            train_op_d['ce_tp'] = (self.update_op_d['f_norm_update_op'], ce_tp)
+        else:
+            train_op_d['ce_tp'] = ce_tp
+
         train_op_d['center_tp'] = center_tp
         train_op_d['center_utp'] = center_utp
         train_op_d['cos_tp'] = cos_tp
@@ -348,26 +355,30 @@ class BaseCRModel(object):
 
     def get_train_merged(self):
         summary_list = list()
-        if isinstance(self.hps.train_output_summ_keys, list):
+        if isinstance(self.hps.train_output_summ_keys, list) or isinstance(
+                self.hps.train_output_summ_keys, CommentedSeq):
             with tf.name_scope('output'):
                 for k in self.hps.train_output_summ_keys:
                     with tf.name_scope(k):
                         v_summ_list = variable_summaries(self.output_d[k])
                     summary_list += v_summ_list
-        if isinstance(self.hps.train_grad_summ_keys, list):
+        if isinstance(self.hps.train_grad_summ_keys, list) or isinstance(
+                self.hps.train_grad_summ_keys, CommentedSeq):
             with tf.name_scope('grad'):
                 for k in self.hps.train_grad_summ_keys:
                     with tf.name_scope(k):
                         # for i, ele in zip(range(self.grad_d))
                         v_summ_list = variable_summaries(self.grad_d[k])
                     summary_list += v_summ_list
-        if isinstance(self.hps.train_metric_summ_keys, list):
+        if isinstance(self.hps.train_metric_summ_keys, list) or isinstance(
+                self.hps.train_metric_summ_keys, CommentedSeq):
             with tf.name_scope('metric'):
                 for k in self.hps.train_metric_summ_keys:
                     # with tf.name_scope(k):
                     summ = tf.summary.scalar(k, self.metric_d[k])
                     summary_list.append(summ)
-        if isinstance(self.hps.train_loss_summ_keys, list):
+        if isinstance(self.hps.train_loss_summ_keys, list) or isinstance(
+                self.hps.train_loss_summ_keys, CommentedSeq):
             with tf.name_scope('loss'):
                 for k in self.hps.train_loss_summ_keys:
                     summ = tf.summary.scalar(k, self.loss_d[k])
@@ -381,7 +392,10 @@ class BaseCRModel(object):
                 centers0 = tf.expand_dims(centers, 0)
                 centers1 = tf.expand_dims(centers, 1)
                 c_diffs = centers0 - centers1
-                v_summ_list = variable_summaries(c_diffs)
+                c_l2s = tf.reduce_sum(tf.square(c_diffs), axis=-1)
+                dist_m = tf.reduce_mean(c_l2s) * 16. / 9.
+                c_l2s_mask = tf.eye(tf.shape(c_l2s)[0], dtype=self.float_type) * dist_m + c_l2s
+                v_summ_list = variable_summaries(c_l2s_mask)
                 summary_list += v_summ_list
 
         return tf.summary.merge(summary_list)
