@@ -89,7 +89,7 @@ default: &DEFAULT
   train_eval_interval: 5
   is_eval_test: True
   persist_interval: 1000
-  gpu_allow_growth: True
+  gpu_allow_growth: False
   restart_train_steps: 500
   best_params_type: 'best_metric' # 'best_loss',
   best_params_start_steps: 10
@@ -228,6 +228,14 @@ ce_m3_bn:
   max_steps: 3000
   is_bn: True
 
+ce_m3_bn_wua:
+  <<: *CE
+  out_dir: './cr_model_v2/cr2_out/ce_m3_bn_wua'
+  model_key: 'CRModel3'
+  max_steps: 3000
+  is_bn: True
+  ckpt_metric_k: 'wua'
+
 # nw means not weight
 ce_m3_nw:
   <<: *CE
@@ -327,7 +335,7 @@ ce_dist_m3_hid_fc: &CE_DIST_M3_HID_FC
 
 ce_dist_m3_hid_fc_wua:
   <<: *CE_DIST_M3_HID_FC
-  out_dir: './cr_model_v2/cr2_out/ce_dist_m3_hid_fc'
+  out_dir: './cr_model_v2/cr2_out/ce_dist_m3_hid_fc_wua'
   ckpt_metric_k: 'wua'
 
 ce_cos_m3_bn:
@@ -384,7 +392,7 @@ ce_cos_debug:
   ckpt_loss_k: 'cos_loss'
   best_params_start_steps: 10
 
-ce_center_m3_co:
+ce_center_m3_co: &CE_CENTER_M3_CO
   <<: *CE_CENTER
   out_dir: './cr_model_v2/cr2_out/ce_center_m3_hid_fc_co_l21'
   center_loss_f_norm: 'l2_1' # 'l2', 'l2_1', ''
@@ -414,6 +422,12 @@ ce_center_m3_co:
   center_loss_gammas: [0.1]
   CUDA_VISIBLE_DEVICES: '2'
   features_key: 'hid_fc'
+
+ce_center_m3_co_bn:
+  <<: *CE_CENTER_M3_CO
+  out_dir: './cr_model_v2/cr2_out/ce_center_m3_hid_fc_co_l21_bn'
+  is_bn: True
+  ckpt_metric_k: 'wua'
 
 
 ce_dist_debug:
