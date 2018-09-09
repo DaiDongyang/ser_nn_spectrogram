@@ -394,7 +394,7 @@ ce_cos_debug:
 
 ce_center_m3_co: &CE_CENTER_M3_CO
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/cr2_out/ce_center_m3_hid_fc_co_l21'
+  out_dir: './cr_model_v2/cr2_out/ce_center_m3_hid_fc_co_l21_2'
   center_loss_f_norm: 'l2_1' # 'l2', 'l2_1', ''
   train_output_summ_keys: ['h_rnn']
   train_grad_summ_keys: ['ce2hrnn', 'center2hrnn']
