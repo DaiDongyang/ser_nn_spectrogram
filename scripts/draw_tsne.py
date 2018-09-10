@@ -33,10 +33,10 @@ def main():
     #               [4, 5, 6],
     #               [7, 8, 9]])
     # l = np.array([1, 2, 1])
-    suffix = '08260208_e4vMtF_r271129_e4vMtF.npy'
-    hrnn_prefix = './tmp/hrnn_'
-    gt_prefix = './tmp/gt_'
-    features = np.load(hrnn_prefix + suffix)
+    suffix = '09070618_e2vFtM_r092258_e2vFtM.npy'
+    hid_prefix = './ce_m3_wua/hid_fc_'
+    gt_prefix = './ce_m3_wua/gt_'
+    features = np.load(hid_prefix + suffix)
     labels = np.load(gt_prefix + suffix)
     emo_dict = {0: 'neu', 1: 'ang', 2: 'hap', 3: 'sad'}
     draw_tsne(features, labels, emo_dict)

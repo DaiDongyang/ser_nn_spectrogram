@@ -318,7 +318,7 @@ class BaseCRModel(object):
                 self.update_op_d['f_norm_update_op'], self.update_op_d['inter_update_c_op'],
                 self.update_op_d['intra_update_c_op'], ce_center_tp)
         else:
-            # todo: test no inter up
+
             center_utp = (
                 self.update_op_d['inter_update_c_op'], self.update_op_d['intra_update_c_op'],
                 center_tp)
@@ -391,7 +391,7 @@ class BaseCRModel(object):
                     summ = tf.summary.scalar(k, self.loss_d[k])
                     summary_list.append(summ)
         if self.hps.is_merge_center_loss_centers:
-            with tf.name_scope('center_loss_dist'):
+            with tf.name_scope('center_loss_dist_squares'):
                 features = self.output_d[self.hps.features_key]
                 len_features = features.get_shape()[1]
                 shape = [len(self.hps.emos), len_features]
