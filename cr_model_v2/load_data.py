@@ -125,7 +125,7 @@ def load_data(hps):
         for sens_type in hps.consider_sent_types:
             if sens_type in file_name:
                 is_load = True
-        e = judge_label(file_name, hps.is_merge_hap_exe)
+        e = judge_label(file_name, hps.is_merge_hap_exc)
         if e == -1:
             is_load = False
         if not is_load:

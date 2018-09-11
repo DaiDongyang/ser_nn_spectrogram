@@ -13,8 +13,8 @@ from spectrum import readwav
 
 import tensorflow as tf
 
-FRAME_LEN = 0.05
-FFT_LENGTH = 800
+FRAME_LEN = 0.04
+FFT_LENGTH = 1600
 
 
 def get_sample_rate(wav_file):
@@ -132,7 +132,7 @@ def main():
 
     start = time.time()
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "2"
     wav_dir_path = sys.argv[1]
     spectrogram_dir_path = sys.argv[2]
     spectrogram_type = sys.argv[3]
