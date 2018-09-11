@@ -59,7 +59,7 @@ default: &DEFAULT
   eval_loss_ks: ['ce_loss']
   eval_metric_ks: ['wa', 'ua']
   saver_max_to_keep: 20
-  dist_loss_margin: 0.15
+  dist_margin: 0.15
 
 
   lr_steps: [3000]
@@ -147,6 +147,7 @@ ce: &CE
 ce_ma: &CE_MA
   <<: *DEFAULT
   out_dir: './cr_model_v2/cr2_out_center_loss/ce_baseline_ce_ma'
+  data_dir: '/home/ddy/projects/emotions/data/iemocap_w4s1f400_f4k_npy'
   train_output_summ_keys: ['h_rnn', 'h_cnn']
   train_grad_summ_keys: ['ce2hrnn', 'ce2hcnn']
   train_metric_summ_keys: ['e_acc']
@@ -154,7 +155,6 @@ ce_ma: &CE_MA
   is_merge_center_loss_centers: False
   eval_loss_ks: ['ce_loss']
   eval_metric_ks: ['wa', 'ua']
-  ckpt_metric_k: 'wua' # or 'ua' 'wua'
   ckpt_loss_k: 'ce_loss'
   max_steps: 4000
   lr_steps: [4000]
@@ -163,6 +163,8 @@ ce_ma: &CE_MA
   train_op_ks: ['ce_tp']
   is_bn: False
   is_merge_hap_exc: True
+  ckpt_metric_k: 'ua'
+  consider_sent_types: ['impro', 'script']
 
 ce_center: &CE_CENTER
   <<: *DEFAULT
@@ -185,6 +187,39 @@ ce_center: &CE_CENTER
   lrs: [0.0003]
   train_op_steps: [4000]
   train_op_ks: ['ce_center_utp']
+  center_loss_lambda_steps: [4000]
+  center_loss_lambdas: [0.3]
+  center_loss_alpha_steps: [4000]
+  center_loss_alhpas: [0.5]
+  center_loss_beta_steps: [4000]
+  center_loss_betas: [0.2]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.1]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+
+
+ce_center2: &CE_CENTER2
+  <<: *DEFAULT
+  out_dir: './cr_model_v2/cr2_out_center_loss/ce_center'
+  center_loss_f_norm: 'l2_1' # 'l2', 'l2_1', ''
+  train_output_summ_keys: ['h_rnn']
+  train_grad_summ_keys: ['ce2hrnn', 'center22hrnn']
+  train_metric_summ_keys: ['e_acc']
+  train_loss_summ_keys: ['ce_loss', 'center_loss2', 'ce_center_loss2']
+  is_merge_center_loss_centers: True
+  eval_loss_ks: ['ce_loss', 'center_loss2', 'ce_center_loss2']
+  eval_metric_ks: ['wa', 'ua']
+  ckpt_metric_k: 'wua' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_center_loss'
+
+  features_key: 'hid_fc'
+
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  train_op_steps: [4000]
+  train_op_ks: ['ce_center2_utp']
   center_loss_lambda_steps: [4000]
   center_loss_lambdas: [0.3]
   center_loss_alpha_steps: [4000]
@@ -231,6 +266,30 @@ ce_center_co_ma: &CE_CENTER_M3_CO_MA
   consider_sent_types: ['impro', 'script']
   is_bn: False
   is_merge_hap_exc: True
+
+
+ce_center_co_ma_ua: &CE_CENTER_M3_CO_MA
+  <<: *CE_CENTER
+  out_dir: '~/cr_model_v2/ce_center_co_ma'
+  data_dir: '/home/ddy/projects/emotions/data/iemocap_w4s1f400_f4k_npy'
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [4000]
+  center_loss_lambdas: [0.3]
+  center_loss_alpha_steps: [4000]
+  center_loss_alhpas: [0.5]
+  center_loss_beta_steps: [4000]
+  center_loss_betas: [0.2]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.1]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  best_params_start_steps: 500
+  consider_sent_types: ['impro', 'script']
+  is_bn: False
+  is_merge_hap_exc: True
+  ckpt_metric_k: 'ua'
 
 
 
