@@ -146,7 +146,7 @@ ce: &CE
 # ma means merge all
 ce_ma: &CE_MA
   <<: *DEFAULT
-  out_dir: './cr_model_v2/cr2_out_center_loss/ce_baseline_ce_ma'
+  out_dir: '/tmp/cr_model_v2/cr2_out_center_loss/ce_baseline_ce_ma_ua'
   data_dir: '/home/ddy/projects/emotions/data/iemocap_w4s1f400_f4k_npy'
   train_output_summ_keys: ['h_rnn', 'h_cnn']
   train_grad_summ_keys: ['ce2hrnn', 'ce2hcnn']
@@ -268,9 +268,9 @@ ce_center_co_ma: &CE_CENTER_M3_CO_MA
   is_merge_hap_exc: True
 
 
-ce_center_co_ma_ua: &CE_CENTER_M3_CO_MA
+ce_center_co_ma_ua: &CE_CENTER_M3_CO_MA_UA
   <<: *CE_CENTER
-  out_dir: '~/cr_model_v2/ce_center_co_ma'
+  out_dir: '/tmp/ddy/cr_model_v2/ce_center_co_ma'
   data_dir: '/home/ddy/projects/emotions/data/iemocap_w4s1f400_f4k_npy'
   max_steps: 4000
   lr_steps: [4000]

@@ -122,7 +122,7 @@ class BaseCRModel(object):
 
     def calc_center_loss2(self, features, labels, num_classes):
         len_features = features.get_shape()[1]
-        batch_size = tf.cast(features.get_shape()[0], dtype=self.float_type)
+        batch_size = tf.cast(tf.shape(features)[0], dtype=self.float_type)
         # if self.hps.is_center_loss_f_norm:
         #     features = tf.nn.l2_normalize(features)
         if self.hps.center_loss_f_norm == 'f_norm':
