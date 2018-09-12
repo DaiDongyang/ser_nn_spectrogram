@@ -93,6 +93,7 @@ default: &DEFAULT
   restart_train_steps: 500
   best_params_type: 'best_metric' # 'best_loss',
   best_params_start_steps: 10
+  is_tf_log: False
 
   # main_cr_v2.py
   model_key: 'CRModel3'

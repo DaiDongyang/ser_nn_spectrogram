@@ -335,31 +335,50 @@ class CRModelRun(object):
             var_hps = self.get_cur_var_hps(i)
             batch_input = session.run(train_iter.BatchedInput)
 
-            # #todo: debug
-            # l_intra, l_inter, h_rnn = session.run((model.l_intra, model.l_inter, model.output_d['h_rnn']), feed_dict={
-            #             model.fc_kprob_ph: self.hps.fc_kprob,
-            #             model.lr_ph: var_hps.lr,
-            #             model.x_ph: batch_input.x.astype(self.np_float_type),
-            #             model.t_ph: batch_input.t,
-            #             model.e_ph: batch_input.e,
-            #             model.e_w_ph: batch_input.w.astype(self.np_float_type),
-            #             model.is_training_ph: True,
-            #             model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
-            #             model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
-            #             model.center_loss_lambda_ph: var_hps.center_loss_lambda,
-            #             model.center_loss_alpha_ph: var_hps.center_loss_alpha,
-            #             model.center_loss_beta_ph: var_hps.center_loss_beta,
-            #             model.center_loss_gamma_ph: var_hps.center_loss_gamma})
-            # print('l_intra', l_intra)
-            # print('l_inter', l_inter)
-            # np.save('/tmp/dai/h_rnn.npy', h_rnn)
-            # np.save('/tmp/dai/label.npy', batch_input.e)
-            # raise ValueError("End")
-
             if i % self.hps.train_eval_interval == 0:
-                summ, batch_e_acc, batch_loss_d, _ = session.run(
-                    (model.train_merged, model.metric_d['e_acc'], model_loss_d, train_op),
-                    feed_dict={
+                if self.hps.is_tflog:
+                    summ, batch_e_acc, batch_loss_d, _ = session.run(
+                        (model.train_merged, model.metric_d['e_acc'], model_loss_d, train_op),
+                        feed_dict={
+                            model.fc_kprob_ph: self.hps.fc_kprob,
+                            model.lr_ph: var_hps.lr,
+                            model.x_ph: batch_input.x.astype(self.np_float_type),
+                            model.t_ph: batch_input.t,
+                            model.e_ph: batch_input.e,
+                            model.e_w_ph: batch_input.w.astype(self.np_float_type),
+                            model.is_training_ph: True,
+                            model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
+                            model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
+                            model.center_loss_lambda_ph: var_hps.center_loss_lambda,
+                            model.center_loss_alpha_ph: var_hps.center_loss_alpha,
+                            model.center_loss_beta_ph: var_hps.center_loss_beta,
+                            model.center_loss_gamma_ph: var_hps.center_loss_gamma,
+                            model.feature_norm_alpha_ph: var_hps.feature_norm_alpha,
+                        })
+                else:
+                    batch_e_acc, batch_loss_d, _ = session.run(
+                        (model.metric_d['e_acc'], model_loss_d, train_op),
+                        feed_dict={
+                            model.fc_kprob_ph: self.hps.fc_kprob,
+                            model.lr_ph: var_hps.lr,
+                            model.x_ph: batch_input.x.astype(self.np_float_type),
+                            model.t_ph: batch_input.t,
+                            model.e_ph: batch_input.e,
+                            model.e_w_ph: batch_input.w.astype(self.np_float_type),
+                            model.is_training_ph: True,
+                            model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
+                            model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
+                            model.center_loss_lambda_ph: var_hps.center_loss_lambda,
+                            model.center_loss_alpha_ph: var_hps.center_loss_alpha,
+                            model.center_loss_beta_ph: var_hps.center_loss_beta,
+                            model.center_loss_gamma_ph: var_hps.center_loss_gamma,
+                            model.feature_norm_alpha_ph: var_hps.feature_norm_alpha,
+                        })
+                self.logger.log('step %d,' % i, 'input shape', batch_input.x.shape, 'e_acc',
+                                batch_e_acc, 'batch_loss_d', batch_loss_d, level=2)
+            else:
+                if self.hps.is_tflog:
+                    summ, _ = session.run((model.train_merged, train_op), feed_dict={
                         model.fc_kprob_ph: self.hps.fc_kprob,
                         model.lr_ph: var_hps.lr,
                         model.x_ph: batch_input.x.astype(self.np_float_type),
@@ -375,35 +394,33 @@ class CRModelRun(object):
                         model.center_loss_gamma_ph: var_hps.center_loss_gamma,
                         model.feature_norm_alpha_ph: var_hps.feature_norm_alpha,
                     })
-                self.logger.log('step %d,' % i, 'input shape', batch_input.x.shape, 'e_acc',
-                                batch_e_acc, 'batch_loss_d', batch_loss_d, level=2)
-            else:
-                summ, _ = session.run((model.train_merged, train_op), feed_dict={
-                    model.fc_kprob_ph: self.hps.fc_kprob,
-                    model.lr_ph: var_hps.lr,
-                    model.x_ph: batch_input.x.astype(self.np_float_type),
-                    model.t_ph: batch_input.t,
-                    model.e_ph: batch_input.e,
-                    model.e_w_ph: batch_input.w.astype(self.np_float_type),
-                    model.is_training_ph: True,
-                    model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
-                    model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
-                    model.center_loss_lambda_ph: var_hps.center_loss_lambda,
-                    model.center_loss_alpha_ph: var_hps.center_loss_alpha,
-                    model.center_loss_beta_ph: var_hps.center_loss_beta,
-                    model.center_loss_gamma_ph: var_hps.center_loss_gamma,
-                    model.feature_norm_alpha_ph: var_hps.feature_norm_alpha,
-                })
-            self.train_writer.add_summary(summ, i)
+                    self.train_writer.add_summary(summ, i)
+                else:
+                    session.run(train_op, feed_dict={
+                        model.fc_kprob_ph: self.hps.fc_kprob,
+                        model.lr_ph: var_hps.lr,
+                        model.x_ph: batch_input.x.astype(self.np_float_type),
+                        model.t_ph: batch_input.t,
+                        model.e_ph: batch_input.e,
+                        model.e_w_ph: batch_input.w.astype(self.np_float_type),
+                        model.is_training_ph: True,
+                        model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
+                        model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
+                        model.center_loss_lambda_ph: var_hps.center_loss_lambda,
+                        model.center_loss_alpha_ph: var_hps.center_loss_alpha,
+                        model.center_loss_beta_ph: var_hps.center_loss_beta,
+                        model.center_loss_gamma_ph: var_hps.center_loss_gamma,
+                        model.feature_norm_alpha_ph: var_hps.feature_norm_alpha,
+                    })
             if i % self.hps.eval_interval == 0:
                 l_level = 1
                 dev_metric_d, dev_loss_d = self.eval(dev_iter, var_hps, session)
-
-                fd = self.get_eval_merged_feed_dict(dev_metric_d, dev_loss_d,
-                                                    self.hps.eval_metric_ks,
-                                                    self.hps.eval_loss_ks)
-                dev_summ = session.run(self.eval_merged, feed_dict=fd)
-                self.dev_writer.add_summary(dev_summ, i)
+                if self.hps.is_tflog:
+                    fd = self.get_eval_merged_feed_dict(dev_metric_d, dev_loss_d,
+                                                        self.hps.eval_metric_ks,
+                                                        self.hps.eval_loss_ks)
+                    dev_summ = session.run(self.eval_merged, feed_dict=fd)
+                    self.dev_writer.add_summary(dev_summ, i)
                 dev_metric = dev_metric_d[self.ckpt_metric_k]
                 dev_loss = dev_loss_d[self.ckpt_loss_k]
                 if i > self.hps.best_params_start_steps and dev_metric > self.best_metric:
@@ -425,11 +442,12 @@ class CRModelRun(object):
                                 level=l_level)
                 if self.hps.is_eval_test:
                     test_metric_d, test_loss_d = self.eval(test_iter, var_hps, session)
-                    fd = self.get_eval_merged_feed_dict(test_metric_d, test_loss_d,
-                                                        self.hps.eval_metric_ks,
-                                                        self.hps.eval_loss_ks)
-                    test_summ = session.run(self.eval_merged, feed_dict=fd)
-                    self.test_writer.add_summary(test_summ, i)
+                    if self.hps.is_tflog:
+                        fd = self.get_eval_merged_feed_dict(test_metric_d, test_loss_d,
+                                                            self.hps.eval_metric_ks,
+                                                            self.hps.eval_loss_ks)
+                        test_summ = session.run(self.eval_merged, feed_dict=fd)
+                        self.test_writer.add_summary(test_summ, i)
                     self.logger.log(' test set: metric_d', test_metric_d, 'loss_d', test_loss_d,
                                     level=1)
                 self.logger.log(' Duration %f' % (time.time() - self.start_time), level=1)
