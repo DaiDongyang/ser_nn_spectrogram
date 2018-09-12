@@ -150,6 +150,36 @@ class BaseCRModel(object):
         loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
         return loss
 
+    # todo: Test
+    def calc_center_loss3(self, features, labels):
+        batch_size = tf.cast(tf.shape(features)[0], dtype=self.float_type)
+        f_norm = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features), axis=1)))
+        features = features / f_norm
+        labels = tf.reshape(labels, [-1])
+        u_label, u_idx, u_count = tf.unique_with_counts(labels)
+        idx_matrix = tf.cast(tf.one_hot(u_idx, tf.shape(u_label)[0]), dtype=self.float_type)
+        # [batch_size, 1, num_classes]
+        idx_tensor = tf.expand_dims(idx_matrix, 1)
+        # x_expand [batch_size, dim, 1]
+        x_expand = tf.expand_dims(features, -1)
+        # x_expand * idx_tensor [batch_size, dim, num_classes]
+        # f_mean [dim, num_classes]
+        f_mean = tf.reduce_sum(x_expand * idx_tensor, axis=0) / tf.cast(u_count, self.float_type)
+        # centers [num_classes, dim]
+        centers = tf.transpose(f_mean, [1, 0])
+        centers_batch = tf.gather(centers, u_idx)
+        dist_in = tf.nn.l2_loss(features - centers_batch) / batch_size
+
+        num_classes = tf.cast(tf.shape(centers)[0], dtype=self.float_type)
+
+        centers0 = tf.expand_dims(centers, 0)
+        centers1 = tf.expand_dims(centers, 1)
+        c_diffs = centers0 - centers1
+
+        dist_out = tf.nn.l2_loss(c_diffs) / tf.maximum(1, num_classes * (num_classes - 1.))
+        loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
+        return loss
+
     def update_f_norm_op(self, features, alpha):
         f_norm = self.get_feature_norm_variable(shape=[])
         cur_f_n = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features), axis=1)))

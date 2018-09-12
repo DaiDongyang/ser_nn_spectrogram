@@ -93,7 +93,7 @@ default: &DEFAULT
   restart_train_steps: 500
   best_params_type: 'best_metric' # 'best_loss',
   best_params_start_steps: 10
-  is_tf_log: False
+  is_tflog: False
 
   # main_cr_v2.py
   model_key: 'CRModel3'
@@ -271,7 +271,7 @@ ce_center_co_ma: &CE_CENTER_M3_CO_MA
 
 ce_center_co_ma_ua: &CE_CENTER_M3_CO_MA_UA
   <<: *CE_CENTER
-  out_dir: '/tmp/ddy/cr_model_v2/ce_center_co_ma'
+  out_dir: './cr_model_v2/output/ce_center_co_ma'
   data_dir: '/home/ddy/projects/emotions/data/iemocap_w4s1f400_f4k_npy'
   max_steps: 4000
   lr_steps: [4000]
