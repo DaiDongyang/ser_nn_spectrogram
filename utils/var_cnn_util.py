@@ -38,7 +38,10 @@ def var_conv2d(inputs, w, strides, padding, bias, seq_length, is_clip_output_siz
 def var_conv2d_v2(inputs, w, bias, seq_length, strides=(1, 2, 2, 1), padding='SAME',
                   is_training=True,
                   activation_fn=tf.nn.relu, is_bn=False, is_mask=True, reuse=None):
-    h = tf.nn.conv2d(input=inputs, filter=w, strides=strides, padding=padding) + bias
+    if is_bn:
+        h = tf.nn.conv2d(input=inputs, filter=w, strides=strides, padding=padding)
+    else:
+        h = tf.nn.conv2d(input=inputs, filter=w, strides=strides, padding=padding) + bias
     s = strides[1]
     seq_len1 = seq_length
     if padding == 'VALID':

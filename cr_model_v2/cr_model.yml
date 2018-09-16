@@ -167,6 +167,31 @@ ce_ma: &CE_MA
   ckpt_metric_k: 'ua'
   consider_sent_types: ['impro', 'script']
 
+# ma means merge all
+ce_ma_bn: &CE_MA_NO_MASK_BN
+  <<: *DEFAULT
+  out_dir: './cr_model_v2/output/ce_baseline_ce_ma_ua_bn'
+  data_dir: '/home/ddy/projects/emotions/data/iemocap_w4s1f400_f4k_npy'
+  train_output_summ_keys: ['h_rnn', 'h_cnn']
+  train_grad_summ_keys: ['ce2hrnn', 'ce2hcnn']
+  train_metric_summ_keys: ['e_acc']
+  train_loss_summ_keys: ['ce_loss']
+  is_merge_center_loss_centers: False
+  eval_loss_ks: ['ce_loss']
+  eval_metric_ks: ['wa', 'ua']
+  ckpt_loss_k: 'ce_loss'
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  train_op_steps: [4000]
+  train_op_ks: ['ce_tp']
+  is_bn: False
+  is_merge_hap_exc: True
+  ckpt_metric_k: 'ua'
+  consider_sent_types: ['impro', 'script']
+  is_var_cnn_mask: False
+  batch_size: 24
+
 ce_center: &CE_CENTER
   <<: *DEFAULT
   out_dir: './cr_model_v2/cr2_out_center_loss/ce_center'
@@ -271,6 +296,31 @@ ce_center_co_ma: &CE_CENTER_M3_CO_MA
 
 ce_center_co_ma_ua: &CE_CENTER_M3_CO_MA_UA
   <<: *CE_CENTER
+  out_dir: './cr_model_v2/output/ce_center_co_ma_ua_gamma005'
+  data_dir: '/home/ddy/projects/emotions/data/iemocap_w4s1f400_f4k_npy'
+  max_steps: 5000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [4000]
+  center_loss_lambdas: [0.3]
+  center_loss_alpha_steps: [4000]
+  center_loss_alhpas: [0.5]
+  center_loss_beta_steps: [4000]
+  center_loss_betas: [0.2]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.05]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  best_params_start_steps: 500
+  consider_sent_types: ['impro', 'script']
+  is_bn: False
+  is_merge_hap_exc: True
+  ckpt_metric_k: 'ua'
+  is_var_cnn_mask: True
+  batch_size: 32
+
+ce_center_co_ma_ua_no_mask: &CE_CENTER_M3_CO_MA_UA_NO_MASK
+  <<: *CE_CENTER
   out_dir: './cr_model_v2/output/ce_center_co_ma'
   data_dir: '/home/ddy/projects/emotions/data/iemocap_w4s1f400_f4k_npy'
   max_steps: 4000
@@ -291,6 +341,7 @@ ce_center_co_ma_ua: &CE_CENTER_M3_CO_MA_UA
   is_bn: False
   is_merge_hap_exc: True
   ckpt_metric_k: 'ua'
+  is_var_cnn_mask: False
 
 
 

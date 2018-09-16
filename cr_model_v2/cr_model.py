@@ -628,7 +628,10 @@ class CRModel3(CGRUFCModel):
             i += 1
             with tf.name_scope('conv' + str(i)):
                 w = self.weight_variable(kernel)
-                b = self.bias_variable(kernel[-1:])
+                if self.hps.is_bn:
+                    b = None
+                else:
+                    b = self.bias_variable(kernel[-1:])
                 h, seq_lens = vcu.var_conv2d_v2(h, w=w, bias=b, seq_length=seq_lens,
                                                 strides=s, padding='SAME',
                                                 is_training=self.is_training_ph,
