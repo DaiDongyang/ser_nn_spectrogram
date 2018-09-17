@@ -155,9 +155,9 @@ def _conv2d_with_seq_len(inputs,
                          filters,
                          kernel_size,
                          seq_length,
-                         strides=(1, 1),
-                         padding='valid',
-                         dilation_rate=(1, 1),
+                         strides,
+                         padding,
+                         dilation_rate,
                          use_bias=True,
                          kernel_initializer=None,
                          bias_initializer=tf.zeros_initializer(),
@@ -174,10 +174,11 @@ def _conv2d_with_seq_len(inputs,
         k = (kernel_size[0] - 1) * dilation_rate[0] + 1
         seq_length = seq_length - k + 1
     new_seq_len = 1 + tf.floor_div((seq_length - 1), strides[0])
+
     outputs = tf.layers.conv2d(inputs=inputs,
                                filters=filters,
                                kernel_size=kernel_size,
-                               strides=kernel_size,
+                               strides=strides,
                                padding=padding,
                                data_format='channels_last',
                                dilation_rate=dilation_rate,
@@ -193,6 +194,13 @@ def _conv2d_with_seq_len(inputs,
                                trainable=trainable,
                                name=name,
                                reuse=reuse)
+    # # todo: debug
+    # print(tf.shape(inputs))
+    # print('padding', padding)
+    # print('dilation_rate', dilation_rate)
+    # print('strides', strides)
+    # print('kernel_size', kernel_size)
+    # print('outputs', outputs)
     return outputs, new_seq_len
 
 
