@@ -7,6 +7,12 @@ def get_mask(seq_lens, max_len, dtype=tf.float32):
     return mask
 
 
+def get_mask_3d(seq_lens, max_len, dtype=tf.float32):
+    mask = tf.cast(tf.sequence_mask(seq_lens, max_len), dtype=dtype)
+    mask = tf.expand_dims(mask, -1)
+    return mask
+
+
 def var_conv2d(inputs, w, strides, padding, bias, seq_length, is_clip_output_size=False):
     """
     conv2d process variable length sequence input, without activate function.
@@ -66,6 +72,37 @@ def var_conv2d_v2(inputs, w, bias, seq_length, strides=(1, 2, 2, 1), padding='SA
     return outputs, new_seq_len
 
 
+# todo: test
+def var_conv1d(inputs, w, bias, seq_length, stride=1, padding='SAME',
+               is_training=True,
+               activation_fn=tf.nn.relu, is_bn=False, is_mask=True, reuse=None):
+    if is_bn:
+        h = tf.nn.conv1d(value=inputs, filters=w, stride=stride, padding=padding)
+        h = tf.contrib.layers.batch_norm(inputs=h,
+                                         center=True,
+                                         scale=True,
+                                         updates_collections=None,
+                                         is_training=is_training,
+                                         fused=True,
+                                         reuse=reuse)
+    else:
+        h = tf.nn.conv1d(value=inputs, filters=w, stride=stride, padding=padding) + bias
+    s = stride
+    seq_len1 = seq_length
+    if padding == 'VALID':
+        k = tf.shape(w)[0]
+        seq_len1 = seq_length - k + 1
+    new_seq_len = 1 + tf.floordiv((seq_len1 - 1), s)
+    if is_mask:
+        mask = get_mask_3d(new_seq_len, tf.shape(h)[1], h.dtype)
+        outputs = h * mask
+    else:
+        outputs = h
+    if activation_fn is not None:
+        outputs = activation_fn(outputs)
+    return outputs, new_seq_len
+
+
 def var_max_pool(inputs, ksize, strides, padding, seq_length, is_clip_output_size=False):
     """
     max pool for variable length sequence input,
@@ -90,6 +127,34 @@ def var_max_pool(inputs, ksize, strides, padding, seq_length, is_clip_output_siz
     if is_clip_output_size:
         max_seq_len = tf.reduce_max(new_seq_len)
         outputs = outputs[:, :max_seq_len, :, :]
+    return outputs, new_seq_len
+
+
+def var_max_pool_3d(inputs, ksize, strides, padding, seq_length, is_clip_output_size=False):
+    """
+    max pool for variable length sequence input,
+    if padding == 'SAME', please make sure all the element in inputs >= 0
+    :param inputs: A Tensor, [batch_size, max_time, channel].
+    :param ksize: A 1-D int Tensor of 4 elements.
+    :param strides: A 1-D int Tensor of 4 elements.
+    :param padding: A string, either 'VALID' or 'SAME'.
+    :param seq_length: A tensor, [batch_size].
+    :param is_clip_output_size: clip useless padding value in output
+    :return: output, new_seq_len
+    """
+    h = tf.nn.pool(input=inputs, window_shape=ksize, strides=strides, padding=padding,
+                   pooling_type='MAX')
+    s = strides[0]
+    seq_len1 = seq_length
+    if padding == 'VALID':
+        k = ksize[0]
+        seq_len1 = seq_length - k + 1
+    new_seq_len = 1 + tf.floordiv((seq_len1 - 1), s)
+    mask = get_mask_3d(new_seq_len, tf.shape(h)[1], h.dtype)
+    outputs = h * mask
+    if is_clip_output_size:
+        max_seq_len = tf.reduce_max(new_seq_len)
+        outputs = outputs[:, :max_seq_len, :]
     return outputs, new_seq_len
 
 

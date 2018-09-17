@@ -4,6 +4,7 @@ from utils import parser_util
 from utils import cfg_process
 from cr_model_v2 import cr_cfg_process
 from cr_model_v2 import cr_model
+from cr_model_v2 import cr_model_impl
 from cr_model_v2 import load_data
 from cr_model_v2 import data_set
 from cr_model_v2 import cr_model_run
@@ -29,7 +30,8 @@ def main(unused_argv):
     yparams.save()
     CRM_dict = {'CRModel1': cr_model.CRModel1,
                 'CRModel2': cr_model.CRModel2,
-                'CRModel3': cr_model.CRModel3}
+                'CRModel3': cr_model.CRModel3,
+                'CRModel4': cr_model_impl.CRModel4}
     # print('model_key', yparams.model_key)
     CRM = CRM_dict[yparams.model_key]
     model = CRM(yparams)
