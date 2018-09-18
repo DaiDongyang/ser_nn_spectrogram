@@ -12,7 +12,7 @@ from cr_model_v2 import cr_model_run
 
 def add_arguments(parser):
     """Build ArgumentParser"""
-    parser.add_argument('--config_file', type=str, default='./cr_model_v2/cr_model.yml',
+    parser.add_argument('--config_file', type=str, default='./cr_model_v2/ma.yml',
                         help='config file about hparams')
     parser.add_argument('--config_name', type=str, default='default',
                         help='config name for hparams')
@@ -31,7 +31,8 @@ def main(unused_argv):
     CRM_dict = {'CRModel1': cr_model.CRModel1,
                 'CRModel2': cr_model.CRModel2,
                 'CRModel3': cr_model.CRModel3,
-                'CRModel4': cr_model_impl.CRModel4}
+                'CRModel4': cr_model_impl.CRModel4,
+                'CRModel5': cr_model_impl.CRModel5}
     # print('model_key', yparams.model_key)
     CRM = CRM_dict[yparams.model_key]
     model = CRM(yparams)

@@ -32,6 +32,7 @@ default: &DEFAULT
 
   ## data_set.py
   batch_size: 32
+  infer_batch_size: 128
   is_shuffle_vali: False
   is_shuffle_test: False
 
@@ -147,7 +148,7 @@ ce: &CE
 # ma means merge all
 ce_ma: &CE_MA
   <<: *DEFAULT
-  out_dir: '/tmp/cr_model_v2/cr2_out_center_loss/ce_baseline_ce_ma_ua'
+  out_dir: '/tmp/cr_model_v2/cr2_out_center_loss/ce_baseline_ce_ma'
   data_dir: '/home/ddy/projects/emotions/data/iemocap_w4s1f400_f4k_npy'
   train_output_summ_keys: ['h_rnn', 'h_cnn']
   train_grad_summ_keys: ['ce2hrnn', 'ce2hcnn']

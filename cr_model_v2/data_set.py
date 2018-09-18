@@ -32,7 +32,7 @@ class DataSet(object):
         dev_set = tf.data.Dataset.zip((dev_x, dev_e, dev_t, dev_w))
         if hps.is_shuffle_vali:
             dev_set = dev_set.shuffle(5000)
-        self.dev_set = dev_set.padded_batch(hps.batch_size,
+        self.dev_set = dev_set.padded_batch(hps.infer_batch_size,
                                             padded_shapes=([None, None], [], [], []))
         test_x = tf.data.Dataset.from_generator(lambda: l_data.test_x, tf.float32)
         test_e = tf.data.Dataset.from_tensor_slices(l_data.test_e)
@@ -41,7 +41,7 @@ class DataSet(object):
         test_set = tf.data.Dataset.zip((test_x, test_e, test_t, test_w))
         if hps.is_shuffle_test:
             test_set = test_set.shuffle(5000)
-        self.test_set = test_set.padded_batch(hps.batch_size,
+        self.test_set = test_set.padded_batch(hps.infer_batch_size,
                                               padded_shapes=([None, None], [], [], []))
 
     def get_train_iter(self):
