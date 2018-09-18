@@ -33,7 +33,7 @@ default: &DEFAULT
 
   ## data_set.py
   batch_size: 32
-  infer_batch_size: 128
+  infer_batch_size: 96
   is_shuffle_vali: False
   is_shuffle_test: False
 
@@ -126,7 +126,7 @@ ce_m5: &CE_M5
   is_var_cnn_mask: True
   model_key: 'CRModel5'
   batch_size: 32
-  infer_batch_size: 128
+  infer_batch_size: 96
 
 
 ce_center: &CE_CENTER

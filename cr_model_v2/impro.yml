@@ -33,7 +33,7 @@ default: &DEFAULT
 
   ## data_set.py
   batch_size: 32
-  infer_batch_size: 128
+  infer_batch_size: 96
   is_shuffle_vali: False
   is_shuffle_test: False
 
@@ -126,7 +126,7 @@ ce_m5: &CE_M5
   is_var_cnn_mask: True
   model_key: 'CRModel5'
   batch_size: 32
-  infer_batch_size: 128
+  infer_batch_size: 96
 
 ce_center: &CE_CENTER
   <<: *DEFAULT
@@ -158,9 +158,9 @@ ce_center: &CE_CENTER
   feature_norm_alpha_steps: [4000]
   feature_norm_alphas: [0.5]
 
-ce_center_lambda030alpha050beta020gamma015:
+ce_center_m5_lambda030alpha050beta020gamma012:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/cr2_out_impro/ce_center_lambda030alpha050beta020gamma015'
+  out_dir: './cr_model_v2/cr2_out_impro/ce_center_m5_lambda030alpha050beta020gamma012'
   max_steps: 4000
   lr_steps: [4000]
   lrs: [0.0003]
@@ -171,12 +171,13 @@ ce_center_lambda030alpha050beta020gamma015:
   center_loss_beta_steps: [4000]
   center_loss_betas: [0.2]
   center_loss_gamma_steps: [4000]
-  center_loss_gammas: [0.15]
+  center_loss_gammas: [0.12]
   feature_norm_alpha_steps: [4000]
   feature_norm_alphas: [0.5]
   best_params_start_steps: 500
   is_bn: false
   is_var_cnn_mask: true
   batch_size: 32
+  model_key: 'CRModel5'
 
 
