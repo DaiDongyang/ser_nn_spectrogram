@@ -203,3 +203,25 @@ ce_center_m5_lambda030alpha050beta015gamma010:
   batch_size: 32
   model_key: 'CRModel5'
 
+ce_center_m5_lambda030alpha050beta010gamma010:
+  <<: *CE_CENTER
+  out_dir: './cr_model_v2/cr2_out_impro/ce_center_m5_lambda030alpha050beta010gamma010'
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [4000]
+  center_loss_lambdas: [0.3]
+  center_loss_alpha_steps: [4000]
+  center_loss_alhpas: [0.5]
+  center_loss_beta_steps: [4000]
+  center_loss_betas: [0.10]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.10]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  best_params_start_steps: 500
+  is_bn: false
+  is_var_cnn_mask: true
+  batch_size: 32
+  model_key: 'CRModel5'
+
