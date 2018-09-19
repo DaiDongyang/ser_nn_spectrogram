@@ -151,7 +151,11 @@ class BaseCRModel(object):
         # self.debug_dict['batch_size'] = batch_size
         # self.debug_dict['num_classes'] = num_classes
 
-        loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
+        epsilon = 1e-8
+
+        loss = (dist_in + epsilon) / (dist_out + epsilon)
+
+        # loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
         return loss
 
     # todo: Test
