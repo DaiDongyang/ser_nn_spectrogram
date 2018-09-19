@@ -139,17 +139,17 @@ class BaseCRModel(object):
         labels = tf.reshape(labels, [-1, 1])
         shifts = tf.reshape(tf.range(start=1, limit=num_classes, dtype=tf.int32), [1, -1])
         idxs = labels + shifts
-        centers_shift_batch = tf.gather(centers, idxs)  # [batch_size, num_classes - 1, feature_size]
+        centers_shift_batch = tf.gather(centers,
+                                        idxs)  # [batch_size, num_classes - 1, feature_size]
         # key_masks = tf.tile(tf.expand_dims(key_masks, 1), [1, tf.shape(queries)[1], 1])
         features_3d = tf.tile(tf.expand_dims(features, 1), [1, num_classes - 1, 1])
-        dist_out_3d = tf.losses.mean_squared_error(labels=centers_shift_batch, predictions=features_3d,
+        dist_out_3d = tf.losses.mean_squared_error(labels=centers_shift_batch,
+                                                   predictions=features_3d,
                                                    reduction=tf.losses.Reduction.NONE)
         # dist_out = tf.reduce_mean(tf.reduce_sum(dist_out_3d, axis=-1))
         dist_out = tf.reduce_mean(tf.reduce_min(tf.reduce_sum(dist_out_3d, axis=-1), axis=-1))
-        self.debug_dict['dist_in'] = dist_in
-        self.debug_dict['dist_out'] = dist_out
-        # self.debug_dict['batch_size'] = batch_size
-        # self.debug_dict['num_classes'] = num_classes
+        # self.debug_dict['dist_in'] = dist_in
+        # self.debug_dict['dist_out'] = dist_out
 
         epsilon = 1e-8
 
@@ -319,6 +319,12 @@ class BaseCRModel(object):
                 logits=self.output_d['logits'],
                 weights=weights,
                 reduction=tf.losses.Reduction.MEAN)
+            l2_reg_loss = 0.
+            if self.hps.is_l2_reg:
+                l2_reg_loss = tf.add_n([tf.nn.l2_loss(v)
+                                        for v in tf.trainable_variables()
+                                        if ('kernel' in v.name) or 'w' in v.name])
+                l2_reg_loss = self.hps.l2_reg_lambda * l2_reg_loss
             # center_loss = self.calc_center_loss()
             features = self.output_d[self.hps.features_key]
             center_loss = self.calc_center_loss(features=features, labels=self.e_ph,
@@ -347,6 +353,7 @@ class BaseCRModel(object):
         loss_d['ce_center_loss3'] = ce_center_loss3
         loss_d['ce_cos_loss'] = ce_cos_loss
         loss_d['ce_dist_loss'] = ce_dist_loss
+        loss_d['l2_reg_loss'] = l2_reg_loss
         return loss_d
 
     def get_update_op_d(self):
@@ -377,17 +384,24 @@ class BaseCRModel(object):
             optimizer = tf.train.GradientDescentOptimizer(self.lr_ph)
         with tf.name_scope('optimizer'):
             # tp: train op
-            ce_tp = optimizer.minimize(self.loss_d['ce_loss'])
-            center_tp = optimizer.minimize(self.loss_d['center_loss'])
-            center2_tp = optimizer.minimize(self.loss_d['center_loss2'])
-            center3_tp = optimizer.minimize(self.loss_d['center_loss3'])
-            cos_tp = optimizer.minimize(self.loss_d['cos_loss'])
-            dist_tp = optimizer.minimize(self.loss_d['dist_loss'])
-            ce_center_tp = optimizer.minimize(self.loss_d['ce_center_loss'])
-            ce_center2_tp = optimizer.minimize(self.loss_d['ce_center_loss2'])
-            ce_center3_tp = optimizer.minimize(self.loss_d['ce_center_loss3'])
-            ce_cos_tp = optimizer.minimize(self.loss_d['ce_cos_loss'])
-            ce_dist_tp = optimizer.minimize(self.loss_d['ce_dist_loss'])
+
+            ce_tp = optimizer.minimize(self.loss_d['ce_loss'] + self.loss_d['l2_reg_loss'])
+            center_tp = optimizer.minimize(self.loss_d['center_loss'] + self.loss_d['l2_reg_loss'])
+            center2_tp = optimizer.minimize(
+                self.loss_d['center_loss2'] + self.loss_d['l2_reg_loss'])
+            center3_tp = optimizer.minimize(
+                self.loss_d['center_loss3'] + self.loss_d['l2_reg_loss'])
+            cos_tp = optimizer.minimize(self.loss_d['cos_loss'] + self.loss_d['l2_reg_loss'])
+            dist_tp = optimizer.minimize(self.loss_d['dist_loss'] + self.loss_d['l2_reg_loss'])
+            ce_center_tp = optimizer.minimize(
+                self.loss_d['ce_center_loss'] + self.loss_d['l2_reg_loss'])
+            ce_center2_tp = optimizer.minimize(
+                self.loss_d['ce_center_loss2'] + self.loss_d['l2_reg_loss'])
+            ce_center3_tp = optimizer.minimize(
+                self.loss_d['ce_center_loss3'] + self.loss_d['l2_reg_loss'])
+            ce_cos_tp = optimizer.minimize(self.loss_d['ce_cos_loss'] + self.loss_d['l2_reg_loss'])
+            ce_dist_tp = optimizer.minimize(
+                self.loss_d['ce_dist_loss'] + self.loss_d['l2_reg_loss'])
 
         if self.hps.center_loss_f_norm == 'f_norm':
             center_utp = (

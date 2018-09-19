@@ -20,6 +20,9 @@ default: &DEFAULT
   is_bn: False
   is_var_cnn_mask: True
 
+  is_l2_reg: False
+  l2_reg_lambda: 0.1
+
   ## load_data.py
   data_dir: '/home/ddy/projects/emotions/data/iemocap_w4s1f400_f4k_npy'
   consider_sent_types: ['impro', 'script']
