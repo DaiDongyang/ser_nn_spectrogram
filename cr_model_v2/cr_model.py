@@ -151,7 +151,11 @@ class BaseCRModel(object):
         # self.debug_dict['dist_in'] = dist_in
         # self.debug_dict['dist_out'] = dist_out
 
-        loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
+        epsilon = 1e-8
+
+        loss = (dist_in + epsilon) / (dist_out + epsilon)
+
+        # loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
         return loss
 
     # todo: Test
