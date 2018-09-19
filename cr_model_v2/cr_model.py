@@ -57,8 +57,7 @@ class BaseCRModel(object):
                                                     name='feature_norm_alpha_ph')
 
         # todo: debug
-        self.l_intra = None
-        self.l_inter = None
+        self.debug_dict = dict()
 
         # build graph
         # self.vars_d = None
@@ -122,9 +121,7 @@ class BaseCRModel(object):
 
     def calc_center_loss2(self, features, labels, num_classes):
         len_features = features.get_shape()[1]
-        batch_size = tf.cast(tf.shape(features)[0], dtype=self.float_type)
-        # if self.hps.is_center_loss_f_norm:
-        #     features = tf.nn.l2_normalize(features)
+
         if self.hps.center_loss_f_norm == 'f_norm':
             f_norm = self.get_feature_norm_variable(shape=[])
             features = features / f_norm
@@ -136,16 +133,23 @@ class BaseCRModel(object):
         centers = self.get_center_loss_centers_variable(shape=[num_classes, len_features])
         labels = tf.reshape(labels, [-1])
         centers_batch = tf.gather(centers, labels)
-        dist_in = tf.nn.l2_loss(features - centers_batch) / batch_size
-        dist_out = 0
-        for i in range(num_classes - 1):
-            labels = (labels + i) % num_classes
-            centers_batch = tf.gather(centers, labels)
-            dist_out += tf.nn.l2_loss(features - centers_batch)
-        dist_out = dist_out / batch_size * (num_classes - 1)
-        # todo: debug
-        self.l_intra = dist_in
-        self.l_inter = dist_out
+        dist_in_2d = tf.losses.mean_squared_error(labels=centers_batch, predictions=features,
+                                                  reduction=tf.losses.Reduction.NONE)
+        dist_in = tf.reduce_mean(tf.reduce_sum(dist_in_2d, axis=-1))
+        labels = tf.reshape(labels, [-1, 1])
+        shifts = tf.reshape(tf.range(start=1, limit=num_classes, dtype=tf.int32), [1, -1])
+        idxs = labels + shifts
+        centers_shift_batch = tf.gather(centers,
+                                        idxs)  # [batch_size, num_classes - 1, feature_size]
+        # key_masks = tf.tile(tf.expand_dims(key_masks, 1), [1, tf.shape(queries)[1], 1])
+        features_3d = tf.tile(tf.expand_dims(features, 1), [1, num_classes - 1, 1])
+        dist_out_3d = tf.losses.mean_squared_error(labels=centers_shift_batch,
+                                                   predictions=features_3d,
+                                                   reduction=tf.losses.Reduction.NONE)
+        # dist_out = tf.reduce_mean(tf.reduce_sum(dist_out_3d, axis=-1))
+        dist_out = tf.reduce_mean(tf.reduce_min(tf.reduce_sum(dist_out_3d, axis=-1), axis=-1))
+        # self.debug_dict['dist_in'] = dist_in
+        # self.debug_dict['dist_out'] = dist_out
 
         loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
         return loss
@@ -176,7 +180,7 @@ class BaseCRModel(object):
         centers1 = tf.expand_dims(centers, 1)
         c_diffs = centers0 - centers1
 
-        dist_out = tf.nn.l2_loss(c_diffs) / tf.maximum(1, num_classes * (num_classes - 1.))
+        dist_out = tf.nn.l2_loss(c_diffs) / tf.maximum(1., num_classes * (num_classes - 1.))
         loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
         return loss
 
@@ -323,10 +327,12 @@ class BaseCRModel(object):
                                                 num_classes=len(self.hps.emos))
             center_loss2 = self.calc_center_loss2(features=features, labels=self.e_ph,
                                                   num_classes=len(self.hps.emos))
+            center_loss3 = self.calc_center_loss3(features=features, labels=self.e_ph)
             cos_loss = self.calc_cos_loss(features=features, labels=self.e_ph)
             dist_loss = self.calc_dist_loss(features=features, labels=self.e_ph)
             ce_center_loss = ce_loss + self.center_loss_lambda_ph * center_loss
             ce_center_loss2 = ce_loss + self.center_loss_lambda_ph * center_loss2
+            ce_center_loss3 = ce_loss + self.center_loss_lambda_ph * center_loss3
             cos_loss_lambda = self.cos_loss_lambda_ph
             ce_cos_loss = (1 - cos_loss_lambda) * ce_loss + cos_loss_lambda * cos_loss
             dist_loss_lambda = self.dist_loss_lambda_ph
@@ -335,10 +341,12 @@ class BaseCRModel(object):
         loss_d['ce_loss'] = ce_loss
         loss_d['center_loss'] = center_loss
         loss_d['center_loss2'] = center_loss2
+        loss_d['center_loss3'] = center_loss3
         loss_d['cos_loss'] = cos_loss
         loss_d['dist_loss'] = dist_loss
         loss_d['ce_center_loss'] = ce_center_loss
         loss_d['ce_center_loss2'] = ce_center_loss2
+        loss_d['ce_center_loss3'] = ce_center_loss3
         loss_d['ce_cos_loss'] = ce_cos_loss
         loss_d['ce_dist_loss'] = ce_dist_loss
         loss_d['l2_reg_loss'] = l2_reg_loss
@@ -372,16 +380,21 @@ class BaseCRModel(object):
             optimizer = tf.train.GradientDescentOptimizer(self.lr_ph)
         with tf.name_scope('optimizer'):
             # tp: train op
+
             ce_tp = optimizer.minimize(self.loss_d['ce_loss'] + self.loss_d['l2_reg_loss'])
             center_tp = optimizer.minimize(self.loss_d['center_loss'] + self.loss_d['l2_reg_loss'])
             center2_tp = optimizer.minimize(
                 self.loss_d['center_loss2'] + self.loss_d['l2_reg_loss'])
+            center3_tp = optimizer.minimize(
+                self.loss_d['center_loss3'] + self.loss_d['l2_reg_loss'])
             cos_tp = optimizer.minimize(self.loss_d['cos_loss'] + self.loss_d['l2_reg_loss'])
             dist_tp = optimizer.minimize(self.loss_d['dist_loss'] + self.loss_d['l2_reg_loss'])
             ce_center_tp = optimizer.minimize(
                 self.loss_d['ce_center_loss'] + self.loss_d['l2_reg_loss'])
             ce_center2_tp = optimizer.minimize(
                 self.loss_d['ce_center_loss2'] + self.loss_d['l2_reg_loss'])
+            ce_center3_tp = optimizer.minimize(
+                self.loss_d['ce_center_loss3'] + self.loss_d['l2_reg_loss'])
             ce_cos_tp = optimizer.minimize(self.loss_d['ce_cos_loss'] + self.loss_d['l2_reg_loss'])
             ce_dist_tp = optimizer.minimize(
                 self.loss_d['ce_dist_loss'] + self.loss_d['l2_reg_loss'])
@@ -418,11 +431,13 @@ class BaseCRModel(object):
         train_op_d['center_utp'] = center_utp
         train_op_d['center2_tp'] = center2_tp
         train_op_d['center2_utp'] = (self.update_op_d['intra_update_c_op'], center2_tp)
+        train_op_d['center3_tp'] = center3_tp
         train_op_d['cos_tp'] = cos_tp
         train_op_d['dist_tp'] = dist_tp
         train_op_d['ce_center_tp'] = ce_center_tp
         train_op_d['ce_center_utp'] = ce_center_utp
         train_op_d['ce_center2_utp'] = (self.update_op_d['intra_update_c_op'], ce_center2_tp)
+        train_op_d['ce_center3_tp'] = ce_center3_tp
         train_op_d['ce_cos_tp'] = ce_cos_tp
         train_op_d['ce_dist_tp'] = ce_dist_tp
         return train_op_d
@@ -437,6 +452,10 @@ class BaseCRModel(object):
             tf.gradients(self.loss_d['center_loss2'], self.output_d['h_rnn'])[0]
         grad_d['center22hcnn'] = \
             tf.gradients(self.loss_d['center_loss2'], self.output_d['h_cnn'])[0]
+        grad_d['center32hrnn'] = \
+            tf.gradients(self.loss_d['center_loss3'], self.output_d['h_rnn'])[0]
+        grad_d['center32hcnn'] = \
+            tf.gradients(self.loss_d['center_loss3'], self.output_d['h_cnn'])[0]
         grad_d['cos2hrnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_rnn'])[0]
         grad_d['cos2hcnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_cnn'])[0]
         grad_d['dist2hrnn'] = tf.gradients(self.loss_d['dist_loss'], self.output_d['h_rnn'])[0]
