@@ -185,7 +185,15 @@ class BaseCRModel(object):
         c_diffs = centers0 - centers1
 
         dist_out = tf.nn.l2_loss(c_diffs) / tf.maximum(1., num_classes * (num_classes - 1.))
-        loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
+        # todo: debug
+        self.debug_dict['dist_in'] = dist_in
+        self.debug_dict['dist_out'] = dist_out
+
+        epsilon = 1e-8
+
+        loss = (dist_in + epsilon) / (dist_out + epsilon)
+
+        # loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
         return loss
 
     def update_f_norm_op(self, features, alpha):
