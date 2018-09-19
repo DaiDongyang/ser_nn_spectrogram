@@ -1,13 +1,13 @@
 import tensorflow as tf
 
-from utils import parser_util
-from utils import cfg_process
 from cr_model_v2 import cr_cfg_process
 from cr_model_v2 import cr_model
 from cr_model_v2 import cr_model_impl
-from cr_model_v2 import load_data
-from cr_model_v2 import data_set
 from cr_model_v2 import cr_model_run
+from cr_model_v2 import data_set
+from cr_model_v2 import load_data
+from utils import cfg_process
+from utils import parser_util
 
 
 def add_arguments(parser):
@@ -28,11 +28,16 @@ def main(unused_argv):
     yparams = cr_cfg_process.CRHpsPreprocessor(yparams, flags_dict).preprocess()
     print('id str:', yparams.id_str)
     yparams.save()
-    CRM_dict = {'CRModel1': cr_model.CRModel1,
-                'CRModel2': cr_model.CRModel2,
-                'CRModel3': cr_model.CRModel3,
-                'CRModel4': cr_model_impl.CRModel4,
-                'CRModel5': cr_model_impl.CRModel5}
+    CRM_dict = {
+        'CRModel1': cr_model.CRModel1,
+        'CRModel2': cr_model.CRModel2,
+        'CRModel3': cr_model.CRModel3,
+        'CRModel4': cr_model_impl.CRModel4,
+        'CRModel5': cr_model_impl.CRModel5,
+        'CRModel6': cr_model_impl.CRModel6,
+        'CRModel7': cr_model_impl.CRModel7,
+        'CRModel8': cr_model_impl.CRModel8,
+    }
     # print('model_key', yparams.model_key)
     CRM = CRM_dict[yparams.model_key]
     model = CRM(yparams)
