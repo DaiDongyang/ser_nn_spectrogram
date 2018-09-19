@@ -90,6 +90,8 @@ class CRModelRun(object):
                                                        name='ce_cos_loss_ph')
         self.loss_ph_d['ce_dist_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                         name='ce_dist_loss_ph')
+        self.loss_ph_d['l2_reg_loss'] = tf.placeholder(self.tf_float_type, shape=[],
+                                                       name='l2_reg_loss_ph')
         self.eval_merged = self.get_eval_merged(self.hps.eval_metric_ks,
                                                 self.hps.eval_loss_ks)
 

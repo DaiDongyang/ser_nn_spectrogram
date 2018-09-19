@@ -408,18 +408,17 @@ class BaseCRModel(object):
                 self.update_op_d['intra_update_c_op'], ce_center_tp)
         else:
 
-            center_utp = (
-                self.update_op_d['inter_update_c_op'], self.update_op_d['intra_update_c_op'],
-                center_tp)
-            ce_center_utp = (
-                self.update_op_d['inter_update_c_op'], self.update_op_d['intra_update_c_op'],
-                ce_center_tp)
             # center_utp = (
-            #     self.update_op_d['intra_update_c_op'],
+            #     self.update_op_d['inter_update_c_op'], self.update_op_d['intra_update_c_op'],
             #     center_tp)
             # ce_center_utp = (
-            #
-            #     self.update_op_d['intra_update_c_op'], ce_center_tp)
+            #     self.update_op_d['inter_update_c_op'], self.update_op_d['intra_update_c_op'],
+            #     ce_center_tp)
+            center_utp = (
+                self.update_op_d['intra_update_c_op'],
+                center_tp)
+            ce_center_utp = (
+                self.update_op_d['intra_update_c_op'], ce_center_tp)
 
         if self.hps.is_merge_center_loss_centers and self.hps.center_loss_f_norm == 'f_norm':
             # ce_tp2 = ()

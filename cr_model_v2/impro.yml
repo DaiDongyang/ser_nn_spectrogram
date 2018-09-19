@@ -231,6 +231,51 @@ ce_center: &CE_CENTER
   feature_norm_alpha_steps: [4000]
   feature_norm_alphas: [0.5]
 
+ce_center2: &CE_CENTER2
+  <<: *DEFAULT
+  out_dir: './cr_model_v2/cr2_out_impro/ce_center2'
+  center_loss_f_norm: 'l2_1' # 'l2', 'l2_1', ''
+  train_output_summ_keys: ['h_rnn']
+  train_grad_summ_keys: ['ce2hrnn', 'center22hrnn']
+  train_metric_summ_keys: ['e_acc']
+  train_loss_summ_keys: ['ce_loss', 'center_loss2', 'ce_center_loss2']
+  is_merge_center_loss_centers: True
+  eval_loss_ks: ['ce_loss', 'center_loss2', 'ce_center_loss2']
+  eval_metric_ks: ['wa', 'ua']
+  ckpt_metric_k: 'ua' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_center_loss2'
+  features_key: 'hid_fc'
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  train_op_steps: [4000]
+  train_op_ks: ['ce_center2_utp']
+  center_loss_lambda_steps: [4000]
+  center_loss_lambdas: [3]
+  center_loss_alpha_steps: [4000]
+  center_loss_alhpas: [0.5]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  CUDA_VISIBLE_DEVICES: '2'
+  best_params_start_steps: 10
+  dist_margin: 0.6
+
+ce_center2_m5:
+  <<: *CE_CENTER
+  out_dir: './cr_model_v2/cr2_out_impro/ce_center2_m5'
+  center_loss_f_norm: 'l2_1' # 'l2', 'l2_1', ''
+  dist_margin: 0.6
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [4000]
+  center_loss_lambdas: [6]
+  center_loss_alpha_steps: [4000]
+  center_loss_alhpas: [0.2]
+  train_op_steps: [4000]
+  train_op_ks: ['ce_center2_utp']
+  model_key: 'CRModel5'
+
 ce_center_m5_lambda030alpha050beta020gamma012:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/cr2_out_impro/ce_center_m5_lambda030alpha050beta020gamma012'
