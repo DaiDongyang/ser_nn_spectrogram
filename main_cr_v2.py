@@ -37,6 +37,10 @@ def main(unused_argv):
         'CRModel6': cr_model_impl.CRModel6,
         'CRModel7': cr_model_impl.CRModel7,
         'CRModel8': cr_model_impl.CRModel8,
+        'CRModel9': cr_model_impl.CRModel9,
+        'CRModel10': cr_model_impl.CRModel10,
+        'CRModel11': cr_model_impl.CRModel11,
+        'CRModel12': cr_model_impl.CRModel12,
     }
     # print('model_key', yparams.model_key)
     CRM = CRM_dict[yparams.model_key]

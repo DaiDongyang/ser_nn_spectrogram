@@ -110,7 +110,7 @@ default: &DEFAULT
 
 ce_m5: &CE_M5
   <<: *DEFAULT
-  out_dir: './cr_model_v2/cr2_out_impro/ce_m5'
+  out_dir: './cr_model_v2/cr2_out_impro/ce_m5_2'
   train_output_summ_keys: '' #['h_rnn', 'h_cnn']
   train_grad_summ_keys: '' #['ce2hrnn', 'ce2hcnn']
   train_metric_summ_keys: ['e_acc']
@@ -120,7 +120,7 @@ ce_m5: &CE_M5
   eval_metric_ks: ['wa', 'ua']
   ckpt_metric_k: 'ua' # or 'ua' 'wua'
   ckpt_loss_k: 'ce_loss'
-  max_steps: 4000
+  max_steps: 2000
   lr_steps: [4000]
   lrs: [0.0003]
   train_op_steps: [4000]
@@ -200,6 +200,101 @@ ce_m8_l2reg_bn: &CE_M8_l2reg_bn
   batch_size: 32
   infer_batch_size: 64
   is_l2_reg: True
+
+ce_m9: &CE_M9
+  <<: *DEFAULT
+  out_dir: './cr_model_v2/cr2_out_impro/ce_m9'
+  train_output_summ_keys: '' #['h_rnn', 'h_cnn']
+  train_grad_summ_keys: '' #['ce2hrnn', 'ce2hcnn']
+  train_metric_summ_keys: ['e_acc']
+  train_loss_summ_keys: ['ce_loss']
+  is_tflog: False
+  eval_loss_ks: ['ce_loss']
+  eval_metric_ks: ['wa', 'ua']
+  ckpt_metric_k: 'ua' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_loss'
+  max_steps: 2000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  train_op_steps: [4000]
+  train_op_ks: ['ce_tp']
+  is_bn: False
+  is_var_cnn_mask: True
+  model_key: 'CRModel9'
+  batch_size: 32
+  infer_batch_size: 64
+
+ce_m10: &CE_M10
+  <<: *DEFAULT
+  out_dir: './cr_model_v2/cr2_out_impro/ce_m10'
+  train_output_summ_keys: '' #['h_rnn', 'h_cnn']
+  train_grad_summ_keys: '' #['ce2hrnn', 'ce2hcnn']
+  train_metric_summ_keys: ['e_acc']
+  train_loss_summ_keys: ['ce_loss']
+  is_tflog: False
+  eval_loss_ks: ['ce_loss']
+  eval_metric_ks: ['wa', 'ua']
+  ckpt_metric_k: 'ua' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_loss'
+  max_steps: 2000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  train_op_steps: [4000]
+  train_op_ks: ['ce_tp']
+  is_bn: False
+  is_var_cnn_mask: True
+  model_key: 'CRModel10'
+  batch_size: 32
+  infer_batch_size: 64
+
+ce_m11: &CE_M11
+  <<: *DEFAULT
+  out_dir: './cr_model_v2/cr2_out_impro/ce_m11'
+  train_output_summ_keys: '' #['h_rnn', 'h_cnn']
+  train_grad_summ_keys: '' #['ce2hrnn', 'ce2hcnn']
+  train_metric_summ_keys: ['e_acc']
+  train_loss_summ_keys: ['ce_loss']
+  is_tflog: False
+  eval_loss_ks: ['ce_loss']
+  eval_metric_ks: ['wa', 'ua']
+  ckpt_metric_k: 'ua' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_loss'
+  max_steps: 3000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  train_op_steps: [4000]
+  train_op_ks: ['ce_tp']
+  is_bn: False
+  is_var_cnn_mask: True
+  model_key: 'CRModel11'
+  batch_size: 48
+  infer_batch_size: 64
+  is_eval_test: False
+
+ce_m12: &CE_M12
+  <<: *DEFAULT
+  out_dir: './cr_model_v2/cr2_out_impro/ce_m12'
+  train_output_summ_keys: '' #['h_rnn', 'h_cnn']
+  train_grad_summ_keys: '' #['ce2hrnn', 'ce2hcnn']
+  train_metric_summ_keys: ['e_acc']
+  train_loss_summ_keys: ['ce_loss']
+  is_tflog: False
+  eval_loss_ks: ['ce_loss']
+  eval_metric_ks: ['wa', 'ua']
+  ckpt_metric_k: 'ua' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_loss'
+  max_steps: 2000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  train_op_steps: [4000]
+  train_op_ks: ['ce_tp']
+  is_bn: False
+  is_var_cnn_mask: True
+  model_key: 'CRModel12'
+  batch_size: 32
+  infer_batch_size: 64
+  is_eval_test: False
+
 
 ce_center: &CE_CENTER
   <<: *DEFAULT
