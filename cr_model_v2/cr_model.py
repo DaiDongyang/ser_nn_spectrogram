@@ -390,6 +390,8 @@ class BaseCRModel(object):
             optimizer = tf.train.AdadeltaOptimizer(self.lr_ph)
         else:
             optimizer = tf.train.GradientDescentOptimizer(self.lr_ph)
+        if self.hps.is_gradient_clip_norm:
+            optimizer = tf.contrib.estimator.clip_gradients_by_norm(optimizer, clip_norm=5.0)
         with tf.name_scope('optimizer'):
             # tp: train op
 
