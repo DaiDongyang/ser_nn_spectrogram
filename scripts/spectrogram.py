@@ -110,7 +110,6 @@ def wav_preprocess(wav_dir_path, spectrogram_dir_path, spectrogram_type):
 
     for file_name in wav_dir:
         file_path = os.path.join(wav_dir_path, file_name)
-
         if os.path.isfile(file_path) and '.wav' in file_path and '.' != file_name[0]:
             if spectrogram_type == "Const":
                 spectrogram_list = get_spectrogram(file_path, 3)
@@ -119,6 +118,10 @@ def wav_preprocess(wav_dir_path, spectrogram_dir_path, spectrogram_type):
                         np.array(spectrogram_list))
             elif spectrogram_type == "Var":
                 spectrogram = get_spectrogram(file_path, -1)
+                print('store spectrogram shape', spectrogram.shape)
+                if spectrogram.shape[0] == 0:
+                    print('0 time size, skip.......................')
+                    continue
                 spectrogram_file_name = os.path.splitext(file_name)[0] + ".npy"
                 np.save(os.path.join(spectrogram_dir_path, spectrogram_file_name),
                         np.array(spectrogram))
@@ -132,7 +135,7 @@ def main():
 
     start = time.time()
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     wav_dir_path = sys.argv[1]
     spectrogram_dir_path = sys.argv[2]
     spectrogram_type = sys.argv[3]
