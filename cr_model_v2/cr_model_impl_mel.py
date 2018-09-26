@@ -139,6 +139,7 @@ class MelModel5(cr_model.CGRUFCModel):
         return h_cnn, seq_lens
 
 
+# 结果太差，跑一半停了
 class MelModel6(cr_model.CGRUFCModel):
 
     # [3, 3] dilation [1, 1], [2, 2], [3, 3], [4, 4]
