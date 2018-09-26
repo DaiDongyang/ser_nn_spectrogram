@@ -11,7 +11,7 @@ from utils import var_cnn_util_v2 as vcu2
 class Model1(cr_model.CGRUFCModel):
 
     def cnn(self, inputs, seq_lens):
-        print('CRModel5')
+        print('Model-v2 Model1')
         h = tf.expand_dims(inputs, 3)
         i = 0
         is_poolings = [False, True, True, True]
@@ -80,7 +80,7 @@ class Model2(cr_model.CGRUFCModel):
         return outputs, seq_length
 
     def cnn(self, inputs, seq_lens):
-        print('CRModel16')
+        print('Model-v2 Model2')
         h = tf.expand_dims(inputs, 3)
         block_layers = 3
         with tf.name_scope('conv1'):

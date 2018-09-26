@@ -102,7 +102,7 @@ default: &DEFAULT
   best_params_start_steps: 10
   is_tflog: False
 
-  # main_cr_v2.py
+  # main_cr_v1.py
   model_key: 'CRModel5'
 
   # utils, other file

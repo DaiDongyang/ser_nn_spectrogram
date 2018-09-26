@@ -94,7 +94,7 @@ default: &DEFAULT
   best_params_type: 'best_metric' # 'best_loss',
   best_params_start_steps: 10
 
-  # main_cr_v2.py
+  # main_cr_v1.py
   model_key: 'CRModel3'
 
   # utils, other file
