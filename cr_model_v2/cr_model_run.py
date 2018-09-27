@@ -223,7 +223,11 @@ class CRModelRun(object):
                         model.is_training_ph: False,
                         model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
                         model.center_loss_lambda_ph: var_hps.center_loss_lambda,
+                        model.center_loss_alpha_ph: var_hps.center_loss_alpha,
+                        model.center_loss_beta_ph: var_hps.center_loss_beta,
+                        model.center_loss_gamma_ph: var_hps.center_loss_gamma,
                         model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
+
                     })
 
                 batched_pr = np.argmax(batched_logits, 1)

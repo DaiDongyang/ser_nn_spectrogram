@@ -397,7 +397,7 @@ ce_center4: &CE_CENTER4
   eval_loss_ks: ['ce_loss', 'center_loss4', 'ce_center_loss4']
   eval_metric_ks: ['wa', 'ua']
   ckpt_metric_k: 'ua' # or 'ua' 'wua'
-  ckpt_loss_k: 'ce_center_loss3'
+  ckpt_loss_k: 'ce_center_loss4'
   features_key: 'hid_fc'
   max_steps: 4000
   lr_steps: [4000]
@@ -414,9 +414,9 @@ ce_center4: &CE_CENTER4
   best_params_start_steps: 10
   dist_margin: 10.6
 
-ce_center4_mel4_lambda2gamma01:
-  <<: *CE_CENTER3
-  out_dir: './cr_model_v2/out_mel_impro/ce_center4_mel4_lambda2gamma01'
+ce_center4_mel4_debug:
+  <<: *CE_CENTER4
+  out_dir: './cr_model_v2/out_mel_impro/ce_center4_mel4_debug'
   center_loss_f_norm: 'avg_l2' # 'l2', 'l2_1', ''
   dist_margin: 0.6
   max_steps: 3000
