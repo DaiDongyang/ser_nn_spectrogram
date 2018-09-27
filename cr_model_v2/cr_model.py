@@ -117,7 +117,8 @@ class BaseCRModel(object):
         labels = tf.reshape(labels, [-1])
         centers_batch = tf.gather(centers, labels)
         if self.hps.is_weighted_center_loss:
-            loss = (tf.square(features - centers_batch) * self.e_w_ph) / tf.reduce_mean(self.e_w_ph)
+            loss = tf.reduce_sum(tf.reduce_sum(tf.square(features - centers_batch),
+                                               axis=-1) * self.e_w_ph) / tf.reduce_mean(self.e_w_ph)
         else:
             loss = tf.nn.l2_loss(features - centers_batch)
         return loss
@@ -181,7 +182,8 @@ class BaseCRModel(object):
         centers_batch = tf.gather(centers, u_idx)
         # todo: balance sample rate on batch level
         if self.hps.is_weighted_center_loss:
-            dist_in = (tf.square(features - centers_batch) * self.e_w_ph) / (
+            dist_in = tf.reduce_sum(tf.reduce_sum(tf.square(features - centers_batch),
+                                                  axis=-1) * self.e_w_ph) / (
                         tf.reduce_mean(self.e_w_ph) * batch_size)
         else:
             dist_in = tf.nn.l2_loss(features - centers_batch) / batch_size

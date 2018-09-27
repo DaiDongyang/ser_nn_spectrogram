@@ -367,13 +367,13 @@ ce_center3: &CE_CENTER3
 
 ce_center3_mel4_lambda2:
   <<: *CE_CENTER3
-  out_dir: './cr_model_v2/out_mel_impro/ce_center3_mel4'
-  center_loss_f_norm: 'l2_1' # 'l2', 'l2_1', ''
+  out_dir: './cr_model_v2/out_mel_impro/ce_center3_mel4_lambda2'
+  center_loss_f_norm: '' # 'l2', 'l2_1', ''
   dist_margin: 0.6
   max_steps: 4000
   lr_steps: [4000]
   lrs: [0.0003]
-  center_loss_lambda_steps: [10, 4000]
+  center_loss_lambda_steps: [20, 4000]
   center_loss_lambdas: [0, 2]
   train_op_steps: [4000]
   train_op_ks: ['ce_center3_tp']
