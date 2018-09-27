@@ -164,6 +164,17 @@ class BaseCRModel(object):
 
     # todo: Test
     def calc_center_loss3(self, features, labels):
+        if self.hps.center_loss_f_norm == 'f_norm':
+            f_norm = self.get_feature_norm_variable(shape=[])
+            features = features / f_norm
+            # features = tf.nn.l2_normalize(features)
+        elif self.hps.center_loss_f_norm == 'l2':
+            features = tf.nn.l2_normalize(features)
+        elif self.hps.center_loss_f_norm == 'l2_1':
+            features = tf.nn.l2_normalize(features, axis=1)
+        elif self.hps.center_loss_f_norm == 'avg_l2':
+            f_norm = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features), axis=1)))
+            features = features / f_norm
         batch_size = tf.cast(tf.shape(features)[0], dtype=self.float_type)
         f_norm = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features), axis=1)))
         features = features / f_norm
@@ -184,7 +195,7 @@ class BaseCRModel(object):
         if self.hps.is_weighted_center_loss:
             dist_in = tf.reduce_sum(tf.reduce_sum(tf.square(features - centers_batch),
                                                   axis=-1) * self.e_w_ph) / (
-                        tf.reduce_mean(self.e_w_ph) * batch_size)
+                              tf.reduce_mean(self.e_w_ph) * batch_size)
         else:
             dist_in = tf.nn.l2_loss(features - centers_batch) / batch_size
 
@@ -202,6 +213,141 @@ class BaseCRModel(object):
         epsilon = 1e-8
 
         loss = (dist_in + epsilon) / (dist_out + epsilon)
+
+        # loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
+        return loss
+
+    # todo: Test
+    def calc_center_loss4(self, features, labels):
+        if self.hps.center_loss_f_norm == 'f_norm':
+            f_norm = self.get_feature_norm_variable(shape=[])
+            features = features / f_norm
+            # features = tf.nn.l2_normalize(features)
+        elif self.hps.center_loss_f_norm == 'l2':
+            features = tf.nn.l2_normalize(features)
+        elif self.hps.center_loss_f_norm == 'l2_1':
+            features = tf.nn.l2_normalize(features, axis=1)
+        elif self.hps.center_loss_f_norm == 'avg_l2':
+            f_norm = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features), axis=1)))
+            features = features / f_norm
+        epsilon = 1e-8
+        batch_size = tf.cast(tf.shape(features)[0], dtype=self.float_type)
+        f_norm = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features), axis=1)))
+        features = features / f_norm
+        labels = tf.reshape(labels, [-1])
+        u_label, u_idx, u_count = tf.unique_with_counts(labels)
+        idx_matrix = tf.cast(tf.one_hot(u_idx, tf.shape(u_label)[0]), dtype=self.float_type)
+        # [batch_size, 1, num_classes]
+        idx_tensor = tf.expand_dims(idx_matrix, 1)
+        # x_expand [batch_size, dim, 1]
+        x_expand = tf.expand_dims(features, -1)
+        # x_expand * idx_tensor [batch_size, dim, num_classes]
+        # f_mean [dim, num_classes]
+        f_mean = tf.reduce_sum(x_expand * idx_tensor, axis=0) / tf.cast(u_count, self.float_type)
+        # centers [num_classes, dim]
+        centers = tf.transpose(f_mean, [1, 0])
+        centers_batch = tf.gather(centers, u_idx)
+        # todo: balance sample rate on batch level
+        if self.hps.is_weighted_center_loss:
+            dist_in = tf.reduce_sum(tf.reduce_sum(tf.square(features - centers_batch),
+                                                  axis=-1) * self.e_w_ph) / (
+                              tf.reduce_mean(self.e_w_ph) * batch_size)
+        else:
+            dist_in = tf.nn.l2_loss(features - centers_batch) / batch_size
+
+        num_classes = tf.cast(tf.shape(centers)[0], dtype=self.float_type)
+
+        centers0 = tf.expand_dims(centers, 0)
+        centers1 = tf.expand_dims(centers, 1)
+        c_diffs_square = tf.reduce_sum(tf.square(centers0 - centers1), axis=-1)
+
+        # dist_ceiling = 1000
+        # c_diffs_mask = tf.eye(tf.shape(c_diffs_square)[0]) * dist_ceiling + c_diffs_square
+
+        gamma = self.center_loss_gamma_ph * tf.reduce_mean(c_diffs_square)
+        # gamma = self.center_loss_gamma_ph
+
+        c_diffs_weight = gamma / (c_diffs_square + gamma + epsilon)
+        c_diffs_weight_norm = c_diffs_weight / tf.reduce_mean(c_diffs_weight)
+
+        dist_out = tf.reduce_sum(c_diffs_square * c_diffs_weight_norm) / tf.maximum(1.,
+                                                                                    num_classes * (num_classes - 1.))
+
+        # loss = (dist_in + epsilon) / (dist_out + epsilon)
+
+        # todo: debug
+        self.debug_dict['u_label'] = u_label
+        self.debug_dict['c_diffs_square'] = c_diffs_square
+        self.debug_dict['dist_out_square'] = c_diffs_square * c_diffs_weight_norm
+
+        loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
+        return loss
+
+    # todo: Test
+    def calc_center_loss5(self, features, labels):
+        if self.hps.center_loss_f_norm == 'f_norm':
+            f_norm = self.get_feature_norm_variable(shape=[])
+            features = features / f_norm
+            # features = tf.nn.l2_normalize(features)
+        elif self.hps.center_loss_f_norm == 'l2':
+            features = tf.nn.l2_normalize(features)
+        elif self.hps.center_loss_f_norm == 'l2_1':
+            features = tf.nn.l2_normalize(features, axis=1)
+        elif self.hps.center_loss_f_norm == 'avg_l2':
+            f_norm = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features), axis=1)))
+            features = features / f_norm
+        epsilon = 1e-8
+        batch_size = tf.cast(tf.shape(features)[0], dtype=self.float_type)
+        f_norm = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features), axis=1)))
+        features = features / f_norm
+        labels = tf.reshape(labels, [-1])
+        u_label, u_idx, u_count = tf.unique_with_counts(labels)
+        idx_matrix = tf.cast(tf.one_hot(u_idx, tf.shape(u_label)[0]), dtype=self.float_type)
+        # [batch_size, 1, num_classes]
+        idx_tensor = tf.expand_dims(idx_matrix, 1)
+        # x_expand [batch_size, dim, 1]
+        x_expand = tf.expand_dims(features, -1)
+        # x_expand * idx_tensor [batch_size, dim, num_classes]
+        # f_mean [dim, num_classes]
+        f_mean = tf.reduce_sum(x_expand * idx_tensor, axis=0) / tf.cast(u_count, self.float_type)
+        # centers [num_classes, dim]
+        centers = tf.transpose(f_mean, [1, 0])
+        centers_batch = tf.gather(centers, u_idx)
+        # todo: balance sample rate on batch level
+        if self.hps.is_weighted_center_loss:
+            dist_in = tf.reduce_sum(tf.reduce_sum(tf.square(features - centers_batch),
+                                                  axis=-1) * self.e_w_ph) / (
+                              tf.reduce_mean(self.e_w_ph) * batch_size)
+        else:
+            dist_in = tf.nn.l2_loss(features - centers_batch) / batch_size
+
+        # num_classes = tf.cast(tf.shape(centers)[0], dtype=self.float_type)
+
+        centers0 = tf.expand_dims(centers, 0)
+        centers1 = tf.expand_dims(centers, 1)
+        c_diffs_square = tf.reduce_sum(tf.square(centers0 - centers1), axis=-1)
+
+        dist_ceiling = 1000
+        c_diffs_mask = tf.eye(tf.shape(c_diffs_square)[0]) * dist_ceiling + c_diffs_square
+        dist_out = tf.reduce_min(c_diffs_mask)
+
+        loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
+
+        # # gamma = self.center_loss_gamma_ph * tf.reduce_mean(c_diffs_square)
+        # gamma = self.center_loss_gamma_ph
+        #
+        # c_diffs_weight = gamma / (c_diffs_square + gamma + epsilon)
+        # c_diffs_weight_norm = c_diffs_weight / tf.reduce_mean(c_diffs_weight)
+
+        # dist_out = tf.reduce_sum(c_diffs_square * c_diffs_weight_norm) / tf.maximum(1.,
+        #                                                                             num_classes * (num_classes - 1.))
+
+        # loss = (dist_in + epsilon) / (dist_out + epsilon)
+        #
+        # # todo: debug
+        # self.debug_dict['u_label'] = u_label
+        # self.debug_dict['c_diffs_square'] = c_diffs_square
+        # self.debug_dict['dist_out_square'] = c_diffs_square * c_diffs_weight_norm
 
         # loss = tf.maximum(self.hps.dist_margin + dist_in - dist_out, 0)
         return loss
@@ -350,11 +496,15 @@ class BaseCRModel(object):
             center_loss2 = self.calc_center_loss2(features=features, labels=self.e_ph,
                                                   num_classes=len(self.hps.emos))
             center_loss3 = self.calc_center_loss3(features=features, labels=self.e_ph)
+            center_loss4 = self.calc_center_loss4(features=features, labels=self.e_ph)
+            center_loss5 = self.calc_center_loss5(features=features, labels=self.e_ph)
             cos_loss = self.calc_cos_loss(features=features, labels=self.e_ph)
             dist_loss = self.calc_dist_loss(features=features, labels=self.e_ph)
             ce_center_loss = ce_loss + self.center_loss_lambda_ph * center_loss
             ce_center_loss2 = ce_loss + self.center_loss_lambda_ph * center_loss2
             ce_center_loss3 = ce_loss + self.center_loss_lambda_ph * center_loss3
+            ce_center_loss4 = ce_loss + self.center_loss_lambda_ph * center_loss4
+            ce_center_loss5 = ce_loss + self.center_loss_lambda_ph * center_loss5
             cos_loss_lambda = self.cos_loss_lambda_ph
             ce_cos_loss = (1 - cos_loss_lambda) * ce_loss + cos_loss_lambda * cos_loss
             dist_loss_lambda = self.dist_loss_lambda_ph
@@ -364,11 +514,13 @@ class BaseCRModel(object):
         loss_d['center_loss'] = center_loss
         loss_d['center_loss2'] = center_loss2
         loss_d['center_loss3'] = center_loss3
+        loss_d['center_loss4'] = center_loss4
         loss_d['cos_loss'] = cos_loss
         loss_d['dist_loss'] = dist_loss
         loss_d['ce_center_loss'] = ce_center_loss
         loss_d['ce_center_loss2'] = ce_center_loss2
         loss_d['ce_center_loss3'] = ce_center_loss3
+        loss_d['ce_center_loss4'] = ce_center_loss4
         loss_d['ce_cos_loss'] = ce_cos_loss
         loss_d['ce_dist_loss'] = ce_dist_loss
         loss_d['l2_reg_loss'] = l2_reg_loss
@@ -411,6 +563,8 @@ class BaseCRModel(object):
                 self.loss_d['center_loss2'] + self.loss_d['l2_reg_loss'])
             center3_tp = optimizer.minimize(
                 self.loss_d['center_loss3'] + self.loss_d['l2_reg_loss'])
+            center4_tp = optimizer.minimize(
+                self.loss_d['center_loss4'] + self.loss_d['l2_reg_loss'])
             cos_tp = optimizer.minimize(self.loss_d['cos_loss'] + self.loss_d['l2_reg_loss'])
             dist_tp = optimizer.minimize(self.loss_d['dist_loss'] + self.loss_d['l2_reg_loss'])
             ce_center_tp = optimizer.minimize(
@@ -419,6 +573,8 @@ class BaseCRModel(object):
                 self.loss_d['ce_center_loss2'] + self.loss_d['l2_reg_loss'])
             ce_center3_tp = optimizer.minimize(
                 self.loss_d['ce_center_loss3'] + self.loss_d['l2_reg_loss'])
+            ce_center4_tp = optimizer.minimize(
+                self.loss_d['ce_center_loss4'] + self.loss_d['l2_reg_loss'])
             ce_cos_tp = optimizer.minimize(self.loss_d['ce_cos_loss'] + self.loss_d['l2_reg_loss'])
             ce_dist_tp = optimizer.minimize(
                 self.loss_d['ce_dist_loss'] + self.loss_d['l2_reg_loss'])
@@ -455,12 +611,14 @@ class BaseCRModel(object):
         train_op_d['center2_tp'] = center2_tp
         train_op_d['center2_utp'] = (self.update_op_d['intra_update_c_op'], center2_tp)
         train_op_d['center3_tp'] = center3_tp
+        train_op_d['center4_tp'] = center4_tp
         train_op_d['cos_tp'] = cos_tp
         train_op_d['dist_tp'] = dist_tp
         train_op_d['ce_center_tp'] = ce_center_tp
         train_op_d['ce_center_utp'] = ce_center_utp
         train_op_d['ce_center2_utp'] = (self.update_op_d['intra_update_c_op'], ce_center2_tp)
         train_op_d['ce_center3_tp'] = ce_center3_tp
+        train_op_d['ce_center4_tp'] = ce_center4_tp
         train_op_d['ce_cos_tp'] = ce_cos_tp
         train_op_d['ce_dist_tp'] = ce_dist_tp
         return train_op_d
@@ -479,6 +637,10 @@ class BaseCRModel(object):
             tf.gradients(self.loss_d['center_loss3'], self.output_d['h_rnn'])[0]
         grad_d['center32hcnn'] = \
             tf.gradients(self.loss_d['center_loss3'], self.output_d['h_cnn'])[0]
+        grad_d['center42hrnn'] = \
+            tf.gradients(self.loss_d['center_loss4'], self.output_d['h_rnn'])[0]
+        grad_d['center42hcnn'] = \
+            tf.gradients(self.loss_d['center_loss4'], self.output_d['h_cnn'])[0]
         grad_d['cos2hrnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_rnn'])[0]
         grad_d['cos2hcnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_cnn'])[0]
         grad_d['dist2hrnn'] = tf.gradients(self.loss_d['dist_loss'], self.output_d['h_rnn'])[0]

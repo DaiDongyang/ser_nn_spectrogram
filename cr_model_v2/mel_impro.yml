@@ -102,6 +102,7 @@ default: &DEFAULT
   best_params_type: 'best_metric' # 'best_loss',
   best_params_start_steps: 10
   is_tflog: False
+  is_log_debug: False
 
   # main_cr_v1.py
   model_key: 'MelModel4'
@@ -347,16 +348,81 @@ ce_center3_mel4_lambda5:
   batch_size: 32
   infer_batch_size: 32
 
-ce_center3_mel4_lambda1:
+ce_center3_mel4_lambda2_avgl2:
   <<: *CE_CENTER3
-  out_dir: './cr_model_v2/out_mel_impro/ce_center3_mel4_lambda1'
-  center_loss_f_norm: '' # 'l2', 'l2_1', ''
+  out_dir: './cr_model_v2/out_mel_impro/ce_center3_mel4_lambda2_avgl2'
+  center_loss_f_norm: 'avg_l2' # 'l2', 'l2_1', ''
+  dist_margin: 0.6
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 5]
+  train_op_steps: [4000]
+  train_op_ks: ['ce_center3_tp']
+  model_key: 'MelModel4'
+  batch_size: 32
+  infer_batch_size: 32
+
+ce_center3_mel4_lambda1_avgl2:
+  <<: *CE_CENTER3
+  out_dir: './cr_model_v2/out_mel_impro/ce_center3_mel4_lambda1_avgl2'
+  center_loss_f_norm: 'avg_l2' # 'l2', 'l2_1', ''
   dist_margin: 0.6
   max_steps: 4000
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
   center_loss_lambdas: [0, 1]
+  train_op_steps: [4000]
+  train_op_ks: ['ce_center3_tp']
+  model_key: 'MelModel4'
+  batch_size: 32
+  infer_batch_size: 32
+
+ce_center4: &CE_CENTER4
+  <<: *DEFAULT
+  out_dir: ./cr_model_v2/out_mel_impro/ce_center4
+  freq_size: 128
+  gpu_allow_growth: True
+  center_loss_f_norm: '' # 'l2', 'l2_1', ''
+  train_output_summ_keys: ['h_rnn']
+  train_grad_summ_keys: ['ce2hrnn', 'center42hrnn']
+  train_metric_summ_keys: ['e_acc']
+  train_loss_summ_keys: ['ce_loss', 'center_loss4', 'ce_center_loss4']
+  is_merge_center_loss_centers: True
+  eval_loss_ks: ['ce_loss', 'center_loss4', 'ce_center_loss4']
+  eval_metric_ks: ['wa', 'ua']
+  ckpt_metric_k: 'ua' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_center_loss3'
+  features_key: 'hid_fc'
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  train_op_steps: [4000]
+  train_op_ks: ['ce_center4_tp']
+  center_loss_lambda_steps: [10, 4000]
+  center_loss_lambdas: [0, 2]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.1]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  CUDA_VISIBLE_DEVICES: '2'
+  best_params_start_steps: 10
+  dist_margin: 10.6
+
+ce_center4_mel4_lambda1gamma005:
+  <<: *CE_CENTER3
+  out_dir: './cr_model_v2/out_mel_impro/ce_center4_mel4_lambda1gamma005'
+  center_loss_f_norm: '' # 'l2', 'l2_1', ''
+  dist_margin: 0.6
+  max_steps: 3000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [50, 4000]
+  center_loss_lambdas: [0, 0.5]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.05]
   train_op_steps: [4000]
   train_op_ks: ['ce_center3_tp']
   model_key: 'MelModel4'
