@@ -490,3 +490,28 @@ ce_center_mel4_lambda030alpha050beta012gamma010:
   is_log_debug: False
 
 
+ce_center_mel4_lambda030alpha050beta010gamma010:
+  <<: *CE_CENTER
+  out_dir: './cr_model_v2/out_mel_impro/ce_center_mel4_lambda030alpha050beta010gamma010'
+  data_dir: '/home/pengzhendong/ser/data/iemocap_5emo_logMelW40fft2048d128'
+  center_loss_f_norm: 'l2_1' # 'l2', 'l2_1', ''
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [4000]
+  center_loss_lambdas: [0.3]
+  center_loss_alpha_steps: [4000]
+  center_loss_alhpas: [0.5]
+  center_loss_beta_steps: [4000]
+  center_loss_betas: [0.10]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.10]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  best_params_start_steps: 200
+  is_bn: false
+  is_var_cnn_mask: true
+  batch_size: 32
+  infer_batch_size: 32
+  model_key: 'MelModel4'
+  is_log_debug: False
