@@ -515,12 +515,14 @@ class BaseCRModel(object):
         loss_d['center_loss2'] = center_loss2
         loss_d['center_loss3'] = center_loss3
         loss_d['center_loss4'] = center_loss4
+        loss_d['center_loss5'] = center_loss5
         loss_d['cos_loss'] = cos_loss
         loss_d['dist_loss'] = dist_loss
         loss_d['ce_center_loss'] = ce_center_loss
         loss_d['ce_center_loss2'] = ce_center_loss2
         loss_d['ce_center_loss3'] = ce_center_loss3
         loss_d['ce_center_loss4'] = ce_center_loss4
+        loss_d['ce_center_loss5'] = ce_center_loss5
         loss_d['ce_cos_loss'] = ce_cos_loss
         loss_d['ce_dist_loss'] = ce_dist_loss
         loss_d['l2_reg_loss'] = l2_reg_loss
@@ -565,6 +567,8 @@ class BaseCRModel(object):
                 self.loss_d['center_loss3'] + self.loss_d['l2_reg_loss'])
             center4_tp = optimizer.minimize(
                 self.loss_d['center_loss4'] + self.loss_d['l2_reg_loss'])
+            center5_tp = optimizer.minimize(
+                self.loss_d['center_loss5'] + self.loss_d['l2_reg_loss'])
             cos_tp = optimizer.minimize(self.loss_d['cos_loss'] + self.loss_d['l2_reg_loss'])
             dist_tp = optimizer.minimize(self.loss_d['dist_loss'] + self.loss_d['l2_reg_loss'])
             ce_center_tp = optimizer.minimize(
@@ -575,6 +579,8 @@ class BaseCRModel(object):
                 self.loss_d['ce_center_loss3'] + self.loss_d['l2_reg_loss'])
             ce_center4_tp = optimizer.minimize(
                 self.loss_d['ce_center_loss4'] + self.loss_d['l2_reg_loss'])
+            ce_center5_tp = optimizer.minimize(
+                self.loss_d['ce_center_loss5'] + self.loss_d['l2_reg_loss'])
             ce_cos_tp = optimizer.minimize(self.loss_d['ce_cos_loss'] + self.loss_d['l2_reg_loss'])
             ce_dist_tp = optimizer.minimize(
                 self.loss_d['ce_dist_loss'] + self.loss_d['l2_reg_loss'])
@@ -612,6 +618,7 @@ class BaseCRModel(object):
         train_op_d['center2_utp'] = (self.update_op_d['intra_update_c_op'], center2_tp)
         train_op_d['center3_tp'] = center3_tp
         train_op_d['center4_tp'] = center4_tp
+        train_op_d['center5_tp'] = center5_tp
         train_op_d['cos_tp'] = cos_tp
         train_op_d['dist_tp'] = dist_tp
         train_op_d['ce_center_tp'] = ce_center_tp
@@ -619,6 +626,7 @@ class BaseCRModel(object):
         train_op_d['ce_center2_utp'] = (self.update_op_d['intra_update_c_op'], ce_center2_tp)
         train_op_d['ce_center3_tp'] = ce_center3_tp
         train_op_d['ce_center4_tp'] = ce_center4_tp
+        train_op_d['ce_center5_tp'] = ce_center5_tp
         train_op_d['ce_cos_tp'] = ce_cos_tp
         train_op_d['ce_dist_tp'] = ce_dist_tp
         return train_op_d
@@ -641,6 +649,10 @@ class BaseCRModel(object):
             tf.gradients(self.loss_d['center_loss4'], self.output_d['h_rnn'])[0]
         grad_d['center42hcnn'] = \
             tf.gradients(self.loss_d['center_loss4'], self.output_d['h_cnn'])[0]
+        grad_d['center52hrnn'] = \
+            tf.gradients(self.loss_d['center_loss5'], self.output_d['h_rnn'])[0]
+        grad_d['center52hcnn'] = \
+            tf.gradients(self.loss_d['center_loss5'], self.output_d['h_cnn'])[0]
         grad_d['cos2hrnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_rnn'])[0]
         grad_d['cos2hcnn'] = tf.gradients(self.loss_d['cos_loss'], self.output_d['h_cnn'])[0]
         grad_d['dist2hrnn'] = tf.gradients(self.loss_d['dist_loss'], self.output_d['h_rnn'])[0]
