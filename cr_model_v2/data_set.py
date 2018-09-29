@@ -1,5 +1,6 @@
-import tensorflow as tf
 import collections
+
+import tensorflow as tf
 
 
 class BatchedInput(
@@ -22,6 +23,8 @@ class DataSet(object):
         train_t = tf.data.Dataset.from_tensor_slices(l_data.train_t)
         train_w = tf.data.Dataset.from_tensor_slices(l_data.train_w)
         train_set = tf.data.Dataset.zip((train_x, train_e, train_t, train_w))
+        self.train_set_no_repeat = train_set.padded_batch(hps.infer_batch_size,
+                                                          padded_shapes=([None, None], [], [], []))
         train_set = train_set.repeat().shuffle(5000)
         self.train_set = train_set.padded_batch(hps.batch_size,
                                                 padded_shapes=([None, None], [], [], []))
@@ -46,6 +49,20 @@ class DataSet(object):
 
     def get_train_iter(self):
         batched_iter = self.train_set.make_initializable_iterator()
+        x, e, t, w = batched_iter.get_next()
+        batched_input = BatchedInput(
+            x=x,
+            e=e,
+            t=t,
+            w=w
+        )
+        return BatchedIter(
+            initializer=batched_iter.initializer,
+            BatchedInput=batched_input
+        )
+
+    def get_train_no_repeat_iter(self):
+        batched_iter = self.train_set_no_repeat.make_initializable_iterator()
         x, e, t, w = batched_iter.get_next()
         batched_input = BatchedInput(
             x=x,

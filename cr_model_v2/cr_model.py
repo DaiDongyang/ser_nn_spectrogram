@@ -411,6 +411,63 @@ class BaseCRModel(object):
         inter_update_c_op = centers.assign(centers - delta)
         return inter_update_c_op
 
+    def update_center_op2(self, features, labels, alpha, beta, gamma, num_classes):
+
+        if self.hps.center_loss_f_norm == 'f_norm':
+            f_norm = self.get_feature_norm_variable(shape=[])
+            features = features / f_norm
+            # features = tf.nn.l2_normalize(features)
+        elif self.hps.center_loss_f_norm == 'l2':
+            features = tf.nn.l2_normalize(features)
+        elif self.hps.center_loss_f_norm == 'l2_1':
+            features = tf.nn.l2_normalize(features, axis=1)
+        elif self.hps.center_loss_f_norm == 'avg_l2':
+            f_norm = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features), axis=1)))
+            features = features / f_norm
+        len_features = features.get_shape()[1]
+        centers = self.get_center_loss_centers_variable(shape=[num_classes, len_features])
+        unique_label, unique_idx, unique_count = tf.unique_with_counts(labels)
+        appear_times = tf.gather(unique_count, unique_idx)
+        appear_times = tf.reshape(appear_times, [-1, 1])
+
+        # Inter update
+        dist_ceiling = 1000
+        epsilon = 1e-8
+        centers_ = tf.identity(centers)
+        centers0 = tf.expand_dims(centers_, 0)
+        centers1 = tf.expand_dims(centers_, 1)
+        c_diffs = centers0 - centers1
+        c_diffs_norm = c_diffs / (
+                tf.sqrt(tf.reduce_sum(tf.square(c_diffs), axis=-1, keepdims=True)) + epsilon)
+        c_l2s = tf.reduce_sum(tf.square(c_diffs), axis=-1)
+        c_l2s_mask = tf.eye(num_classes, dtype=self.float_type) * dist_ceiling + c_l2s
+        # c_diff_norm = c_diff / tf.expand_dims(c_dist_mask)
+        column_idx = tf.argmin(c_l2s_mask, axis=1, output_type=tf.int32)
+        rng = tf.range(0, num_classes, dtype=tf.int32)
+        idx = tf.stack([rng, column_idx], axis=1)
+        c_diff_norm = tf.gather_nd(c_diffs_norm, idx)
+
+        # todo: 这里取个根号会不会更好
+        c_l2 = tf.expand_dims(tf.gather_nd(c_l2s_mask, idx), -1)
+        inter_delta = beta * c_diff_norm * gamma / (gamma + c_l2)
+        inter_delta = tf.gather(inter_delta, labels) / tf.cast((1 + appear_times), self.float_type)
+
+        labels = tf.reshape(labels, [-1])
+        centers_batch = tf.gather(centers, labels)
+
+        intra_delta = centers_batch - features
+
+        # todo:  这里的 '1 +' 可能不行
+        intra_delta = intra_delta / tf.cast((1 + appear_times), self.float_type)
+        intra_delta = alpha * intra_delta
+
+        delta = intra_delta + inter_delta
+
+        up_op = tf.scatter_sub(centers, labels, delta)
+        return up_op
+
+        # return inter_update_c_op
+
     def calc_cos_loss(self, features, labels):
         f = tf.nn.l2_normalize(features, axis=1)
         f0 = tf.expand_dims(f, axis=0)
@@ -537,11 +594,17 @@ class BaseCRModel(object):
                                                         beta=self.center_loss_beta_ph,
                                                         gamma=self.center_loss_gamma_ph,
                                                         num_classes=len(self.hps.emos))
+        update_center_op2 = self.update_center_op2(features=features, labels=self.e_ph,
+                                                   alpha=self.center_loss_alpha_ph,
+                                                   beta=self.center_loss_beta_ph,
+                                                   gamma=self.center_loss_gamma_ph,
+                                                   num_classes=len(self.hps.emos))
         f_norm_update_op = self.update_f_norm_op(features=features,
                                                  alpha=self.feature_norm_alpha_ph)
         update_op_d = defaultdict(lambda: None)
         update_op_d['intra_update_c_op'] = intra_update_c_op
         update_op_d['inter_update_c_op'] = inter_update_c_op
+        update_op_d['update_c_op2'] = update_center_op2
         update_op_d['f_norm_update_op'] = f_norm_update_op
         return update_op_d
 
@@ -614,6 +677,7 @@ class BaseCRModel(object):
 
         train_op_d['center_tp'] = center_tp
         train_op_d['center_utp'] = center_utp
+        train_op_d['center_u2tp'] = (self.update_op_d['update_c_op2'], center_tp)
         train_op_d['center2_tp'] = center2_tp
         train_op_d['center2_utp'] = (self.update_op_d['intra_update_c_op'], center2_tp)
         train_op_d['center3_tp'] = center3_tp
@@ -623,6 +687,7 @@ class BaseCRModel(object):
         train_op_d['dist_tp'] = dist_tp
         train_op_d['ce_center_tp'] = ce_center_tp
         train_op_d['ce_center_utp'] = ce_center_utp
+        train_op_d['ce_center_u2tp'] = (self.update_op_d['update_c_op2'], ce_center_tp)
         train_op_d['ce_center2_utp'] = (self.update_op_d['intra_update_c_op'], ce_center2_tp)
         train_op_d['ce_center3_tp'] = ce_center3_tp
         train_op_d['ce_center4_tp'] = ce_center4_tp

@@ -4,6 +4,7 @@ default: &DEFAULT
   freq_size: 400
   float_type: '32' # '32'
   is_weighted_cross_entropy_loss: True
+  is_weighted_center_loss: False
   features_key: 'hid_fc'
   emos: ['neu', 'ang', 'hap', 'sad'] # 这个配置不要改，对应于某些代码里写死的部分。
 
@@ -109,6 +110,25 @@ default: &DEFAULT
   is_log_beside: True
   stdout_level: 1
   log_level: 0
+
+restore:
+  <<: *DEFAULT
+  out_dir: ./cr_model_v2/cr2_restore_out/ce_m5_2
+  is_train: False
+  is_restore: True
+  restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_model_v2/cr2_out_impro/ce_m5/bestmetric_ckpt/09180802_e3vFtM'
+#  restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_model_v2/cr2_out_impro/ce_center_m5_lambda030alpha050beta015gamma010/bestmetric_ckpt/09181718_e3vFtM'
+#  restore_file: '/home/ddy/projects/emotions/ser_nn_spectrogram/cr_model_v2/cr2_out_impro/ce_center/bestmetric_ckpt/09200114_e3vFtM'
+  is_save_emo_result: False
+  vali_type: 'F'
+  test_type: 'M'
+  vali_test_ses: 3
+  id_prefix: ''
+  stdout_level: 1
+  train_epochs: [100]
+  lrs: [0.0003]
+  CUDA_VISIBLE_DEVICES: ''
+  features_key: 'hid_fc'
 
 trim_ce_m5: &CE_M5
   <<: *DEFAULT

@@ -4,10 +4,10 @@ import os
 import time
 from collections import defaultdict
 from itertools import accumulate
-from ruamel.yaml.comments import CommentedSeq
 
 import numpy as np
 import tensorflow as tf
+from ruamel.yaml.comments import CommentedSeq
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import recall_score
 
@@ -262,20 +262,16 @@ class CRModelRun(object):
 
         gts = list()
         prs = list()
-        h_rnn_list = list()
-        hid_fc_list = list()
 
         session.run(test_iter.initializer)
         model_logits = model.output_d['logits']
-        model_h_rnn = model.output_d['h_rnn']
-        model_hid_fc = model.output_d['hid_fc']
 
         MAX_LOOP = 999
         for _ in range(MAX_LOOP):
             try:
                 batched_input = session.run(test_iter.BatchedInput)
-                batched_logits, batched_h_rnn, batched_hid_fc = session.run(
-                    (model_logits, model_h_rnn, model_hid_fc), feed_dict={
+                batched_logits = session.run(
+                    model_logits, feed_dict={
                         model.fc_kprob_ph: 1.0,
                         model.x_ph: batched_input.x.astype(self.np_float_type),
                         model.t_ph: batched_input.t,
@@ -289,27 +285,19 @@ class CRModelRun(object):
                 batched_pr = np.argmax(batched_logits, 1)
                 gts += list(batched_input.e)
                 prs += list(batched_pr)
-                h_rnn_list.append(batched_h_rnn)
-                hid_fc_list.append(batched_hid_fc)
+
             except tf.errors.OutOfRangeError:
                 break
         gt_np = np.array(gts)
         pr_np = np.array(prs)
-        h_rnn_np = np.vstack(h_rnn_list)
-        hid_fc_np = np.vstack(hid_fc_list)
 
         if self.hps.is_save_emo_result:
             result_npy_dir = self.hps.result_npy_dir
             id_str = self.hps.id_str
             gt_path = os.path.join(result_npy_dir, 'gt_' + id_str + '.npy')
             pr_path = os.path.join(result_npy_dir, 'pr_' + id_str + '.npy')
-            h_rnn_path = os.path.join(result_npy_dir, 'h_rnn_' + id_str + '.npy')
-            hid_fc_path = os.path.join(result_npy_dir, 'hid_fc_' + id_str + '.npy')
             np.save(gt_path, gt_np)
             np.save(pr_path, pr_np)
-            np.save(h_rnn_path, h_rnn_np)
-            np.save(hid_fc_path, hid_fc_np)
-
         matrix, _ = post_process.print_csv_confustion_matrix(gt_np, pr_np, self.hps.emos)
         result_npy_path = os.path.join(self.hps.result_matrix_dir,
                                        'matrix_' + self.hps.id_str + '.npy')
@@ -319,6 +307,49 @@ class CRModelRun(object):
             post_process.print_csv_confustion_matrix(gt_np, pr_np, self.hps.emos, file=outf)
         self.logger.log('id str', self.hps.id_str, level=2)
         self.logger.log('')
+
+    def save_feature(self, batched_iter, var_hps, session, key_str='train'):
+        assert isinstance(batched_iter, data_set.BatchedIter)
+        assert isinstance(var_hps, VarHps)
+        model = self.model
+
+        gts = list()
+        features = list()
+        model_batched_feature = model.output_d[self.hps.features_key]
+
+        session.run(batched_iter.initializer)
+
+        MAX_LOOP = 999
+        for _ in range(MAX_LOOP):
+            try:
+                batched_input = session.run(batched_iter.BatchedInput)
+                batched_feature = session.run(
+                    model_batched_feature, feed_dict={
+                        model.fc_kprob_ph: 1.0,
+                        model.x_ph: batched_input.x.astype(self.np_float_type),
+                        model.t_ph: batched_input.t,
+                        model.e_ph: batched_input.e,
+                        model.e_w_ph: batched_input.w.astype(self.np_float_type),
+                        model.is_training_ph: False,
+                        model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
+                        model.center_loss_lambda_ph: var_hps.center_loss_lambda,
+                        model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
+                    })
+
+                gts += list(batched_input.e)
+                features += list(batched_feature)
+            except tf.errors.OutOfRangeError:
+                break
+        gt_np = np.array(gts)
+
+        feature_np = np.vstack(features)
+
+        result_npy_dir = self.hps.result_npy_dir
+        id_str = self.hps.id_str
+        gt_path = os.path.join(result_npy_dir, key_str + '_' + 'gt_' + id_str + '.npy')
+        feature_path = os.path.join(result_npy_dir, key_str + '_' + 'feature_' + id_str + '.npy')
+        np.save(gt_path, gt_np)
+        np.save(feature_path, feature_np)
 
     def train(self, start_i, session, d_set):
         assert isinstance(d_set, data_set.DataSet)
@@ -509,8 +540,13 @@ class CRModelRun(object):
             else:
                 self.saver.restore(sess, self.hps.restore_file)
             test_iter = d_set.get_test_iter()
+            train_no_repeat_iter = d_set.get_train_no_repeat_iter()
+            dev_iter = d_set.get_dev_iter()
             var_hps = self.get_cur_var_hps(param_i)
             metric_d, loss_d = self.eval(test_iter, var_hps, sess)
             self.logger.log('test set: metric_d', metric_d, 'loss_d', loss_d)
             self.process_result(test_iter, var_hps, sess)
+            self.save_feature(train_no_repeat_iter, var_hps, sess, 'train')
+            self.save_feature(dev_iter, var_hps, sess, 'dev')
+            self.save_feature(test_iter, var_hps, sess, 'test')
         self.exit()
