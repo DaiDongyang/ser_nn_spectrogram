@@ -146,14 +146,20 @@ class BaseCRModel(object):
         centers_shift_batch = tf.gather(centers,
                                         idxs)  # [batch_size, num_classes - 1, feature_size]
         # key_masks = tf.tile(tf.expand_dims(key_masks, 1), [1, tf.shape(queries)[1], 1])
-        features_3d = tf.tile(tf.expand_dims(features, 1), [1, num_classes - 1, 1])
-        dist_out_3d = tf.losses.mean_squared_error(labels=centers_shift_batch,
-                                                   predictions=features_3d,
-                                                   reduction=tf.losses.Reduction.NONE)
+        # features_3d = tf.tile(tf.expand_dims(features, 1), [1, num_classes - 1, 1])
+        # dist_out_3d = tf.losses.mean_squared_error(labels=centers_shift_batch,
+        #                                            predictions=features_3d,
+        #                                            reduction=tf.losses.Reduction.NONE)
         # dist_out = tf.reduce_mean(tf.reduce_sum(dist_out_3d, axis=-1))
-        dist_out = tf.reduce_mean(tf.reduce_min(tf.reduce_sum(dist_out_3d, axis=-1), axis=-1))
+        # dist_out = tf.reduce_mean(tf.reduce_min(tf.reduce_sum(dist_out_3d, axis=-1), axis=-1))
         # self.debug_dict['dist_in'] = dist_in
         # self.debug_dict['dist_out'] = dist_out
+
+        centers0 = tf.expand_dims(centers, 0)
+        centers1 = tf.expand_dims(centers, 1)
+        c_diffs = centers0 - centers1
+
+        dist_out = tf.nn.l2_loss(c_diffs) / tf.maximum(1., num_classes * (num_classes - 1.))
 
         epsilon = 1e-8
 
