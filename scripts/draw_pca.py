@@ -1,7 +1,8 @@
-from sklearn.manifold import TSNE
 import numpy as np
+from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+
 
 # # def draw_tsne(features, labels):
 # def get_embed(features, n_components=2):
@@ -11,8 +12,9 @@ from mpl_toolkits.mplot3d import Axes3D
 COLORS = ['c', 'r', 'b', 'g', 'm', 'y', 'k']
 
 
-def draw_tsne(features, labels, c_dict=None):
-    embed = TSNE(n_components=2).fit_transform(features)
+def draw_pca(features, labels, c_dict=None):
+    pca = PCA(n_components=2)
+    embed = pca.fit_transform(features)
     i = 0
     for c in set(list(labels)):
         if c_dict:
@@ -29,8 +31,10 @@ def draw_tsne(features, labels, c_dict=None):
     plt.show()
 
 
-def draw_tsne_3d(features, labels, c_dict=None):
-    embed = TSNE(n_components=3).fit_transform(features)
+def draw_pca_3d(features, labels, c_dict=None):
+    pca = PCA(n_components=2)
+    embed = pca.fit_transform(features)
+    # embed = TSNE(n_components=3).fit_transform(features)
     i = 0
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -56,13 +60,13 @@ def main():
     #               [4, 5, 6],
     #               [7, 8, 9]])
     # l = np.array([1, 2, 1])
-    suffix = '09301159_e0vFtM.npy'
-    hid_prefix = './npys/ce_m4_2/dev_feature_'
-    gt_prefix = './npys/ce_m4_2/dev_gt_'
+    suffix = '09301134_e0vFtM.npy'
+    hid_prefix = './npys/ce_center2_m4_lambda005/test_feature_'
+    gt_prefix = './npys/ce_center2_m4_lambda005/test_gt_'
     features = np.load(hid_prefix + suffix)
     labels = np.load(gt_prefix + suffix)
     emo_dict = {0: 'neu', 1: 'ang', 2: 'hap', 3: 'sad'}
-    draw_tsne(features, labels, emo_dict)
+    draw_pca(features, labels, emo_dict)
     # draw_tsne_3d(features, labels, emo_dict)
 
 
