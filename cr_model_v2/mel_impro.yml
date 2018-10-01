@@ -116,7 +116,7 @@ ce_m4: &CE_M4
   # wa: 0.60, ua: 0.626
   # wa: 0.581, ua: 0.593
   <<: *DEFAULT
-  out_dir: './cr_model_v2/out_mel_impro/ce_m4_3'
+  out_dir: './cr_model_v2/out_mel_impro/ce_m4_4'
   train_output_summ_keys: ['h_rnn', 'hid_fc'] #['h_rnn', 'h_cnn']
   train_grad_summ_keys: '' #['ce2hrnn', 'ce2hcnn']
   train_metric_summ_keys: ['e_acc']
@@ -261,14 +261,83 @@ ce_center_m4_origin:
   infer_batch_size: 32
   model_key: 'MelModel4'
 
-ce_center_hid2d_origin:
+ce_center_m4_origin_lambda3:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/out_mel_impro/ce_center_hid2d_origin_2'
-  max_steps: 4000
+  out_dir: './cr_model_v2/out_mel_impro/ce_center_m4_origin_lambda3'
+  max_steps: 5000
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [4000]
   center_loss_lambdas: [3]
+  center_loss_alpha_steps: [4000]
+  center_loss_alhpas: [0.5]
+  center_loss_beta_steps: [4000]
+  center_loss_betas: [0]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.10]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  best_params_start_steps: 200
+  is_bn: false
+  is_var_cnn_mask: true
+  batch_size: 32
+  infer_batch_size: 32
+  model_key: 'MelModel4'
+
+ce_center_m4_origin_lambda03:
+  <<: *CE_CENTER
+  out_dir: './cr_model_v2/out_mel_impro/ce_center_m4_origin_lambda03'
+  max_steps: 3000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [4000]
+  center_loss_lambdas: [0.3]
+  center_loss_alpha_steps: [4000]
+  center_loss_alhpas: [0.5]
+  center_loss_beta_steps: [4000]
+  center_loss_betas: [0]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.10]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  best_params_start_steps: 200
+  is_bn: false
+  is_var_cnn_mask: true
+  batch_size: 32
+  infer_batch_size: 32
+  model_key: 'MelModel4'
+
+ce_center_m4_origin_lambda10:
+  <<: *CE_CENTER
+  out_dir: './cr_model_v2/out_mel_impro/ce_center_m4_origin_lambda10'
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [4000]
+  center_loss_lambdas: [10]
+  center_loss_alpha_steps: [4000]
+  center_loss_alhpas: [0.5]
+  center_loss_beta_steps: [4000]
+  center_loss_betas: [0]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.10]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  best_params_start_steps: 200
+  is_bn: false
+  is_var_cnn_mask: true
+  batch_size: 32
+  infer_batch_size: 32
+  model_key: 'MelModel4'
+
+ce_center_hid2d_origin:
+  <<: *CE_CENTER
+  out_dir: './cr_model_v2/out_mel_impro/ce_center_hid2d_origin_3'
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [4000]
+  center_loss_lambdas: [0.3]
   center_loss_alpha_steps: [4000]
   center_loss_alhpas: [0.5]
   center_loss_beta_steps: [4000]
