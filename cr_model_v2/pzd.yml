@@ -330,6 +330,33 @@ ce_mel6: &CE_MEL6
   batch_size: 32
   infer_batch_size: 32
 
+ce_mel8: &CE_MEL8
+  <<: *DEFAULT
+  data_dir: /home/pengzhendong/ser/data/iemocap_5emo_logMelW40fft2048d128
+  freq_size: 128
+  gpu_allow_growth: True
+  out_dir: ./cr_model_v2/out_mel_impro/ce_mel8_bn
+  train_output_summ_keys: '' #['h_rnn', 'h_cnn']
+  train_grad_summ_keys: '' #['ce2hrnn', 'ce2hcnn']
+  train_metric_summ_keys: ['e_acc']
+  train_loss_summ_keys: ['ce_loss']
+  is_tflog: False
+  eval_loss_ks: ['ce_loss']
+  eval_metric_ks: ['wa', 'ua']
+  ckpt_metric_k: 'ua' # or 'ua' 'wua'
+  ckpt_loss_k: 'ce_loss'
+  max_steps: 3000
+  lr_steps: [4000]
+  lrs: [0.001]
+  train_op_steps: [4000]
+  train_op_ks: ['ce_tp']
+  is_bn: True
+  is_var_cnn_mask: True
+  model_key: 'MelModel8'
+  batch_size: 32
+  infer_batch_size: 32
+  is_log_debug: False
+
 ce_center3: &CE_CENTER3
   <<: *DEFAULT
   out_dir: ./cr_model_v2/out_mel_impro/ce_center3

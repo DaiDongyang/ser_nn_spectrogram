@@ -121,6 +121,9 @@ class BaseCRModel(object):
                                                axis=-1) * self.e_w_ph) / tf.reduce_mean(self.e_w_ph)
         else:
             loss = tf.nn.l2_loss(features - centers_batch)
+
+        batch_size = tf.cast(tf.shape(features)[0], dtype=self.float_type)
+        loss = loss / batch_size
         return loss
 
     def calc_center_loss2(self, features, labels, num_classes):
@@ -143,8 +146,7 @@ class BaseCRModel(object):
         labels = tf.reshape(labels, [-1, 1])
         shifts = tf.reshape(tf.range(start=1, limit=num_classes, dtype=tf.int32), [1, -1])
         idxs = labels + shifts
-        centers_shift_batch = tf.gather(centers,
-                                        idxs)  # [batch_size, num_classes - 1, feature_size]
+        # centers_shift_batch = tf.gather(centers, idxs) # [batch_size, num_classes - 1, feature_size]
         # key_masks = tf.tile(tf.expand_dims(key_masks, 1), [1, tf.shape(queries)[1], 1])
         # features_3d = tf.tile(tf.expand_dims(features, 1), [1, num_classes - 1, 1])
         # dist_out_3d = tf.losses.mean_squared_error(labels=centers_shift_batch,

@@ -16,3 +16,6 @@ python main_cr_v2.py --config_name=debug --model_key=CRModel3 --gpu=0
 
 python main_cr_v2.py --config_file=./cr_model_v2/pzd_debug.yml --config_name=ce_center3 --gpu=2 --vali_test_ses=4 --vali_type=F --test_type=M
 python main_cr_v2.py --config_file=./cr_model_v2/impro.yml --config_name=restore --gpu='3'
+
+python main_cr_mel.py --config_file=./cr_model_v2/mel_impro.yml --config_name=ce_center_hid2d_origin_debug --gpu=2 --vali_test_ses=0 --vali_type=F --test_type=M
+
