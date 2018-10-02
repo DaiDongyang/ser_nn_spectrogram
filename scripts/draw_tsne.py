@@ -56,14 +56,14 @@ def main():
     #               [4, 5, 6],
     #               [7, 8, 9]])
     # l = np.array([1, 2, 1])
-    suffix = '09302108_e0vMtF.npy'
-    hid_prefix = './npys/ce_center_hid2d_origin/dev_feature_'
-    gt_prefix = './npys/ce_center_hid2d_origin/dev_gt_'
+    suffix = '09271221_e3vFtM_r021008_e3vFtM.npy'
+    hid_prefix = './npys/ce_old_center3_mel4_lambda2/train_feature_'
+    gt_prefix = './npys/ce_old_center3_mel4_lambda2/train_gt_'
     features = np.load(hid_prefix + suffix)
     labels = np.load(gt_prefix + suffix)
     emo_dict = {0: 'neu', 1: 'ang', 2: 'hap', 3: 'sad'}
-    draw_tsne(features, labels, emo_dict)
-    # draw_tsne_3d(features, labels, emo_dict)
+    # draw_tsne(features, labels, emo_dict)
+    draw_tsne_3d(features, labels, emo_dict)
 
 
 if __name__ == '__main__':
