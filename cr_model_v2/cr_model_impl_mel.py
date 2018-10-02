@@ -263,15 +263,16 @@ class MelModel8(cr_model.CGRUFCModel):
         return h_cnn, seq_lens
 
     def fc(self, inputs):
-        # print('Hid3DMelModel(MelModel4)')
+
         out_dim = len(self.hps.emos)
         in_dim = 256
-        fc_hidden = 32
+        fc_hidden = 64
+        inputs = tf.nn.dropout(inputs, self.fc_kprob_ph)
         with tf.name_scope('fc1'):
             w_fc1 = self.weight_variable([in_dim, fc_hidden])
             b_fc1 = self.bias_variable([fc_hidden])
             h_fc1 = tf.matmul(inputs, w_fc1) + b_fc1
-            h_fc1_drop = tf.nn.dropout(tf.nn.relu(h_fc1), self.fc_kprob_ph)
+            h_fc1_drop = tf.nn.relu(h_fc1)
         with tf.name_scope('fc2'):
             w_fc2 = self.weight_variable([fc_hidden, out_dim])
             b_fc2 = self.bias_variable([out_dim])
