@@ -1,0 +1,143 @@
+default: &DEFAULT
+  out_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel4_lambda2
+  center_loss_f_norm: ''
+  dist_margin: 0.6
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 2]
+  train_op_steps: [4000]
+  train_op_ks: [ce_center6_tp]
+  model_key: MelModel4
+  batch_size: 32
+  infer_batch_size: 32
+#  data_dir: /home/pengzhendong/ser/data/iemocap_5emo_logMelW40fft2048d128
+  data_dir: '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft2048d128'
+  freq_size: 128
+  gpu_allow_growth: true
+  train_output_summ_keys: [h_rnn]
+  train_grad_summ_keys: [ce2hrnn, center62hrnn]
+  train_metric_summ_keys: [e_acc]
+  train_loss_summ_keys: [ce_loss, center_loss6, ce_center_loss6]
+  is_merge_center_loss_centers: False
+  eval_loss_ks: [ce_loss, center_loss6, ce_center_loss6]
+  eval_metric_ks: [wa, ua]
+  ckpt_metric_k: ua
+  ckpt_loss_k: ce_center_loss6
+  features_key: hid_fc
+  center_loss_alpha_steps: [4000]
+  center_loss_alhpas: [0.1]
+  center_loss_beta_steps: [4000]
+  center_loss_betas: [0.2]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.1]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  CUDA_VISIBLE_DEVICES: '2'
+  best_params_start_steps: 10
+  float_type: '32'
+  is_weighted_cross_entropy_loss: true
+  is_weighted_center_loss: true
+  emos: [neu, ang, hap, sad]           # 这个配置不要改，对应于某些代码里写死的部分。
+  optimizer_type: adam
+  is_bn: false
+  is_var_cnn_mask: true
+  is_l2_reg: false
+  l2_reg_lambda: 0.1
+  is_gradient_clip_norm: false
+  consider_sent_types: [impro]
+  is_merge_hap_exc: false
+  sess: [Ses01, Ses02, Ses03, Ses04, Ses05]
+  vali_test_ses: 2
+  vali_type: F
+  test_type: M
+  repeat_emos: ''
+  is_pre_shuffle_train: false
+  is_shuffle_vali: false
+  is_shuffle_test: false
+  restore_file: ''
+  id: ''
+  id_prefix: ''
+  is_train: true
+  is_restore: false
+  tf_log_fold_prefix: tflog_
+  result_npy_fold: result_npy
+  result_matrix_fold: result_matrix
+  cfg_out_fold: cfg
+  ckpt_fold: ckpt
+  bestloss_ckpt_fold: bestloss_ckpt
+  bestmetric_ckpt_fold: bestmetric_ckpt
+  log_fold: log
+  saver_max_to_keep: 20
+  cos_loss_lambda_steps: [3000]
+  cos_loss_lambdas: [0.1]
+  dist_loss_lambda_steps: [3000]
+  dist_loss_lambdas: [0.1]
+  is_save_emo_result: false
+  fc_kprob: 0.5
+  eval_interval: 10
+  train_eval_interval: 5
+  is_eval_test: true
+  persist_interval: 1000
+  restart_train_steps: 500
+  best_params_type: best_metric
+  is_tflog: true
+  is_log_beside: true
+  stdout_level: 1
+  log_level: 0
+  is_log_debug: False
+  #config_file: ./cr_model_v2/pzd.yml
+  #config_name: ce_center6_mel4_lambda2
+  #gpu: '2'
+  #id_str: 09271100_e2vFtM
+  #tf_log_fold: tflog_09271100_e2vFtM
+  #tf_log_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel4_lambda2/tflog_09271100_e2vFtM
+  #result_npy_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel4_lambda2/result_npy
+  #result_matrix_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel4_lambda2/result_matrix
+  #cfg_out_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel4_lambda2/cfg
+  #ckpt_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel4_lambda2/ckpt
+  #bestloss_ckpt_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel4_lambda2/bestloss_ckpt
+  #bestmetric_ckpt_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel4_lambda2/bestmetric_ckpt
+  #log_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel4_lambda2/log
+  #log_path: ./cr_model_v2/out_mel_impro/ce_center6_mel4_lambda2/log/09271100_e2vFtM.log
+
+ce_center6_mel4_lambda2:
+  <<: *DEFAULT
+  out_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel4_lambda2
+  center_loss_f_norm: ''
+  dist_margin: 0.6
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 2]
+  train_op_steps: [4000]
+  train_op_ks: [ce_center6_tp]
+  model_key: MelModel4
+  batch_size: 32
+  infer_batch_size: 32
+  #  data_dir: /home/pengzhendong/ser/data/iemocap_5emo_logMelW40fft2048d128
+  data_dir: '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft2048d128'
+  freq_size: 128
+  gpu_allow_growth: true
+
+ce_center6_mel4_lambda2_pzd:
+  <<: *DEFAULT
+  out_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel4_lambda2_pzd
+  center_loss_f_norm: ''
+  dist_margin: 0.6
+  max_steps: 4000
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 2]
+  train_op_steps: [4000]
+  train_op_ks: [ce_center6_tp]
+  model_key: MelModel4
+  batch_size: 32
+  infer_batch_size: 32
+  data_dir: /home/pengzhendong/ser/data/iemocap_5emo_logMelW40fft2048d128
+#  data_dir: '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft2048d128'
+  freq_size: 128
+  gpu_allow_growth: true

@@ -397,8 +397,8 @@ class BaseCRModel(object):
 
     def calc_center_loss6(self, features, labels):
         batch_size = tf.cast(tf.shape(features)[0], dtype=self.float_type)
-        f_norm = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features), axis=1)))
-        features = features / f_norm
+        # f_norm = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(features), axis=1)))
+        # features = features / f_norm
         labels = tf.reshape(labels, [-1])
         u_label, u_idx, u_count = tf.unique_with_counts(labels)
         idx_matrix = tf.cast(tf.one_hot(u_idx, tf.shape(u_label)[0]), dtype=self.float_type)

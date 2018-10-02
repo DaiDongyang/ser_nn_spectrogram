@@ -309,8 +309,8 @@ ce_center_m4_origin_lambda3:
   max_steps: 5000
   lr_steps: [4000]
   lrs: [0.0003]
-  center_loss_lambda_steps: [4000]
-  center_loss_lambdas: [3]
+  center_loss_lambda_steps: [100, 4000]
+  center_loss_lambdas: [0, 3]
   center_loss_alpha_steps: [4000]
   center_loss_alhpas: [0.5]
   center_loss_beta_steps: [4000]
@@ -326,14 +326,14 @@ ce_center_m4_origin_lambda3:
   infer_batch_size: 32
   model_key: 'MelModel4'
 
-ce_center_m4_origin_lambda01:
+ce_center_m4_origin_lambda03:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/out_mel_impro/ce_center_m4_origin_lambda01'
+  out_dir: './cr_model_v2/out_mel_impro/ce_center_m4_origin_lambda03'
   max_steps: 5000
   lr_steps: [4000]
   lrs: [0.0003]
-  center_loss_lambda_steps: [4000]
-  center_loss_lambdas: [0.1]
+  center_loss_lambda_steps: [100, 4000]
+  center_loss_lambdas: [0, 0.3]
   center_loss_alpha_steps: [4000]
   center_loss_alhpas: [0.5]
   center_loss_beta_steps: [4000]
@@ -355,8 +355,8 @@ ce_center_m4_origin_lambda1:
   max_steps: 4000
   lr_steps: [4000]
   lrs: [0.0003]
-  center_loss_lambda_steps: [4000]
-  center_loss_lambdas: [1]
+  center_loss_lambda_steps: [100, 4000]
+  center_loss_lambdas: [0, 1]
   center_loss_alpha_steps: [4000]
   center_loss_alhpas: [0.5]
   center_loss_beta_steps: [4000]
@@ -378,8 +378,8 @@ ce_center_m4_origin_lambda10:
   max_steps: 4000
   lr_steps: [4000]
   lrs: [0.0003]
-  center_loss_lambda_steps: [4000]
-  center_loss_lambdas: [10]
+  center_loss_lambda_steps: [100, 4000]
+  center_loss_lambdas: [0, 10]
   center_loss_alpha_steps: [4000]
   center_loss_alhpas: [0.5]
   center_loss_beta_steps: [4000]
@@ -590,7 +590,8 @@ ce_center6: &CE_CENTER6
   lrs: [0.0003]
   train_op_steps: [4000]
   train_op_ks: ['ce_center6_tp']
-  center_loss_lambda_steps: [4000]
-  center_loss_lambdas: [2]
+  # 刚开始先让特征扩散开
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 2]
   CUDA_VISIBLE_DEVICES: '2'
   best_params_start_steps: 10

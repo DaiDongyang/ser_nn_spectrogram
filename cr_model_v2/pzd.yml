@@ -562,8 +562,8 @@ ce_center6: &CE_CENTER6
   lrs: [0.0003]
   train_op_steps: [4000]
   train_op_ks: ['ce_center6_tp']
-  center_loss_lambda_steps: [4000]
-  center_loss_lambdas: [2]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 2]
   CUDA_VISIBLE_DEVICES: '2'
   best_params_start_steps: 10
 
@@ -574,8 +574,8 @@ ce_center6_mel4_lambda2:
   max_steps: 4000
   lr_steps: [4000]
   lrs: [0.0003]
-  center_loss_lambda_steps: [4000]
-  center_loss_lambdas: [2]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 2]
   train_op_ks: ['ce_center6_tp']
   model_key: 'MelModel4'
   batch_size: 32
