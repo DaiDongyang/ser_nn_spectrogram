@@ -80,6 +80,8 @@ class CRModelRun(object):
                                                         name='center_loss4_ph')
         self.loss_ph_d['center_loss5'] = tf.placeholder(self.tf_float_type, shape=[],
                                                         name='center_loss5_ph')
+        self.loss_ph_d['center_loss6'] = tf.placeholder(self.tf_float_type, shape=[],
+                                                        name='center_loss6_ph')
         self.loss_ph_d['cos_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                     name='cos_loss_ph')
         self.loss_ph_d['dist_loss'] = tf.placeholder(self.tf_float_type, shape=[],
@@ -94,6 +96,8 @@ class CRModelRun(object):
                                                            name='ce_center_loss4_ph')
         self.loss_ph_d['ce_center_loss5'] = tf.placeholder(self.tf_float_type, shape=[],
                                                            name='ce_center_loss5_ph')
+        self.loss_ph_d['ce_center_loss6'] = tf.placeholder(self.tf_float_type, shape=[],
+                                                           name='ce_center_loss6_ph')
         self.loss_ph_d['ce_cos_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                        name='ce_cos_loss_ph')
         self.loss_ph_d['ce_dist_loss'] = tf.placeholder(self.tf_float_type, shape=[],
