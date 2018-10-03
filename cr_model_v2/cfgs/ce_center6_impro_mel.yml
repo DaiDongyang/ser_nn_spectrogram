@@ -87,7 +87,9 @@ default: &DEFAULT
   stdout_level: 1
   log_level: 0
   is_log_debug: False
-  #config_file: ./cr_model_v2/pzd.yml
+  is_clip_long_data: True
+  max_length_of_data: 1600
+  #config_file: ./cr_model_v2/pzd_20181003.yml
   #config_name: ce_center6_mel4_lambda2
   #gpu: '2'
   #id_str: 09271100_e2vFtM
@@ -138,6 +140,82 @@ ce_center6_mel4_lambda2_pzd:
   batch_size: 32
   infer_batch_size: 32
   data_dir: /home/pengzhendong/ser/data/iemocap_5emo_logMelW40fft2048d128
+#  data_dir: '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft2048d128'
+  freq_size: 128
+  gpu_allow_growth: true
+
+ce_center6_mel10_lambda3_pzd:
+  <<: *DEFAULT
+  out_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel10_lambda3_pzd
+  center_loss_f_norm: ''
+  max_steps: 4020
+  lr_steps: [4020]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 3]
+  train_op_steps: [4000]
+  train_op_ks: [ce_center6_tp]
+  model_key: MelModel10
+  batch_size: 32
+  infer_batch_size: 64
+  data_dir: /home/pengzhendong/ser/data/iemocap_5emo_logMelW40fft1024d128
+#  data_dir: '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft2048d128'
+  freq_size: 128
+  gpu_allow_growth: true
+
+ce_center6_mel10_lambda2_pzd:
+  <<: *DEFAULT
+  out_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel10_lambda2_pzd
+  center_loss_f_norm: ''
+  max_steps: 4020
+  lr_steps: [4020]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 2]
+  train_op_steps: [4000]
+  train_op_ks: [ce_center6_tp]
+  model_key: MelModel10
+  batch_size: 32
+  infer_batch_size: 64
+  data_dir: /home/pengzhendong/ser/data/iemocap_5emo_logMelW40fft1024d128
+#  data_dir: '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft2048d128'
+  freq_size: 128
+  gpu_allow_growth: true
+
+ce_center6_mel10_lambda1_pzd:
+  <<: *DEFAULT
+  out_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel10_lambda1_pzd
+  center_loss_f_norm: ''
+  max_steps: 4020
+  lr_steps: [4020]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 1]
+  train_op_steps: [4000]
+  train_op_ks: [ce_center6_tp]
+  model_key: MelModel10
+  batch_size: 32
+  infer_batch_size: 64
+  data_dir: /home/pengzhendong/ser/data/iemocap_5emo_logMelW40fft1024d128
+#  data_dir: '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft2048d128'
+  freq_size: 128
+  gpu_allow_growth: true
+
+ce_center6_mel10_lambda05_pzd:
+  <<: *DEFAULT
+  out_dir: ./cr_model_v2/out_mel_impro/ce_center6_mel10_lambda05_pzd
+  center_loss_f_norm: ''
+  max_steps: 4020
+  lr_steps: [4020]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 0.5]
+  train_op_steps: [4000]
+  train_op_ks: [ce_center6_tp]
+  model_key: MelModel10
+  batch_size: 32
+  infer_batch_size: 64
+  data_dir: /home/pengzhendong/ser/data/iemocap_5emo_logMelW40fft1024d128
 #  data_dir: '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft2048d128'
   freq_size: 128
   gpu_allow_growth: true

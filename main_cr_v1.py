@@ -12,7 +12,7 @@ from utils import parser_util
 
 def add_arguments(parser):
     """Build ArgumentParser"""
-    parser.add_argument('--config_file', type=str, default='./cr_model_v2/ma.yml',
+    parser.add_argument('--config_file', type=str, default='./cr_model_v2/ma_20181003.yml',
                         help='config file about hparams')
     parser.add_argument('--config_name', type=str, default='default',
                         help='config name for hparams')

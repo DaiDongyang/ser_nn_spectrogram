@@ -132,6 +132,9 @@ def load_data(hps):
             continue
         file_path = os.path.join(data_dir, file_name)
         x = np.load(file_path)
+        if hps.is_clip_long_data and len(x) > hps.max_length_of_data:
+            start_idx = (len(x) - hps.max_length_of_data) // 2
+            x = x[start_idx:start_idx + hps.max_length_of_data]
         if hps.sess[hps.vali_test_ses] in file_name:
             if file_name[-12] == hps.vali_type:
                 dev_x.append(x)

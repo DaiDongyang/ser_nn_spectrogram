@@ -12,7 +12,7 @@ from utils import parser_util
 
 def add_arguments(parser):
     """Build ArgumentParser"""
-    parser.add_argument('--config_file', type=str, default='./cr_model_v2/ma.yml',
+    parser.add_argument('--config_file', type=str, default='./cr_model_v2/ma_20181003.yml',
                         help='config file about hparams')
     parser.add_argument('--config_name', type=str, default='default',
                         help='config name for hparams')
@@ -40,6 +40,8 @@ def main(unused_argv):
         'MelModel6': cr_model_impl_mel.MelModel6,
         'MelModel7': cr_model_impl_mel.MelModel7,
         'MelModel8': cr_model_impl_mel.MelModel8,
+        'MelModel9': cr_model_impl_mel.MelModel9,
+        'MelModel10': cr_model_impl_mel.MelModel10,
         'Hid2DMelModel': cr_model_impl_mel.Hid2DMelModel,
         'Hid3DMelModel': cr_model_impl_mel.Hid3DMelModel
     }
