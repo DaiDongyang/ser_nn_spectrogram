@@ -181,7 +181,7 @@ ce_m4_clipg:
 
 ce_m8: &CE_M8
   <<: *DEFAULT
-  out_dir: './cr_model_v2/out_mel_impro/ce_m4_3'
+  out_dir: './cr_model_v2/out_mel_impro/ce_m8'
   train_output_summ_keys: ['h_rnn', 'hid_fc'] #['h_rnn', 'h_cnn']
   train_grad_summ_keys: '' #['ce2hrnn', 'ce2hcnn']
   train_metric_summ_keys: ['e_acc']
@@ -342,7 +342,7 @@ ce_center_m4_origin_lambda03:
   center_loss_gammas: [0.10]
   feature_norm_alpha_steps: [4000]
   feature_norm_alphas: [0.5]
-  best_params_start_steps: 200
+  best_params_start_steps: 100
   is_bn: false
   is_var_cnn_mask: true
   batch_size: 32
@@ -365,7 +365,7 @@ ce_center_m4_origin_lambda1:
   center_loss_gammas: [0.10]
   feature_norm_alpha_steps: [4000]
   feature_norm_alphas: [0.5]
-  best_params_start_steps: 200
+  best_params_start_steps: 100
   is_bn: false
   is_var_cnn_mask: true
   batch_size: 32
