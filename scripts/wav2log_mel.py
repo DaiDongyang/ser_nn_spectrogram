@@ -15,11 +15,11 @@ def get_log_mel_spectrogram(y, sr, n_fft, win_length, hop_length, power=2, windo
 
 
 def wav2log_mel():
-    n_fft = 2048
+    n_fft = 1024
     win_time = 0.04
     hop_time = 0.01
     in_fold = '/home/ddy/projects/emotions/data/iemocap_5emo_wavs'
-    out_fold = '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft2048d128'
+    out_fold = '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft1024d128'
     if not os.path.exists(out_fold):
         os.mkdir(out_fold)
     file_names = os.listdir(in_fold)
@@ -28,7 +28,7 @@ def wav2log_mel():
 
             in_file_path = os.path.join(in_fold, file_name)
             out_file_path = os.path.join(out_fold, os.path.splitext(file_name)[0] + ".npy")
-            y, sr = librosa.load(in_file_path)
+            y, sr = librosa.load(in_file_path, sr=16000)
             win_length = int(win_time * sr)
             hop_length = int(hop_time * sr)
 

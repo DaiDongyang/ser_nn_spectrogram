@@ -271,14 +271,55 @@ class MelModel8(cr_model.CGRUFCModel):
         with tf.name_scope('fc1'):
             w_fc1 = self.weight_variable([in_dim, fc_hidden])
             b_fc1 = self.bias_variable([fc_hidden])
-            h_fc1 = tf.matmul(inputs, w_fc1) + b_fc1
-            h_fc1_drop = tf.nn.relu(h_fc1)
+            h_fc1 = tf.nn.relu(tf.matmul(inputs, w_fc1) + b_fc1)
+            # h_fc1_drop = tf.nn.relu(h_fc1)
         with tf.name_scope('fc2'):
             w_fc2 = self.weight_variable([fc_hidden, out_dim])
             b_fc2 = self.bias_variable([out_dim])
-            h_fc2 = tf.matmul(h_fc1_drop, w_fc2) + b_fc2
+            h_fc2 = tf.matmul(h_fc1, w_fc2) + b_fc2
         h_fc = h_fc2
         hid_fc = h_fc1
+        return h_fc, hid_fc
+
+
+class MelModel9(cr_model.CGRUFCModel):
+    def cnn(self, inputs, seq_lens):
+        print('MelModel9')
+        h = tf.expand_dims(inputs, 3)
+        i = 0
+        is_poolings = [False, True, True, True]
+        kernel_sizes = [[7, 7], [3, 3], [3, 3], [3, 3]]
+        filter_nums = [48, 64, 80, 96]
+        strides = [[2, 2], [1, 1], [1, 1], [1, 1]]
+        for ker_size, filter_num, stride, is_pool in zip(kernel_sizes, filter_nums, strides,
+                                                         is_poolings):
+            i += 1
+            with tf.name_scope('conv{}'.format(i)):
+                h, seq_lens = vcu2.var_conv2d(inputs=h, filters=filter_num, kernel_size=ker_size,
+                                              seq_length=seq_lens, strides=stride, padding='valid',
+                                              use_bias=True, is_seq_mask=False,
+                                              is_bn=self.hps.is_bn,
+                                              activation_fn=tf.keras.layers.PReLU(),
+                                              is_training=self.is_training_ph)
+                if is_pool:
+                    h, seq_lens = vcu2.var_max_pooling2d(inputs=h, pool_size=[2, 2], strides=[2, 2],
+                                                         padding='valid',
+                                                         is_seq_mask=self.hps.is_var_cnn_mask,
+                                                         seq_length=seq_lens)
+        h_cnn = tf.reshape(h, [tf.shape(h)[0], -1, h.shape[2] * h.shape[3]])
+        return h_cnn, seq_lens
+
+    def fc(self, inputs):
+        out_dim = len(self.hps.emos)
+        fc_hidden = 64
+        inputs = tf.nn.dropout(inputs, self.fc_kprob_ph)
+        with tf.name_scope('fc1'):
+            h_fc1_act = tf.layers.dense(inputs=inputs, units=fc_hidden,
+                                        activation=tf.keras.layers.PReLU())
+        with tf.name_scope('fc2'):
+            h_fc2 = tf.layers.dense(inputs=h_fc1_act, units=out_dim, activation=None)
+        h_fc = h_fc2
+        hid_fc = h_fc1_act
         return h_fc, hid_fc
 
 
