@@ -6,7 +6,7 @@ from librosa import display
 import numpy as np
 
 # Load sound file
-y, sr = librosa.load("/Users/d/Desktop/wavs2/Ses01F_impro01_F014.wav")
+y, sr = librosa.load("/Users/d/Desktop/tmp_wav/b.wav")
 
 # Let's make and display a mel-scaled power (energy-squared) spectrogram
 S = librosa.feature.melspectrogram(y, sr=sr, n_mels=128)
