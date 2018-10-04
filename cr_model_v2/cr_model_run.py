@@ -480,6 +480,7 @@ class CRModelRun(object):
                         model.feature_norm_alpha_ph: var_hps.feature_norm_alpha,
                     })
             if i % self.hps.eval_interval == 0:
+                is_eval_test = self.hps.is_eval_test
                 l_level = 1
                 dev_metric_d, dev_loss_d = self.eval(dev_iter, var_hps, session)
                 if self.hps.is_tflog:
@@ -495,10 +496,12 @@ class CRModelRun(object):
                     self.best_metric_step = i
                     self.saver.save(session, self.best_metric_ckpt_path)
                     l_level = 2
+                    is_eval_test = True
                 if i > self.hps.best_params_start_steps and dev_loss < self.best_loss:
                     self.best_loss = dev_loss
                     self.best_loss_step = i
                     self.saver.save(session, self.best_loss_ckpt_path)
+                    is_eval_test = True
                 self.logger.log(' dev set: metric_d', dev_metric_d, 'loss_d', dev_loss_d,
                                 level=l_level)
                 self.logger.log('   best_metric', self.best_metric, 'best_metric_step',
@@ -507,7 +510,7 @@ class CRModelRun(object):
                 self.logger.log('   best_loss', self.best_loss, 'best_loss_step',
                                 self.best_loss_step,
                                 level=l_level)
-                if self.hps.is_eval_test:
+                if is_eval_test:
                     test_metric_d, test_loss_d = self.eval(test_iter, var_hps, session)
                     if self.hps.is_tflog:
                         fd = self.get_eval_merged_feed_dict(test_metric_d, test_loss_d,

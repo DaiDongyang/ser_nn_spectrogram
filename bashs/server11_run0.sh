@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-echo 'ce_center_m10_origin_lambda1'
+echo 'ce_center6_ma_rediv_mel_batch64'
 
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_impro.yml --config_name=ce_center_m10_origin_lambda1 --gpu=0 --vali_test_ses=0 --vali_type=F --test_type=M
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_impro.yml --config_name=ce_center_m10_origin_lambda1 --gpu=0 --vali_test_ses=0 --vali_type=M --test_type=F
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_impro.yml --config_name=ce_center_m10_origin_lambda1 --gpu=0 --vali_test_ses=1 --vali_type=F --test_type=M
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_impro.yml --config_name=ce_center_m10_origin_lambda1 --gpu=0 --vali_test_ses=1 --vali_type=M --test_type=F
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_impro.yml --config_name=ce_center_m10_origin_lambda1 --gpu=0 --vali_test_ses=2 --vali_type=F --test_type=M
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_impro.yml --config_name=ce_center_m10_origin_lambda1 --gpu=0 --vali_test_ses=2 --vali_type=M --test_type=F
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_impro.yml --config_name=ce_center_m10_origin_lambda1 --gpu=0 --vali_test_ses=3 --vali_type=F --test_type=M
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_impro.yml --config_name=ce_center_m10_origin_lambda1 --gpu=0 --vali_test_ses=3 --vali_type=M --test_type=F
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_impro.yml --config_name=ce_center_m10_origin_lambda1 --gpu=0 --vali_test_ses=4 --vali_type=F --test_type=M
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_impro.yml --config_name=ce_center_m10_origin_lambda1 --gpu=0 --vali_test_ses=4 --vali_type=M --test_type=F
+
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_ma_rediv_mel_batch64.yml --config_name=ce_center6_mel10_lambda1_single --gpu=0 --is_tflog=true
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_ma_rediv_mel_batch64.yml --config_name=ce_center6_mel10_lambda1_single --gpu=0
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_ma_rediv_mel_batch64.yml --config_name=ce_center6_mel10_lambda1_single --gpu=0
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_ma_rediv_mel_batch64.yml --config_name=ce_center6_mel10_lambda3_single --gpu=0 --is_tflog=true
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_ma_rediv_mel_batch64.yml --config_name=ce_center6_mel10_lambda3_single --gpu=0
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_ma_rediv_mel_batch64.yml --config_name=ce_center6_mel10_lambda3_single --gpu=0
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_ma_rediv_mel_batch64.yml --config_name=ce_center6_mel10_lambda03_single --gpu=0 --is_tflog=true
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_ma_rediv_mel_batch64.yml --config_name=ce_center6_mel10_lambda03_single --gpu=0
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_ma_rediv_mel_batch64.yml --config_name=ce_center6_mel10_lambda03_single --gpu=0

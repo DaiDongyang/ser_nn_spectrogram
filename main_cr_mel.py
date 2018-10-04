@@ -48,7 +48,10 @@ def main(unused_argv):
     # print('model_key', yparams.model_key)
     CRM = CRM_dict[yparams.model_key]
     model = CRM(yparams)
-    l_data = load_data.load_data(yparams)
+    if 'is_rediv_data' in yparams and yparams.is_rediv_data is True:
+        l_data = load_data.load_data_mix(yparams)
+    else:
+        l_data = load_data.load_data(yparams)
     d_set = data_set.DataSet(l_data, yparams)
     cr_model_run_v2 = cr_model_run.CRModelRun(model)
     cr_model_run_v2.run(d_set)
