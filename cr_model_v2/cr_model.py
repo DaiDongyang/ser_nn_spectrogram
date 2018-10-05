@@ -137,25 +137,16 @@ class BaseCRModel(object):
             features = tf.nn.l2_normalize(features)
         elif self.hps.center_loss_f_norm == 'l2_1':
             features = tf.nn.l2_normalize(features, axis=1)
+
         centers = self.get_center_loss_centers_variable(shape=[num_classes, len_features])
         labels = tf.reshape(labels, [-1])
         centers_batch = tf.gather(centers, labels)
-        dist_in_2d = tf.losses.mean_squared_error(labels=centers_batch, predictions=features,
-                                                  reduction=tf.losses.Reduction.NONE)
-        dist_in = tf.reduce_mean(tf.reduce_sum(dist_in_2d, axis=-1))
-        labels = tf.reshape(labels, [-1, 1])
-        shifts = tf.reshape(tf.range(start=1, limit=num_classes, dtype=tf.int32), [1, -1])
-        idxs = labels + shifts
-        # centers_shift_batch = tf.gather(centers, idxs) # [batch_size, num_classes - 1, feature_size]
-        # key_masks = tf.tile(tf.expand_dims(key_masks, 1), [1, tf.shape(queries)[1], 1])
-        # features_3d = tf.tile(tf.expand_dims(features, 1), [1, num_classes - 1, 1])
-        # dist_out_3d = tf.losses.mean_squared_error(labels=centers_shift_batch,
-        #                                            predictions=features_3d,
-        #                                            reduction=tf.losses.Reduction.NONE)
-        # dist_out = tf.reduce_mean(tf.reduce_sum(dist_out_3d, axis=-1))
-        # dist_out = tf.reduce_mean(tf.reduce_min(tf.reduce_sum(dist_out_3d, axis=-1), axis=-1))
-        # self.debug_dict['dist_in'] = dist_in
-        # self.debug_dict['dist_out'] = dist_out
+        if self.hps.is_weighted_center_loss:
+            dist_in = tf.reduce_sum(tf.reduce_sum(tf.square(features - centers_batch),
+                                                  axis=-1) * self.e_w_ph) / tf.reduce_mean(
+                self.e_w_ph)
+        else:
+            dist_in = tf.nn.l2_loss(features - centers_batch)
 
         centers0 = tf.expand_dims(centers, 0)
         centers1 = tf.expand_dims(centers, 1)
