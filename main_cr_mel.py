@@ -42,6 +42,7 @@ def main(unused_argv):
         'MelModel8': cr_model_impl_mel.MelModel8,
         'MelModel9': cr_model_impl_mel.MelModel9,
         'MelModel10': cr_model_impl_mel.MelModel10,
+        'MelModel11': cr_model_impl_mel.MelModel11,
         'Hid2DMelModel': cr_model_impl_mel.Hid2DMelModel,
         'Hid3DMelModel': cr_model_impl_mel.Hid3DMelModel
     }

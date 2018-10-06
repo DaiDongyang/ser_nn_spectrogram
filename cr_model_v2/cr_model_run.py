@@ -82,6 +82,8 @@ class CRModelRun(object):
                                                         name='center_loss5_ph')
         self.loss_ph_d['center_loss6'] = tf.placeholder(self.tf_float_type, shape=[],
                                                         name='center_loss6_ph')
+        self.loss_ph_d['center_loss7'] = tf.placeholder(self.tf_float_type, shape=[],
+                                                        name='center_loss7_ph')
         self.loss_ph_d['cos_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                     name='cos_loss_ph')
         self.loss_ph_d['dist_loss'] = tf.placeholder(self.tf_float_type, shape=[],
@@ -98,6 +100,8 @@ class CRModelRun(object):
                                                            name='ce_center_loss5_ph')
         self.loss_ph_d['ce_center_loss6'] = tf.placeholder(self.tf_float_type, shape=[],
                                                            name='ce_center_loss6_ph')
+        self.loss_ph_d['ce_center_loss7'] = tf.placeholder(self.tf_float_type, shape=[],
+                                                           name='ce_center_loss7_ph')
         self.loss_ph_d['ce_cos_loss'] = tf.placeholder(self.tf_float_type, shape=[],
                                                        name='ce_cos_loss_ph')
         self.loss_ph_d['ce_dist_loss'] = tf.placeholder(self.tf_float_type, shape=[],
@@ -376,6 +380,33 @@ class CRModelRun(object):
             var_hps = self.get_cur_var_hps(i)
             batch_input = session.run(train_iter.BatchedInput)
 
+            if self.hps.is_log_debug:
+                # todo: debug
+                # print(session.run(self.model.get_center_loss_centers_variable(shape=[4, 4])))
+                debug_dict = session.run(model.debug_dict,
+                                         feed_dict={
+                                             model.fc_kprob_ph: self.hps.fc_kprob,
+                                             model.lr_ph: var_hps.lr,
+                                             model.x_ph: batch_input.x.astype(self.np_float_type),
+                                             model.t_ph: batch_input.t,
+                                             model.e_ph: batch_input.e,
+                                             model.e_w_ph: batch_input.w.astype(self.np_float_type),
+                                             model.is_training_ph: True,
+                                             model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
+                                             model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
+                                             model.center_loss_lambda_ph: var_hps.center_loss_lambda,
+                                             model.center_loss_alpha_ph: var_hps.center_loss_alpha,
+                                             model.center_loss_beta_ph: var_hps.center_loss_beta,
+                                             model.center_loss_gamma_ph: var_hps.center_loss_gamma,
+                                             model.feature_norm_alpha_ph: var_hps.feature_norm_alpha,
+                                         })
+                print('======== debug dict: ==========')
+                for k, v in debug_dict.items():
+                    print(k)
+                    print(v)
+                print('======== debug dict: ==========')
+
+
             if i % self.hps.train_eval_interval == 0:
                 if self.hps.is_tflog:
                     summ, batch_e_acc, batch_loss_d, _ = session.run(
@@ -416,31 +447,7 @@ class CRModelRun(object):
                             model.feature_norm_alpha_ph: var_hps.feature_norm_alpha,
                         })
 
-                if self.hps.is_log_debug:
-                    # todo: debug
-                    print(session.run(self.model.get_center_loss_centers_variable(shape=[4, 4])))
-                    # debug_dict = session.run(model.debug_dict,
-                    #                          feed_dict={
-                    #                              model.fc_kprob_ph: self.hps.fc_kprob,
-                    #                              model.lr_ph: var_hps.lr,
-                    #                              model.x_ph: batch_input.x.astype(self.np_float_type),
-                    #                              model.t_ph: batch_input.t,
-                    #                              model.e_ph: batch_input.e,
-                    #                              model.e_w_ph: batch_input.w.astype(self.np_float_type),
-                    #                              model.is_training_ph: True,
-                    #                              model.cos_loss_lambda_ph: var_hps.cos_loss_lambda,
-                    #                              model.dist_loss_lambda_ph: var_hps.dist_loss_lambda,
-                    #                              model.center_loss_lambda_ph: var_hps.center_loss_lambda,
-                    #                              model.center_loss_alpha_ph: var_hps.center_loss_alpha,
-                    #                              model.center_loss_beta_ph: var_hps.center_loss_beta,
-                    #                              model.center_loss_gamma_ph: var_hps.center_loss_gamma,
-                    #                              model.feature_norm_alpha_ph: var_hps.feature_norm_alpha,
-                    #                          })
-                    # print('======== debug dict: ==========')
-                    # for k, v in debug_dict.items():
-                    #     print(k)
-                    #     print(v)
-                    # print('======== debug dict: ==========')
+
                 self.logger.log('step %d,' % i, 'input shape', batch_input.x.shape, 'e_acc',
                                 batch_e_acc, 'batch_loss_d', batch_loss_d, level=2)
             else:
