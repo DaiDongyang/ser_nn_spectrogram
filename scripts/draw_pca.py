@@ -60,9 +60,9 @@ def main():
     #               [4, 5, 6],
     #               [7, 8, 9]])
     # l = np.array([1, 2, 1])
-    suffix = '10010600_e3vFtM.npy'
-    hid_prefix = './npys/ce_m4_3/train_feature_'
-    gt_prefix = './npys/ce_m4_3/train_gt_'
+    suffix = '10061006_e0v8t9.npy'
+    hid_prefix = './npys/ce_center_m11_origin_lambda1_single_nodropout/test_feature_'
+    gt_prefix = './npys/ce_center_m11_origin_lambda1_single_nodropout/test_gt_'
     features = np.load(hid_prefix + suffix)
     labels = np.load(gt_prefix + suffix)
     emo_dict = {0: 'neu', 1: 'ang', 2: 'hap', 3: 'sad'}
