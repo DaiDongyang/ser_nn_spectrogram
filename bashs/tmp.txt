@@ -19,3 +19,5 @@ python main_cr_v2.py --config_file=./cr_model_v2/impro.yml --config_name=restore
 
 python main_cr_mel.py --config_file=./cr_model_v2/mel_impro.yml --config_name=restore --gpu=2
 
+
+

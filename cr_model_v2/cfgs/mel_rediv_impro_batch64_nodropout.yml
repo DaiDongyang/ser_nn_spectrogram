@@ -149,7 +149,7 @@ ce_center: &CE_CENTER
 ce_center_m11_origin_lambda03_alpha01:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/out_mel_rediv_impro_batch64_nodropout/ce_center_m11_origin_lambda03_alpha01'
-  max_steps: 2520
+  max_steps: 2020
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
@@ -175,7 +175,7 @@ ce_center_m11_origin_lambda03_alpha01:
 ce_center_m11_origin_lambda03_alpha02:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/out_mel_rediv_impro_batch64_nodropout/ce_center_m11_origin_lambda03_alpha02'
-  max_steps: 2520
+  max_steps: 2020
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
@@ -201,7 +201,7 @@ ce_center_m11_origin_lambda03_alpha02:
 ce_center_m11_origin_lambda03_alpha03:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/out_mel_rediv_impro_batch64_nodropout/ce_center_m11_origin_lambda03_alpha03'
-  max_steps: 2520
+  max_steps: 2020
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
@@ -227,7 +227,7 @@ ce_center_m11_origin_lambda03_alpha03:
 ce_center_m11_origin_lambda03_alpha04:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/out_mel_rediv_impro_batch64_nodropout/ce_center_m11_origin_lambda03_alpha04'
-  max_steps: 2520
+  max_steps: 2020
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
@@ -253,7 +253,7 @@ ce_center_m11_origin_lambda03_alpha04:
 ce_center_m11_origin_lambda03_alpha05:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/out_mel_rediv_impro_batch64_nodropout/ce_center_m11_origin_lambda03_alpha05'
-  max_steps: 2520
+  max_steps: 2020
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
@@ -279,7 +279,7 @@ ce_center_m11_origin_lambda03_alpha05:
 ce_center_m11_origin_lambda03_alpha06:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/out_mel_rediv_impro_batch64_nodropout/ce_center_m11_origin_lambda03_alpha06'
-  max_steps: 2520
+  max_steps: 2020
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
@@ -305,7 +305,7 @@ ce_center_m11_origin_lambda03_alpha06:
 ce_center_m11_origin_lambda03_alpha07:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/out_mel_rediv_impro_batch64_nodropout/ce_center_m11_origin_lambda03_alpha07'
-  max_steps: 2520
+  max_steps: 2020
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
@@ -331,7 +331,7 @@ ce_center_m11_origin_lambda03_alpha07:
 ce_center_m11_origin_lambda03_alpha08:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/out_mel_rediv_impro_batch64_nodropout/ce_center_m11_origin_lambda03_alpha08'
-  max_steps: 2520
+  max_steps: 2020
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
@@ -357,7 +357,7 @@ ce_center_m11_origin_lambda03_alpha08:
 ce_center_m11_origin_lambda03_alpha09:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/out_mel_rediv_impro_batch64_nodropout/ce_center_m11_origin_lambda03_alpha09'
-  max_steps: 2520
+  max_steps: 2020
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
@@ -383,7 +383,7 @@ ce_center_m11_origin_lambda03_alpha09:
 ce_center_m11_origin_lambda03_alpha10:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/out_mel_rediv_impro_batch64_nodropout/ce_center_m11_origin_lambda03_alpha10'
-  max_steps: 2520
+  max_steps: 2020
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
