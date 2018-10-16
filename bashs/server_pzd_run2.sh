@@ -1,14 +1,29 @@
 #!/usr/bin/env bash
 
-echo 'ce_center6_mel10_lambda1_pzd'
+echo 'test alpha v0t1'
 
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_impro_mel.yml --config_name=ce_center6_mel10_lambda1_pzd --vali_test_ses=0 --vali_type=F --test_type=M --gpu=2
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_impro_mel.yml --config_name=ce_center6_mel10_lambda1_pzd --vali_test_ses=0 --vali_type=M --test_type=F --gpu=2
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_impro_mel.yml --config_name=ce_center6_mel10_lambda1_pzd --vali_test_ses=1 --vali_type=F --test_type=M --gpu=2
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_impro_mel.yml --config_name=ce_center6_mel10_lambda1_pzd --vali_test_ses=1 --vali_type=M --test_type=F --gpu=2
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_impro_mel.yml --config_name=ce_center6_mel10_lambda1_pzd --vali_test_ses=2 --vali_type=F --test_type=M --gpu=2
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_impro_mel.yml --config_name=ce_center6_mel10_lambda1_pzd --vali_test_ses=2 --vali_type=M --test_type=F --gpu=2
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_impro_mel.yml --config_name=ce_center6_mel10_lambda1_pzd --vali_test_ses=3 --vali_type=F --test_type=M --gpu=2
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_impro_mel.yml --config_name=ce_center6_mel10_lambda1_pzd --vali_test_ses=3 --vali_type=M --test_type=F --gpu=2
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_impro_mel.yml --config_name=ce_center6_mel10_lambda1_pzd --vali_test_ses=4 --vali_type=F --test_type=M --gpu=2
-python main_cr_mel.py --config_file=./cr_model_v2/cfgs/ce_center6_impro_mel.yml --config_name=ce_center6_mel10_lambda1_pzd --vali_test_ses=4 --vali_type=M --test_type=F --gpu=2
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha01 --gpu=2 --vali_type='0' --test_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha03 --gpu=2 --vali_type='0' --test_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha05 --gpu=2 --vali_type='0' --test_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha07 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha09 --gpu=2 --vali_type='0' --vali_type='1'
+
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha01 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha03 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha05 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha07 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha09 --gpu=2 --vali_type='0' --vali_type='1'
+
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha01 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha03 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha05 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha07 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha09 --gpu=2 --vali_type='0' --vali_type='1'
+
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha01 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha03 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha05 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha07 --gpu=2 --vali_type='0' --vali_type='1'
+python main_cr_mel.py --config_file=./cr_model_v2/cfgs/mel_rediv_ma_batch64_pzd_nodropout.yml --config_name=ce_center_m11_origin_lambda03_alpha09 --gpu=2 --vali_type='0' --vali_type='1'
+
+
