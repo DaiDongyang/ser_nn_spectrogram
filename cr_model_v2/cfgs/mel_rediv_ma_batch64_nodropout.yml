@@ -172,6 +172,33 @@ ce_center_m11_origin_lambda03_alpha01:
   test_type: '9'
   fc_kprob: 1.0
 
+ce_center_m11_origin_lambda03_alpha01_clip800:
+  <<: *CE_CENTER
+  out_dir: './cr_model_v2/out_mel_rediv_ma_batch64_nodropout/ce_center_m11_origin_lambda03_alpha01_clip800'
+  max_steps: 2920
+  max_length_of_data: 800
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 0.3]
+  center_loss_alpha_steps: [20, 4000]
+  center_loss_alhpas: [1, 0.1]
+  center_loss_beta_steps: [4000]
+  center_loss_betas: [0]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.003]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  best_params_start_steps: 200
+  is_bn: false
+  is_var_cnn_mask: true
+  batch_size: 64
+  infer_batch_size: 64
+  model_key: 'MelModel11'
+  vali_type: '8'
+  test_type: '9'
+  fc_kprob: 1.0
+
 ce_center_m11_origin_lambda03_alpha02:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/out_mel_rediv_ma_batch64_nodropout/ce_center_m11_origin_lambda03_alpha02'
@@ -409,6 +436,33 @@ ce_center_m11_origin_lambda03_alpha10:
 ce_center_m11_origin_lambda0:
   <<: *CE_CENTER
   out_dir: './cr_model_v2/out_mel_rediv_ma_batch64_nodropout/ce_center_m11_origin_lambda0'
+  max_steps: 2920
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 0]
+  center_loss_alpha_steps: [20, 4000]
+  center_loss_alhpas: [1, 1]
+  center_loss_beta_steps: [4000]
+  center_loss_betas: [0]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.003]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  best_params_start_steps: 200
+  is_bn: false
+  is_var_cnn_mask: true
+  batch_size: 64
+  infer_batch_size: 64
+  model_key: 'MelModel11'
+  vali_type: '8'
+  test_type: '9'
+  fc_kprob: 1.0
+
+ce_center_m11_origin_lambda0_clip800:
+  <<: *CE_CENTER
+  max_length_of_data: 800
+  out_dir: './cr_model_v2/out_mel_rediv_ma_batch64_nodropout/ce_center_m11_origin_lambda0_clip800'
   max_steps: 2920
   lr_steps: [4000]
   lrs: [0.0003]

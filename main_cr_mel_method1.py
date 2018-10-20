@@ -12,12 +12,17 @@ from utils import parser_util
 
 def add_arguments(parser):
     """Build ArgumentParser"""
-    parser.add_argument('--config_file', type=str, default='./cr_model_v2/ma_20181003.yml',
+    parser.add_argument('--config_file', type=str,
+                        default='./cr_model_v2/cfgs/mel_rediv_ma_batch64_nodropout_method1.yml',
                         help='config file about hparams')
-    parser.add_argument('--config_name', type=str, default='default',
+    parser.add_argument('--config_name', type=str, default='server',
                         help='config name for hparams')
     parser.add_argument('--gpu', type=str, default='',
                         help='config for CUDA_VISIBLE_DEVICES')
+    parser.add_argument('--beta', type=float, default=0.1,
+                        help='config for center loss beta')
+    parser.add_argument('--gamma', type=float, default=0.1,
+                        help='config for center loss gamma')
 
 
 def main(unused_argv):
@@ -25,7 +30,16 @@ def main(unused_argv):
     add_arguments(parser)
     argc, flags_dict = parser.parse_to_dict()
     yparams = cfg_process.YParams(argc.config_file, argc.config_name)
+    yparams.center_loss_betas[-1] = argc.beta
+    yparams.center_loss_gammas[-1] = argc.gamma
+    outdir_prefix = './cr_model_v2/out_mel_rediv_ma_batch64_nodropout_method1/ce_center_m11_origin_lambda03_alpha01_'
+    yparams.out_dir = outdir_prefix + 'beta' + str(argc.beta) + '_' + 'gamma' + str(
+        argc.gamma)
     yparams = cr_cfg_process.CRHpsPreprocessor(yparams, flags_dict).preprocess()
+
+    print(yparams.center_loss_betas)
+    print(yparams.center_loss_gammas)
+    print(yparams.out_dir)
     print('id str:', yparams.id_str)
     yparams.save()
     CRM_dict = {
@@ -43,7 +57,6 @@ def main(unused_argv):
         'MelModel9': cr_model_impl_mel.MelModel9,
         'MelModel10': cr_model_impl_mel.MelModel10,
         'MelModel11': cr_model_impl_mel.MelModel11,
-        'MelModel12': cr_model_impl_mel.MelModel12,
         'Hid2DMelModel': cr_model_impl_mel.Hid2DMelModel,
         'Hid3DMelModel': cr_model_impl_mel.Hid3DMelModel
     }

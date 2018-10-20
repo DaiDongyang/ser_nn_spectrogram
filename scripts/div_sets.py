@@ -19,8 +19,8 @@ def get_key(filename):
 def mix_div_sets(sub_nums=10):
     print('in mix div set')
     file_dict = defaultdict(list)
-    in_dir = '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft1024d128'
-    out_dir = '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft1024d128_rediv'
+    in_dir = '/home/ddy/projects/emotions/data/iemocap_5emo_logStftW40fft1024d128'
+    out_dir = '/home/ddy/projects/emotions/data/iemocap_5emo_logStftW40fft1024d128_rediv'
 
     if not os.path.exists(out_dir):
         print('make fold')

@@ -187,6 +187,7 @@ def load_data_mix(hps):
     dev_e = []
     test_x = []
     test_e = []
+    clip_count = 0
     for file_name in file_names:
         is_load = False
         for sens_type in hps.consider_sent_types:
@@ -202,6 +203,7 @@ def load_data_mix(hps):
         if hps.is_clip_long_data and len(x) > hps.max_length_of_data:
             start_idx = (len(x) - hps.max_length_of_data) // 2
             x = x[start_idx:start_idx + hps.max_length_of_data]
+            clip_count += 1
         # if hps.sess[hps.vali_test_ses] in file_name:
         #     if file_name[-12] == hps.vali_type:
         #         dev_x.append(x)
@@ -234,4 +236,5 @@ def load_data_mix(hps):
     l_data.update_t()
     l_data.update_inverse_sample_w()
     l_data.print_metadata()
+    print('clip_count', clip_count)
     return l_data
