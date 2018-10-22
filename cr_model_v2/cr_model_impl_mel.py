@@ -414,7 +414,7 @@ class MelModel12(cr_model.CGRUFCModel):
         for ker_size, filter_num, stride, is_pool in zip(kernel_sizes, filter_nums, strides,
                                                          is_poolings):
             i += 1
-            if i <= 1:
+            if i <= 2:
                 device_str = '/device:GPU:1'
             else:
                 device_str = '/device:GPU:0'

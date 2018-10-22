@@ -27,7 +27,7 @@ default: &DEFAULT
   is_gradient_clip_norm: False
 
   ## load_data.py
-  data_dir: '/home/ddy/projects/emotions/data/iemocap_5emo_logStftW40fft1024d128_rediv'
+  data_dir: '/home/ubuntu/projects/emotions/data/iemocap_5emo_logStftW40fft1024d128_rediv'
   consider_sent_types: ['impro', 'script']
   is_merge_hap_exc: True
   sess: ['Ses01', 'Ses02', 'Ses03', 'Ses04', 'Ses05']
@@ -41,7 +41,7 @@ default: &DEFAULT
 
   ## data_set.py
   batch_size: 64
-  infer_batch_size: 64
+  infer_batch_size: 256
   is_shuffle_vali: False
   is_shuffle_test: False
 
@@ -99,7 +99,7 @@ default: &DEFAULT
   train_eval_interval: 5
   is_eval_test: False
   persist_interval: 1000
-  gpu_allow_growth: True
+  gpu_allow_growth: False
   restart_train_steps: 500
   best_params_type: 'best_metric' # 'best_loss',
   best_params_start_steps: 10
@@ -145,9 +145,9 @@ ce_center: &CE_CENTER
   feature_norm_alpha_steps: [4000]
   feature_norm_alphas: [0.5]
 
-ce_center_m12_origin_lambda0:
+ce_center_m11_origin_lambda0:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/out_stft_rediv_ma_batch64_nodropout/ce_center_m12_origin_lambda0'
+  out_dir: './cr_model_v2/out_stft_rediv_ma_batch64_nodropout/ce_center_m11_origin_lambda0'
   max_steps: 2920
   lr_steps: [4000]
   lrs: [0.0003]
@@ -166,14 +166,14 @@ ce_center_m12_origin_lambda0:
   is_var_cnn_mask: true
   batch_size: 64
   infer_batch_size: 64
-  model_key: 'MelModel12'
+  model_key: 'MelModel11'
   vali_type: '8'
   test_type: '9'
   fc_kprob: 1.0
 
-ce_center_m12_origin_lambda03_alpha01:
+ce_center_m11_origin_lambda03_alpha01:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/out_stft_rediv_ma_batch64_nodropout/ce_center_m12_origin_lambda03_alpha01'
+  out_dir: './cr_model_v2/out_stft_rediv_ma_batch64_nodropout/ce_center_m11_origin_lambda03_alpha01'
   max_steps: 2920
   lr_steps: [4000]
   lrs: [0.0003]
@@ -192,7 +192,7 @@ ce_center_m12_origin_lambda03_alpha01:
   is_var_cnn_mask: true
   batch_size: 64
   infer_batch_size: 64
-  model_key: 'MelModel12'
+  model_key: 'MelModel11'
   vali_type: '8'
   test_type: '9'
   fc_kprob: 1.0
