@@ -147,7 +147,7 @@ ce_center: &CE_CENTER
 
 ce_center_m11_origin_lambda0:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/out_mel_ma_batch64_nodropout/ce_center_m11_origin_lambda0'
+  out_dir: './cr_model_v2/mel_ma_nodropout/ce_center_m11_origin_lambda0'
   max_steps: 2920
   lr_steps: [4000]
   lrs: [0.0003]

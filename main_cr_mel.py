@@ -12,9 +12,9 @@ from utils import parser_util
 
 def add_arguments(parser):
     """Build ArgumentParser"""
-    parser.add_argument('--config_file', type=str, default='./cr_model_v2/ma_20181003.yml',
+    parser.add_argument('--config_file', type=str, default='./cr_model_v2/cfgs/mel_ma_nodropout.yml',
                         help='config file about hparams')
-    parser.add_argument('--config_name', type=str, default='default',
+    parser.add_argument('--config_name', type=str, default='mel_ma_nodropout',
                         help='config name for hparams')
     parser.add_argument('--gpu', type=str, default='',
                         help='config for CUDA_VISIBLE_DEVICES')

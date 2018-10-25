@@ -414,10 +414,10 @@ class MelModel12(cr_model.CGRUFCModel):
         for ker_size, filter_num, stride, is_pool in zip(kernel_sizes, filter_nums, strides,
                                                          is_poolings):
             i += 1
-            if i <= 2:
+            if i <= 1:
                 device_str = '/device:GPU:1'
             else:
-                device_str = '/device:GPU:0'
+                device_str = '/device:GPU:2'
             with tf.device(device_str):
                 with tf.name_scope('conv{}'.format(i)):
                     h, seq_lens = vcu2.var_conv2d(inputs=h, filters=filter_num,
