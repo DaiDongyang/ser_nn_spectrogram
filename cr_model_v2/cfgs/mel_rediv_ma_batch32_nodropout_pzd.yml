@@ -27,7 +27,7 @@ default: &DEFAULT
   is_gradient_clip_norm: False
 
   ## load_data.py
-  data_dir: '/home/ddy/projects/emotions/data/iemocap_5emo_logMelW40fft1024d128_rediv'
+  data_dir: '/home/pengzhendong/ser/data/iemocap_5emo_logMelW40fft1024d128_rediv'
   consider_sent_types: ['impro', 'script']
   is_merge_hap_exc: True
   sess: ['Ses01', 'Ses02', 'Ses03', 'Ses04', 'Ses05']
@@ -513,16 +513,16 @@ ce_center_m11_origin_lambda03_alpha05_beta01_gamma01:
   test_type: '9'
   fc_kprob: 1.0
 
-ce_center_m11_origin_lambda0003_alpha05:
+ce_center_m11_origin_lambda0003_alpha01:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/out_mel_rediv_ma_batch32_nodropout/ce_center_m11_origin_lambda0003_alpha05'
+  out_dir: './cr_model_v2/out_mel_rediv_ma_batch32_nodropout/ce_center_m11_origin_lambda0003_alpha01'
   max_steps: 3520
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
   center_loss_lambdas: [0, 0.003]
   center_loss_alpha_steps: [20, 4000]
-  center_loss_alhpas: [1, 0.5]
+  center_loss_alhpas: [1, 0.1]
   center_loss_beta_steps: [4000]
   center_loss_betas: [0]
   center_loss_gamma_steps: [4000]
@@ -539,16 +539,16 @@ ce_center_m11_origin_lambda0003_alpha05:
   test_type: '9'
   fc_kprob: 1.0
 
-ce_center_m11_origin_lambda003_alpha05:
+ce_center_m11_origin_lambda003_alpha01:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/out_mel_rediv_ma_batch32_nodropout/ce_center_m11_origin_lambda003_alpha05'
+  out_dir: './cr_model_v2/out_mel_rediv_ma_batch32_nodropout/ce_center_m11_origin_lambda003_alpha01'
   max_steps: 3520
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
   center_loss_lambdas: [0, 0.03]
   center_loss_alpha_steps: [20, 4000]
-  center_loss_alhpas: [1, 0.5]
+  center_loss_alhpas: [1, 0.1]
   center_loss_beta_steps: [4000]
   center_loss_betas: [0]
   center_loss_gamma_steps: [4000]
@@ -565,16 +565,16 @@ ce_center_m11_origin_lambda003_alpha05:
   test_type: '9'
   fc_kprob: 1.0
 
-ce_center_m11_origin_lambda3_alpha05:
+ce_center_m11_origin_lambda3_alpha01:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/out_mel_rediv_ma_batch32_nodropout/ce_center_m11_origin_lambda3_alpha05'
+  out_dir: './cr_model_v2/out_mel_rediv_ma_batch32_nodropout/ce_center_m11_origin_lambda3_alpha01'
   max_steps: 3520
   lr_steps: [4000]
   lrs: [0.0003]
   center_loss_lambda_steps: [20, 4000]
   center_loss_lambdas: [0, 3]
   center_loss_alpha_steps: [20, 4000]
-  center_loss_alhpas: [1, 0.5]
+  center_loss_alhpas: [1, 0.1]
   center_loss_beta_steps: [4000]
   center_loss_betas: [0]
   center_loss_gamma_steps: [4000]
