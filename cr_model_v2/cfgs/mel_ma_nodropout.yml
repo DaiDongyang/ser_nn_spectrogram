@@ -225,3 +225,30 @@ ce_center_m11_origin_lambda03_alpha05:
   vali_type: 'F'
   test_type: 'M'
   fc_kprob: 1.0
+
+ce_center_m11_origin_lambda03_alpha05_drop05:
+  <<: *CE_CENTER
+  out_dir: './cr_model_v2/mel_ma_nodropout/ce_center_m11_origin_lambda03_alpha05_drop05'
+  max_steps: 3520
+  lr_steps: [4000]
+  lrs: [0.0003]
+  center_loss_lambda_steps: [20, 4000]
+  center_loss_lambdas: [0, 0.3]
+  center_loss_alpha_steps: [20, 4000]
+  center_loss_alhpas: [1, 0.5]
+  center_loss_beta_steps: [4000]
+  center_loss_betas: [0]
+  center_loss_gamma_steps: [4000]
+  center_loss_gammas: [0.003]
+  feature_norm_alpha_steps: [4000]
+  feature_norm_alphas: [0.5]
+  best_params_start_steps: 200
+  is_bn: false
+  is_var_cnn_mask: true
+  batch_size: 32
+  infer_batch_size: 128
+  model_key: 'MelModel11'
+  vali_test_ses: 4
+  vali_type: 'F'
+  test_type: 'M'
+  fc_kprob: 0.5

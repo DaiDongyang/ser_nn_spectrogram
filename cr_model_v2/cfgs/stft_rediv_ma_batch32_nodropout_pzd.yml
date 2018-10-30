@@ -27,7 +27,7 @@ default: &DEFAULT
   is_gradient_clip_norm: False
 
   ## load_data.py
-  data_dir: '/home/ddy/projects/emotions/data/iemocap_5emo_logStftW40fft1024d128_rediv'
+  data_dir: '/home/pengzhendong/ser/data/iemocap_5emo_logStftW40fft1024d128_rediv'
   consider_sent_types: ['impro', 'script']
   is_merge_hap_exc: True
   sess: ['Ses01', 'Ses02', 'Ses03', 'Ses04', 'Ses05']
@@ -117,7 +117,7 @@ default: &DEFAULT
 
 ce_center: &CE_CENTER
   <<: *DEFAULT
-  out_dir: './cr_model_v2/out_stft_rediv_ma_batch64_nodropout/ce_center'
+  out_dir: './cr_model_v2/out_stft_rediv_ma_batch32_nodropout/ce_center'
   center_loss_f_norm: '' # 'l2', 'l2_1', ''
   train_output_summ_keys: ['h_rnn', 'hid_fc']
   train_grad_summ_keys: ['ce2hrnn', 'center2hrnn', 'ce2hcnn', 'center2hcnn']
@@ -147,7 +147,7 @@ ce_center: &CE_CENTER
 
 ce_center_m12_origin_lambda0:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/out_stft_rediv_ma_batch64_nodropout/ce_center_m12_origin_lambda0'
+  out_dir: './cr_model_v2/out_stft_rediv_ma_batch32_nodropout/ce_center_m12_origin_lambda0'
   max_steps: 2920
   lr_steps: [4000]
   lrs: [0.0003]
@@ -173,7 +173,7 @@ ce_center_m12_origin_lambda0:
 
 ce_center_m11_origin_lambda0:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/out_stft_rediv_ma_batch64_nodropout/ce_center_m11_origin_lambda0'
+  out_dir: './cr_model_v2/out_stft_rediv_ma_batch32_nodropout/ce_center_m11_origin_lambda0'
   max_steps: 2920
   lr_steps: [4000]
   lrs: [0.0003]
@@ -199,7 +199,7 @@ ce_center_m11_origin_lambda0:
 
 ce_center_m12_origin_lambda03_alpha01:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/out_stft_rediv_ma_batch64_nodropout/ce_center_m12_origin_lambda03_alpha01'
+  out_dir: './cr_model_v2/out_stft_rediv_ma_batch32_nodropout/ce_center_m12_origin_lambda03_alpha01'
   max_steps: 2920
   lr_steps: [4000]
   lrs: [0.0003]
@@ -225,7 +225,7 @@ ce_center_m12_origin_lambda03_alpha01:
 
 ce_center_m11_origin_lambda03_alpha01:
   <<: *CE_CENTER
-  out_dir: './cr_model_v2/out_stft_rediv_ma_batch64_nodropout/ce_center_m11_origin_lambda03_alpha01'
+  out_dir: './cr_model_v2/out_stft_rediv_ma_batch32_nodropout/ce_center_m11_origin_lambda03_alpha01'
   max_steps: 2920
   lr_steps: [4000]
   lrs: [0.0003]
